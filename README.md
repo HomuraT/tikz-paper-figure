@@ -95,7 +95,7 @@ The reasoning behind the style, the palette and the chart choices is in a blog p
 
 ## Support
 
-The project is free to use. If these templates saved you an afternoon, you can leave a tip through the WeChat reward code below.
+The project is free to use. If these templates have been helpful to you, you can leave a tip through the WeChat reward code below.
 
 <img src="docs/sponsor/wechat-reward.png" width="240" alt="WeChat reward code">
 
