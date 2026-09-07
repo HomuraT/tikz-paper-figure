@@ -1,0 +1,29 @@
+% Candidate 7: cost versus quality scatter with the Pareto frontier. Log x axis with the values as tick labels,
+% every point named next to it, ours as the large blue dot, the region it dominates tinted, the frontier as a
+% grey staircase. Grid in both directions and no axis lines: neither axis is primary in a scatter (Wilke,
+% Background grids). A zero cost or a failed run has no place on the log axis; say so in the caption.
+\documentclass[10pt,tikz,border=2pt]{standalone}
+\usepackage{plotfig}
+\begin{document}
+\begin{tikzpicture}
+\begin{axis}[paper, width=6.4cm, height=4.2cm, y label top, both grids,
+  xmode=log, xmin=0.2, xmax=40, xtick={0.3,1,3,10,30}, xticklabels={0.3,1,3,10,30},
+  xlabel={cost per 1k queries (\$)}, ylabel={accuracy (\%)}, ymin=45, ymax=90, ytick={50,60,70,80,90}]
+\fill[barblue!7] (axis cs:2,45) rectangle (axis cs:40,78);
+\node[note, text=barblue!70!black, anchor=south east] at (axis cs:40,45.5) {costlier and worse than ours};
+\addplot[black!35, dashed, line width=0.6pt, const plot] coordinates {(0.3,52) (0.8,61) (1.5,64) (2,78) (9,80) (20,83) (40,83)}
+  node[dl, text=black!50, pos=1, anchor=north east, inner sep=1.5pt] {Pareto frontier};
+\addplot[only marks, mark=*, mark size=2.2pt, black!45] coordinates {(0.3,52) (0.8,61) (1.5,64) (1.0,55) (4.0,72) (9,80) (20,83) (6,68)};
+\addplot[only marks, mark=*, mark size=3.2pt, barblue] coordinates {(2,78)};
+\node[dlc, text=black!70] at (axis cs:0.3,52) {A};
+\node[dlc, text=black!70] at (axis cs:0.8,61) {B};
+\node[dlc, text=black!70] at (axis cs:1.5,64) {C};
+\node[dl, text=black!70, anchor=north west] at (axis cs:1.0,55) {D};
+\node[dl, text=black!70, anchor=north west] at (axis cs:4.0,72) {E};
+\node[dlc, text=black!70] at (axis cs:9,80) {F};
+\node[dlc, text=black!70] at (axis cs:20,83) {G};
+\node[dl, text=black!70, anchor=north west] at (axis cs:6,68) {H};
+\node[dlc, text=barblue, font=\fontsize{7}{7}\selectfont\bfseries] at (axis cs:2,78) {Ours};
+\end{axis}
+\end{tikzpicture}
+\end{document}

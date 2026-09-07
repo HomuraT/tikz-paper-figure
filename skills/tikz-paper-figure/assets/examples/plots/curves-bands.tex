@@ -1,0 +1,48 @@
+% Candidate 1: learning curves with confidence bands, two metrics side by side (groupplots), direct labels at
+% the line ends instead of a legend, one dashed reference line, one annotation of the finding the text discusses.
+% Bands are translucent (`band` style) so overlapping intervals stay visible; the caption must say what they
+% are (here: 95% CI over 5 seeds at every x). Marks stay because the x grid is sparse (six points); a dense
+% series would use `no marks`. Lines join points because x is ordered (training examples).
+\documentclass[10pt,tikz,border=2pt]{standalone}
+\usepackage{plotfig}
+\begin{document}
+\begin{tikzpicture}
+\begin{groupplot}[group style={group size=2 by 1, horizontal sep=1.15cm}, paper, width=4.9cm, height=3.5cm,
+  xmode=log, log basis x=10, xtick={100,1000,10000,100000}, xticklabels={$10^2$,$10^3$,$10^4$,$10^5$},
+  xlabel={training examples}, ymin=20, ymax=90, ytick={20,40,60,80},
+  enlarge x limits={lower, value=0.05}, y label top]
+% ------------------------------------------------------------------ left panel
+\nextgroupplot[title={Accuracy (\%)}]
+\addplot[name path=ou, draw=none, forget plot] coordinates {(100,46.5) (300,58.5) (1000,69.2) (3000,76.6) (10000,81.1) (30000,83.6)};
+\addplot[name path=ol, draw=none, forget plot] coordinates {(100,37.5) (300,51.5) (1000,62.8) (3000,71.4) (10000,76.9) (30000,80.4)};
+\addplot[band, fill=kept] fill between[of=ou and ol];
+\addplot[name path=au, draw=none, forget plot] coordinates {(100,41.2) (300,50.1) (1000,59.0) (3000,65.9) (10000,70.8) (30000,73.7)};
+\addplot[name path=al, draw=none, forget plot] coordinates {(100,34.8) (300,43.9) (1000,53.0) (3000,60.1) (10000,65.2) (30000,68.3)};
+\addplot[band, fill=addc] fill between[of=au and al];
+\addplot[name path=bu, draw=none, forget plot] coordinates {(100,29.0) (300,40.1) (1000,53.6) (3000,64.4) (10000,71.4) (30000,76.2)};
+\addplot[name path=bl, draw=none, forget plot] coordinates {(100,21.0) (300,31.9) (1000,46.4) (3000,57.6) (10000,64.6) (30000,69.8)};
+\addplot[band, fill=dbA] fill between[of=bu and bl];
+% direct labels: when two lines end within about 4 points of each other, nudge the labels apart with yshift
+\addplot[ref, forget plot] coordinates {(100,86) (30000,86)} node[dl, text=black!55, yshift=2pt] {human};
+\addplot[kept, mark=*, mark size=1.3pt] coordinates {(100,42) (300,55) (1000,66) (3000,74) (10000,79) (30000,82)} node[dl, text=kept, yshift=-1.5pt] {Ours};
+\addplot[addc, mark=square*, mark size=1.2pt] coordinates {(100,38) (300,47) (1000,56) (3000,63) (10000,68) (30000,71)} node[dl, text=addctext, yshift=-3pt] {System A};
+\addplot[dbA, mark=triangle*, mark size=1.5pt] coordinates {(100,25) (300,36) (1000,50) (3000,61) (10000,68) (30000,73)} node[dl, text=dbA, yshift=3pt] {System B};
+\node[note, anchor=north] at (axis cs:3000,35) {B overtakes A\\ at 3k examples};
+\draw[notearrow] (axis cs:3000,36) -- (axis cs:3000,60);
+% ------------------------------------------------------------------ right panel
+\nextgroupplot[title={Exact match (\%)}]
+\addplot[name path=ou, draw=none, forget plot] coordinates {(100,36.0) (300,47.8) (1000,58.4) (3000,66.2) (10000,71.5) (30000,74.6)};
+\addplot[name path=ol, draw=none, forget plot] coordinates {(100,28.0) (300,41.2) (1000,52.6) (3000,61.4) (10000,67.3) (30000,71.2)};
+\addplot[band, fill=kept] fill between[of=ou and ol];
+\addplot[name path=au, draw=none, forget plot] coordinates {(100,32.5) (300,40.1) (1000,48.4) (3000,55.2) (10000,60.0) (30000,63.0)};
+\addplot[name path=al, draw=none, forget plot] coordinates {(100,26.1) (300,34.1) (1000,42.6) (3000,49.6) (10000,54.8) (30000,58.2)};
+\addplot[band, fill=addc] fill between[of=au and al];
+\addplot[name path=bu, draw=none, forget plot] coordinates {(100,24.0) (300,33.3) (1000,44.1) (3000,54.0) (10000,61.4) (30000,66.5)};
+\addplot[name path=bl, draw=none, forget plot] coordinates {(100,16.0) (300,25.1) (1000,36.7) (3000,47.4) (10000,55.2) (30000,60.7)};
+\addplot[band, fill=dbA] fill between[of=bu and bl];
+\addplot[kept, mark=*, mark size=1.3pt] coordinates {(100,32) (300,44.5) (1000,55.5) (3000,63.8) (10000,69.4) (30000,72.9)} node[dl, text=kept] {Ours};
+\addplot[addc, mark=square*, mark size=1.2pt] coordinates {(100,29.3) (300,37.1) (1000,45.5) (3000,52.4) (10000,57.4) (30000,60.6)} node[dl, text=addctext, yshift=-2.5pt] {System A};
+\addplot[dbA, mark=triangle*, mark size=1.5pt] coordinates {(100,20) (300,29.2) (1000,40.4) (3000,50.7) (10000,58.3) (30000,63.6)} node[dl, text=dbA, yshift=2.5pt] {System B};
+\end{groupplot}
+\end{tikzpicture}
+\end{document}

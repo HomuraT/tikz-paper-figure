@@ -1,0 +1,166 @@
+% plotfig.sty -- pgfplots styles that match the cardfig look (same fonts, same palette), for data figures.
+% The defaults follow Wilke, Fundamentals of Data Visualization (digest in references/principles.md): axis lines
+% left and bottom only, a light grid perpendicular to the variable of interest, grey tick labels, direct labels
+% at line ends instead of a legend box, bars from zero, solid marks, one colour per system across every figure.
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{plotfig}[2026/09/07 v0.2 pgfplots styles matching cardfig]
+\RequirePackage[default]{sourcesanspro}
+\RequirePackage[scaled=0.92]{inconsolata}
+\RequirePackage{fontawesome5}
+\RequirePackage{amsmath,amssymb}
+\RequirePackage{xcolor}
+\RequirePackage{tikz}
+\RequirePackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepgfplotslibrary{groupplots,fillbetween,polar,statistics}
+\usetikzlibrary{arrows.meta,calc,positioning,patterns.meta,backgrounds}
+
+% ---------------------------------------------------------------------------
+% Palette: the card colours, so a plot and a card figure in one paper share their meaning of blue and orange.
+% ---------------------------------------------------------------------------
+\definecolor{ink}{HTML}{1A202C}
+\definecolor{kept}{HTML}{2B6CB0}      % blue: ours, the target side
+\definecolor{addc}{HTML}{DD6B20}      % orange: the difficulty, a regression, a second system to single out
+\definecolor{dbA}{HTML}{2C7A7B}       % teal
+\definecolor{dbB}{HTML}{6B46C1}       % violet
+\definecolor{gold}{HTML}{B7791F}      % fifth series
+\definecolor{barblue}{HTML}{007DFF}   % bright blue for bars and dots against grey
+\definecolor{bargrey}{HTML}{E7E7E7}
+\colorlet{addctext}{addc!80!black}    % orange for small text: raw addc (L* 58) is too light for 6.5pt glyphs
+\colorlet{goldtext}{gold!80!black}
+% Colours for translucent overlapping fills (parallel sets, stacked densities): drawn at opacity 0.5 over white
+% they give light bands whose overlaps blend into clean secondaries (pink over blue = violet, blue over yellow =
+% green). The first three are the bases of the bands in Wilke's bridges figure (Nested proportions), recovered
+% from the rendered colours; the house hues are too dark for this and turn grey when overlaid.
+\definecolor{setpink}{HTML}{B96393}
+\definecolor{setblue}{HTML}{47A3E3}
+\definecolor{setyellow}{HTML}{EDE133}
+\definecolor{setgreen}{HTML}{4FB477}
+\definecolor{setviolet}{HTML}{8E6BC8}
+\definecolor{setorange}{HTML}{EE8A3C}
+\definecolor{setgrey}{HTML}{C1C1C1}   % node bars of a parallel-sets diagram
+
+% Series colours, measured with scripts/palette_check.py (Machado 2009 CVD simulation, CIE76 distance):
+% kept/addc are safe for every observer; kept/dbA fails only under tritanopia (rare) and in greyscale; kept/dbB
+% is 15 under deuteranopia; gold/addc is 2 to 6 under red-green deficiency; all five hues sit between L* 40 and
+% 58, so a black-and-white print shows one grey. Therefore every series carries a solid mark of its own shape
+% and a direct label, and colour is never the only difference (Wilke, Redundant coding). Dash patterns are not
+% used on data lines (they look porous and are hard to match to a name); only `ref` is dashed.
+\pgfplotscreateplotcyclelist{paper}{
+  {kept, mark=*, mark size=1.7pt},
+  {addc, mark=square*, mark size=1.55pt},
+  {dbA, mark=triangle*, mark size=1.95pt},
+  {dbB, mark=diamond*, mark size=1.95pt},
+  {gold, mark=pentagon*, mark size=1.75pt},
+  {black!50, mark=*, mark size=1.7pt},
+}
+% "ours against the field": hue only for ours (addc for the one system the text singles out), the rest in greys
+% of decreasing weight, so the accent does not compete with saturated baselines (Wilke, Color as a tool to highlight).
+\pgfplotscreateplotcyclelist{paper accent}{
+  {kept, mark=*, mark size=1.7pt},
+  {black!70, mark=square*, mark size=1.55pt},
+  {black!50, mark=triangle*, mark size=1.95pt},
+  {black!35, mark=diamond*, mark size=1.95pt},
+}
+% Colour maps. paperblues: sequential, single hue, lightness monotonic, for amounts and rates. paperdiv: diverging
+% with a light centre for signed values (gain over a baseline, difference of two matrices); the arms are balanced
+% in lightness (addc!80!black at L* 47 against kept at L* 45) and it is used only around a meaningful midpoint,
+% with point meta min/max symmetric about it.
+\pgfplotsset{
+  colormap={paperdiv}{color(0cm)=(addc!80!black); color(1cm)=(white); color(2cm)=(kept)},
+  colormap={paperblues}{color(0cm)=(white); color(1cm)=(kept)},
+}
+
+% ---------------------------------------------------------------------------
+% Base axis style
+% ---------------------------------------------------------------------------
+\pgfplotsset{
+  paper/.style={
+    scale only axis, width=6cm, height=4cm,
+    axis lines*=left,
+    axis line style={black!35, line width=0.5pt},
+    tick style={black!35, line width=0.5pt}, tick align=outside, major tick length=2pt, minor tick length=1.2pt,
+    tick label style={font=\fontsize{6.5}{7.5}\selectfont, text=black!65},
+    label style={font=\fontsize{7}{8}\selectfont, text=black!75},
+    xlabel style={yshift=1pt},
+    title style={font=\fontsize{8}{9}\selectfont\bfseries, text=ink, at={(0,1)}, anchor=south west, inner xsep=0pt, yshift=3pt},
+    ymajorgrids, grid style={black!10, line width=0.4pt},
+    every axis plot/.append style={line width=1pt},
+    cycle list name=paper,
+    legend style={draw=none, fill=none, font=\fontsize{6.5}{7.5}\selectfont, text=black!75, row sep=-1.5pt},
+    legend cell align=left,
+    clip=false,
+    % tick labels and printed values in the text font: pgfplots' default template wraps numbers in $...$, which
+    % sets the digits in Computer Modern next to sans labels. Log axes: `xmode=log, log ticks x` (styles below).
+    xticklabel={\pgfmathprintnumber{\tick}}, yticklabel={\pgfmathprintnumber{\tick}},
+    % full paths, never `.cd`: a `.cd` inside a style leaks into the options that follow it in the same list
+    /pgf/number format/1000 sep={,}, /pgf/number format/assume math mode=true,
+  },
+  % log axes whose ticks read as the values (0.1, 1, 10, 1000), not as exponents; the axis title then names the
+  % variable, never "log cost" (Wilke, Nonlinear axes). Usage: `xmode=log, log ticks x`. The mode itself must be
+  % written in the axis options: pgfplots scans them for xmode before any style runs, and an xmode hidden in a
+  % style raises "you can't change xmode in this context". Zero cannot be placed on a log axis; see principles.md.
+  % (keys carry their full /pgfplots/ path so the style also works inside \nextgroupplot[...], which is
+  % processed with /tikz as the default path)
+  log ticks x/.style={/pgfplots/log basis x=10, /pgfplots/xticklabel={\pgfmathparse{10^(\tick)}\pgfmathprintnumber[fixed, precision=3]{\pgfmathresult}}},
+  log ticks y/.style={/pgfplots/log basis y=10, /pgfplots/yticklabel={\pgfmathparse{10^(\tick)}\pgfmathprintnumber[fixed, precision=3]{\pgfmathresult}}},
+  % horizontal y label above the axis, the way Tufte and The Economist set it
+  y label top/.style={ylabel style={at={(axis description cs:0,1)}, anchor=south west, rotate=-90, xshift=-2pt, yshift=3pt, inner sep=0pt}},
+  % legend as a row of squares above the plot; entries in the order the bars appear in a group
+  legend top/.style={
+    legend style={at={(0,1)}, anchor=south west, legend columns=-1, /tikz/every even column/.append style={column sep=0.35cm}, yshift=2pt},
+    legend image code/.code={\fill[#1] (0cm,-0.085cm) rectangle (0.24cm,0.085cm);},
+  },
+  % grids. The base style draws horizontal lines (y is the quantity of interest). Horizontal bars and dot rows
+  % switch to xmajorgrids with y axis hidden; a scatter with no primary axis takes both grids and no axis lines;
+  % a parity (x = y) plot takes no grid and the diagonal instead (Wilke, Background grids).
+  both grids/.style={/pgfplots/xmajorgrids, /pgfplots/ymajorgrids, /pgfplots/axis line style={draw=none}},
+  no grid/.style={/pgfplots/xmajorgrids=false, /pgfplots/ymajorgrids=false},
+  % vertical bars that print their values: no y axis and no grid, values in the text font; bars start at zero
+  % because a bar encodes its value by length (Wilke, Proportional ink)
+  bars labelled/.style={
+    ymin=0, axis y line=none, ymajorgrids=false, axis x line*=bottom,
+    nodes near coords, every node near coord/.append style={font=\fontsize{5.8}{6}\selectfont\ttfamily, text=black!70, /pgf/number format/assume math mode=true},
+    /pgf/number format/fixed, /pgf/number format/fixed zerofill, /pgf/number format/precision=1,
+  },
+  % the same for horizontal bars: row names kept, no x axis, values after the bars
+  xbars labelled/.style={
+    /pgfplots/xmin=0, /pgfplots/axis x line=none, /pgfplots/xmajorgrids=false, /pgfplots/ymajorgrids=false,
+    /pgfplots/axis y line*=left, /pgfplots/y axis line style={draw=none}, /pgfplots/ytick style={draw=none},
+    /pgfplots/nodes near coords, /pgfplots/every node near coord/.append style={font=\fontsize{5.8}{6}\selectfont\ttfamily, text=black!70, /pgf/number format/assume math mode=true},
+    /pgf/number format/fixed, /pgf/number format/fixed zerofill, /pgf/number format/precision=1,
+  },
+  % keep the y tick labels (row names) but draw neither the axis line nor the ticks
+  y axis hidden/.style={axis y line*=left, y axis line style={draw=none}, ytick style={draw=none}, ymajorgrids=false},
+  x axis hidden/.style={axis x line*=bottom, x axis line style={draw=none}, xtick style={draw=none}, xmajorgrids=false},
+  % plot-level styles (pgfplots keys, so they may carry `no marks` and `forget plot`)
+  band/.style={draw=none, fill opacity=0.14, forget plot},               % \addplot[band, fill=kept] fill between[...]
+  runs/.style={no marks, line width=0.45pt, opacity=0.3, forget plot},    % individual seeds or draws behind the mean
+  trend/.style={black!70, line width=0.8pt, no marks, forget plot},       % a fitted curve; its form goes in the caption
+  ecdf/.style={const plot, no marks},                                     % cumulative distribution as a step line
+  % box plots: quartile box, whiskers to the last value within 1.5 IQR, median as a dark line; grey for the
+  % field, `box ours` for our system. Items beyond the whiskers are drawn as a separate only-marks plot.
+  boxes/.style={
+    /pgfplots/boxplot/draw direction=x, /pgfplots/boxplot/box extend=0.52, /pgfplots/boxplot/whisker extend=0.26,
+    /pgfplots/boxplot/every box/.style={fill=black!10, draw=black!55, line width=0.5pt},
+    /pgfplots/boxplot/every whisker/.style={black!55, line width=0.5pt},
+    /pgfplots/boxplot/every median/.style={ink, line width=0.9pt},
+  },
+  box ours/.style={
+    /pgfplots/boxplot/every box/.style={fill=barblue!22, draw=barblue, line width=0.5pt},
+    /pgfplots/boxplot/every whisker/.style={barblue, line width=0.5pt},
+  },
+}
+\pgfplotsset{colormap name=paperblues}
+% panel letter for compound figures, set inside the title: title={\plab{a} accuracy (\%)}. Not bold and not
+% large, "like a page number" (Wilke, Compound figures); one case (a or A) for the whole paper.
+\newcommand{\plab}[1]{{\mdseries(#1)}\enspace}
+\tikzset{
+  dl/.style={font=\fontsize{6.5}{7}\selectfont, anchor=west, inner sep=2pt},           % direct label at a line end
+  dlc/.style={font=\fontsize{6.5}{7}\selectfont, anchor=south, inner sep=1.5pt},       % direct label above a point
+  note/.style={font=\fontsize{6.2}{7}\selectfont, text=black!60, inner sep=1pt, align=left},
+  notearrow/.style={-{Latex[length=1.2mm,width=1mm]}, black!50, line width=0.5pt, shorten >=1pt},
+  ref/.style={black!45, dashed, line width=0.6pt},                                     % reference line (human, chance, previous best, x = y)
+  mono/.style={font=\fontsize{6}{6}\selectfont\ttfamily},
+}
+\endinput

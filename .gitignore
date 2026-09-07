@@ -1,0 +1,17 @@
+# LaTeX build products (the figure PDFs and PNGs are kept on purpose)
+*.aux
+*.log
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+*.synctex(busy)
+*.out
+*.toc
+*.bbl
+*.blg
+# Python
+__pycache__/
+*.pyc
+# OS
+.DS_Store
+Thumbs.db

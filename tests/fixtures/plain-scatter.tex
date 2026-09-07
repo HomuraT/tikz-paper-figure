@@ -1,0 +1,15 @@
+% Test fixture: a cost-against-score scatter in pgfplots' default style (log x, red for ours, legend box).
+% Input for the "unify three existing figures" task; the data must survive unchanged.
+\documentclass[border=2pt]{standalone}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\begin{document}
+\begin{tikzpicture}
+\begin{axis}[width=8cm, height=6cm, xmode=log, xlabel={Cost (\$ per 1k tasks)}, ylabel={Score},
+  legend pos=south east]
+\addplot[only marks, mark=*] coordinates {(1.2,61) (2.5,66) (4.8,70) (9.6,74) (20,77)};
+\addplot[only marks, mark=square*, red] coordinates {(3.1,72) (7.5,79)};
+\legend{Baselines, Ours}
+\end{axis}
+\end{tikzpicture}
+\end{document}

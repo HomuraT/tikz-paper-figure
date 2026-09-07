@@ -1,0 +1,29 @@
+% densities: three overlaid density curves of one statistic (response length) for three sources. For two or
+% three groups translucent overlaid densities beat stacked or overlapping histograms: a stacked histogram has no
+% shared baseline and overlapping bars breed a third colour. Exactly two groups: a back-to-back histogram; more
+% than three: ridgeline.tex. A density is an estimate, so it is clipped at the domain bounds and gets no y axis:
+% density values are not numbers a reader can use. (Wilke, Visualizing many distributions at once.)
+\documentclass[10pt,tikz,border=2pt]{standalone}
+\usepackage{plotfig}
+\begin{document}
+\begin{tikzpicture}
+% lognormal densities x 1000, median m and log-sd s: 1000/(x s 2.5066) exp(-(ln x - ln m)^2 / (2 s^2));
+% Web m=120 s=0.42 (peak at 101), Books m=260 s=0.45 (peak at 212), Code m=90 s=0.75 (peak at 51)
+\pgfplotsset{density/.style={domain=5:600, samples=120, no marks, line width=0.7pt}}
+\begin{axis}[paper, width=6cm, height=3.4cm,
+  axis y line=none, ytick=\empty, ymajorgrids=false, axis x line*=bottom,
+  xmin=0, xmax=600, xtick={0,200,400,600}, xlabel={response length (tokens)}, ymin=0, ymax=9.6]
+% fills first, tallest first, then the outlines, so no outline is dimmed by a fill drawn over it
+\addplot[density, draw=none, fill=setblue, fill opacity=0.5]   {1000/(x*0.42*2.5066)*exp(-(ln(x)-4.7875)^2/(2*0.42^2))} \closedcycle;
+\addplot[density, draw=none, fill=setyellow, fill opacity=0.5] {1000/(x*0.75*2.5066)*exp(-(ln(x)-4.4998)^2/(2*0.75^2))} \closedcycle;
+\addplot[density, draw=none, fill=setpink, fill opacity=0.5]   {1000/(x*0.45*2.5066)*exp(-(ln(x)-5.5607)^2/(2*0.45^2))} \closedcycle;
+\addplot[density, setblue!70!black]   {1000/(x*0.42*2.5066)*exp(-(ln(x)-4.7875)^2/(2*0.42^2))};
+\addplot[density, setyellow!70!black] {1000/(x*0.75*2.5066)*exp(-(ln(x)-4.4998)^2/(2*0.75^2))};
+\addplot[density, setpink!70!black]   {1000/(x*0.45*2.5066)*exp(-(ln(x)-5.5607)^2/(2*0.45^2))};
+% each source named above its own peak, in the outline colour
+\node[dlc, text=setblue!70!black] at (axis cs:100.6,8.65) {Web};
+\node[dlc, text=setyellow!70!black] at (axis cs:51.3,7.83) {Code};
+\node[dlc, text=setpink!70!black] at (axis cs:212.3,3.77) {Books};
+\end{axis}
+\end{tikzpicture}
+\end{document}

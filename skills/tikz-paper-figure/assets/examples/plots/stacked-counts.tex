@@ -1,0 +1,29 @@
+% stacked-counts: error analysis as stacked vertical bars whose heights are counts, so the total of every stack
+% is a value in itself; in stacked-100.tex the stacks are normalised and only the shares matter. Categories in
+% the palette order of stacked-100.tex, the total printed above each stack, the count axis and its grid kept
+% because the totals differ. Ours first with the smallest stack. (Wilke, Visualizing proportions: stacked bars
+% when the totals and the parts both matter.)
+\documentclass[10pt,tikz,border=2pt]{standalone}
+\usepackage{plotfig}
+\begin{document}
+\begin{tikzpicture}
+\begin{axis}[paper, width=5.6cm, height=3.6cm,
+  ybar stacked, bar width=0.46cm, ymin=0, ymax=235, ytick={0,50,...,200},
+  legend top,   % after ybar stacked, which sets its own legend image
+  ylabel={errors (count)},
+  symbolic x coords={Ours, System A, System B, Baseline}, xtick=data,
+  x tick label style={text=ink, font=\fontsize{7}{8}\selectfont},
+  enlarge x limits=0.16]
+\addplot[fill=kept, draw=none] coordinates {(Ours,38) (System A,61) (System B,72) (Baseline,95)};
+\addplot[fill=dbA, draw=none] coordinates {(Ours,27) (System A,44) (System B,51) (Baseline,68)};
+\addplot[fill=addc, draw=none] coordinates {(Ours,12) (System A,19) (System B,24) (Baseline,31)};
+\addplot[fill=black!25, draw=none] coordinates {(Ours,9) (System A,14) (System B,17) (Baseline,22)};
+\legend{retrieval, reasoning, formatting, other}
+% totals above the stacks
+\node[mono, text=black!70, anchor=south, yshift=1.5pt] at (axis cs:Ours,86) {86};
+\node[mono, text=black!70, anchor=south, yshift=1.5pt] at (axis cs:System A,138) {138};
+\node[mono, text=black!70, anchor=south, yshift=1.5pt] at (axis cs:System B,164) {164};
+\node[mono, text=black!70, anchor=south, yshift=1.5pt] at (axis cs:Baseline,216) {216};
+\end{axis}
+\end{tikzpicture}
+\end{document}

@@ -1,0 +1,19 @@
+% Candidate 2: grouped bars with the value printed on every bar, so the y axis and the grid are dropped.
+% Ours in bright blue, the two comparison systems in two greys; legend as a row of squares above the plot.
+\documentclass[10pt,tikz,border=2pt]{standalone}
+\usepackage{plotfig}
+\begin{document}
+\begin{tikzpicture}
+\begin{axis}[paper, width=9.4cm, height=3.2cm, bars labelled,
+  ybar, bar width=0.3cm, ymin=0, ymax=100,
+  legend top,   % after ybar, which sets its own legend image
+  symbolic x coords={Retrieval, Reasoning, Code, Agents, Long context}, xtick=data,
+  x tick label style={text=ink, font=\fontsize{7}{8}\selectfont},
+  enlarge x limits=0.12]
+\addplot[fill=black!20, draw=none] coordinates {(Retrieval,58.2) (Reasoning,44.1) (Code,51.3) (Agents,32.7) (Long context,47.9)};
+\addplot[fill=black!45, draw=none] coordinates {(Retrieval,66.4) (Reasoning,52.8) (Code,63.0) (Agents,41.5) (Long context,59.6)};
+\addplot[fill=barblue, draw=none] coordinates {(Retrieval,74.1) (Reasoning,61.7) (Code,72.5) (Agents,55.2) (Long context,68.8)};
+\legend{Baseline, Prior best, Ours}
+\end{axis}
+\end{tikzpicture}
+\end{document}

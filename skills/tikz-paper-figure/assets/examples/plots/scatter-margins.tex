@@ -1,0 +1,34 @@
+% scatter-margins: a scatter with the two marginal histograms on its top and right edges. The dense middle of a
+% scatter hides how each variable is distributed on its own (here most inputs are short and most scores lie
+% between 70 and 90); the marginals show both in one panel instead of three figures, and the trend stays
+% readable. The marginals share the main axis' size and range exactly and carry no axis of their own. The y
+% range is cut to the data (40 to 100): dots encode position, so no zero is needed, unlike the marginal bars.
+% (Wilke, Visualizing associations among two or more quantitative variables; Visualizing distributions.)
+\documentclass[10pt,tikz,border=2pt]{standalone}
+\usepackage{plotfig}
+\begin{document}
+\begin{tikzpicture}
+\begin{axis}[paper, name=main, width=5.3cm, height=3.4cm, no grid,
+  xmin=0, xmax=2000, ymin=40, ymax=100, xtick={0,500,1000,1500,2000}, ytick={40,60,80,100},
+  xlabel={input length (tokens)}, ylabel={score (\%)}]
+\addplot[only marks, mark=*, mark size=1.7pt, kept, fill opacity=0.55, draw opacity=0] coordinates {
+  (71,89.6) (113,79.1) (160,99) (213,82.7) (216,76.7) (238,90.6) (243,82.2) (256,76.3) (279,76.8) (283,80.1)
+  (297,66.5) (311,90.0) (340,83.5) (408,88.4) (410,86.1) (411,79.0) (416,89.9) (421,96.1) (428,78.1) (428,83.8)
+  (462,88.9) (470,77.9) (476,75.2) (501,63.2) (514,74.4) (517,76.3) (549,64.4) (558,78.9) (571,73.3) (610,72.9)
+  (631,75.9) (636,78.0) (642,77.8) (655,66.8) (655,84.2) (663,90.0) (672,75.3) (712,72.3) (718,63.3) (750,66.2)
+  (759,61.3) (787,78.1) (788,83.8) (797,76.0) (846,67.7) (846,79.4) (848,87.3) (850,55.2) (852,85.4) (865,71.4)
+  (903,78.1) (911,58.0) (1084,70.2) (1087,81.9) (1125,66.7) (1328,57.3) (1463,58.0) (1512,54.6) (1715,53.7) (1914,42.1)};
+\end{axis}
+% top marginal: counts of x in bins of 200, same width and x range as the main axis. ybar interval takes the bin
+% edges; the last coordinate only closes the last bin. No axis, no ticks: the bars are the message.
+\begin{axis}[paper, at={(main.north west)}, anchor=south west, yshift=0.15cm, width=5.3cm, height=1.1cm,
+  axis lines=none, xtick=\empty, ytick=\empty, ymajorgrids=false, xmin=0, xmax=2000, ymin=0, ybar interval=0.9]
+\addplot[fill=barblue!60, draw=none] coordinates {(0,3) (200,10) (400,16) (600,15) (800,8) (1000,3) (1200,1) (1400,2) (1600,1) (1800,1) (2000,0)};
+\end{axis}
+% right marginal: counts of y in bins of 10, same height and y range as the main axis; coordinates are (count, edge)
+\begin{axis}[paper, at={(main.south east)}, anchor=south west, xshift=0.15cm, width=1.1cm, height=3.4cm,
+  axis lines=none, xtick=\empty, ytick=\empty, ymajorgrids=false, ymin=40, ymax=100, xmin=0, xbar interval=0.9]
+\addplot[fill=barblue!60, draw=none] coordinates {(1,40) (6,50) (9,60) (24,70) (15,80) (5,90) (0,100)};
+\end{axis}
+\end{tikzpicture}
+\end{document}

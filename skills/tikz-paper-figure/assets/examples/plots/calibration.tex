@@ -1,0 +1,21 @@
+% calibration: reliability diagram of one system. Predictions are binned by confidence (ten bins of width 0.1),
+% the bar is the mean accuracy in the bin, the dashed diagonal x = y is the reference (perfect calibration), and
+% the gap between bar top and diagonal is the miscalibration: bars below the line at high confidence mean
+% overconfidence. Square axes with equal ranges, as in parity.tex. The caption states the number of bins and n;
+% the ECE is the one note. (Wilke, Visualizing associations: the diagonal as reference.)
+\documentclass[10pt,tikz,border=2pt]{standalone}
+\usepackage{plotfig}
+\begin{document}
+\begin{tikzpicture}
+\begin{axis}[paper, width=4.2cm, height=4.2cm,
+  xmin=0, xmax=1, ymin=0, ymax=1, xtick={0,0.2,...,1}, ytick={0,0.2,...,1},
+  xlabel={confidence}, ylabel={accuracy}, y label top]
+% ybar interval: coordinates are the bin edges, the last y is ignored; bars fill the whole bin, white edges part them
+\addplot[ybar interval, fill=barblue!75, draw=white, line width=0.4pt] coordinates
+  {(0,0.08) (0.1,0.17) (0.2,0.27) (0.3,0.36) (0.4,0.44) (0.5,0.52) (0.6,0.59) (0.7,0.66) (0.8,0.74) (0.9,0.83) (1,0)};
+\addplot[ref] coordinates {(0,0) (1,1)};
+\node[note, anchor=north west] at (rel axis cs:0.04,0.97) {ECE = 4.1\%};
+\node[note, rotate=45, anchor=south, inner sep=2pt] at (axis cs:0.78,0.78) {perfect calibration};
+\end{axis}
+\end{tikzpicture}
+\end{document}

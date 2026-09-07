@@ -1,0 +1,22 @@
+% scaling-law: log-log scaling plot. Seven measured models as dots, the power law fitted to the six smaller ones as a
+% straight `trend` line drawn over their range only, the largest model as a hollow mark labelled "held out": it was
+% not used for the fit, so its distance to the line is a prediction check. A fit never extends past the observations
+% it was made from (Wilke, Visualizing trends); the fitted form is printed once as a `note`. Use it when the message
+% is the law itself; when systems are compared along x, use curves-bands.tex. The log y tick labels are hand-set:
+% `log ticks y` computes 10^tick in pgfmath and prints 2.4998 for a tick at 2.5 (decade ticks print correctly).
+\documentclass[10pt,tikz,border=2pt]{standalone}
+\usepackage{plotfig}
+\begin{document}
+\begin{tikzpicture}
+\begin{axis}[paper, width=6cm, height=4cm, y label top,
+  xmode=log, log ticks x, xmin=0.7, xmax=1400, xtick={1,10,100,1000}, xlabel={training compute (PFLOP-days)},
+  ymode=log, log basis y=10, ymin=2, ymax=4.6, ytick={2,2.5,3,4}, yticklabels={2,2.5,3,4}, ylabel={validation loss}]
+% the fit, from the six smaller models, drawn over their range only
+\addplot[trend] coordinates {(1,4.2) (300,2.514)};
+\node[note, anchor=south west] at (axis cs:14,3.42) {$L = 4.2\,C^{-0.09}$};
+% measured models; the largest was held out of the fit
+\addplot[kept, only marks, mark=*, mark size=1.8pt] coordinates {(1,4.194) (3,3.816) (10,3.409) (30,3.087) (100,2.759) (300,2.51)};
+\addplot[kept, only marks, mark=o, mark size=1.8pt, mark options={line width=0.7pt}] coordinates {(1000,2.271)} node[dl, text=kept, xshift=1.5pt] {held out};
+\end{axis}
+\end{tikzpicture}
+\end{document}

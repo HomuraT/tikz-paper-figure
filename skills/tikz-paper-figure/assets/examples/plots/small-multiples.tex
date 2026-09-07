@@ -1,0 +1,51 @@
+% small-multiples: a 3 x 2 grid of small line charts, one benchmark per panel, accuracy against model size for
+% three systems. Use it when one relation (score against size, data or time) is to be compared across many
+% benchmarks: every panel shares the same x and y range, so a position in one panel means the same in every
+% other; when one panel must differ, the caption says so. The panel title alone identifies the panel (no
+% letters), and one legend for the whole grid sits above it, never one per panel. (Wilke, Multi-panel figures)
+\documentclass[10pt,tikz,border=2pt]{standalone}
+\usepackage{plotfig}
+\begin{document}
+\begin{tikzpicture}
+% vertical sep holds the second row's titles (8pt bold, 3pt above the panel): 0.8cm lets them touch the row above
+\begin{groupplot}[group style={group size=3 by 2, horizontal sep=0.5cm, vertical sep=1.1cm,
+    x descriptions at=edge bottom, y descriptions at=edge left},
+  paper, width=3.5cm, height=2.4cm,
+  xmode=log, xtick={0.5,1,3,7,14,30}, xticklabels={0.5,1,3,7,14,30}, xlabel={parameters (B)},
+  ymin=20, ymax=95, ytick={20,40,60,80}, enlarge x limits=0.08,
+  every axis plot/.append style={line width=0.8pt},
+  legend style={legend columns=-1, /tikz/every even column/.append style={column sep=0.3cm}}]
+% the legend is built once, in the first panel, stored under a name and drawn after the grid
+\nextgroupplot[title={Retrieval}, legend to name=smlegend]
+\addplot[kept, mark=*, mark size=1.3pt] coordinates {(0.5,48) (1,56) (3,66) (7,74) (14,79) (30,83)};
+\addlegendentry{Ours}
+\addplot[black!60, mark=square*, mark size=1.2pt] coordinates {(0.5,42) (1,50) (3,60) (7,68) (14,73) (30,77)};
+\addlegendentry{System A}
+\addplot[black!40, mark=triangle*, mark size=1.5pt] coordinates {(0.5,35) (1,42) (3,52) (7,60) (14,66) (30,70)};
+\addlegendentry{Baseline}
+\nextgroupplot[title={Code}]
+\addplot[kept, mark=*, mark size=1.3pt] coordinates {(0.5,30) (1,40) (3,54) (7,66) (14,74) (30,80)};
+\addplot[black!60, mark=square*, mark size=1.2pt] coordinates {(0.5,26) (1,35) (3,48) (7,59) (14,67) (30,73)};
+\addplot[black!40, mark=triangle*, mark size=1.5pt] coordinates {(0.5,22) (1,29) (3,40) (7,51) (14,59) (30,65)};
+\nextgroupplot[title={Math}]
+\addplot[kept, mark=*, mark size=1.3pt] coordinates {(0.5,25) (1,33) (3,47) (7,60) (14,70) (30,78)};
+\addplot[black!60, mark=square*, mark size=1.2pt] coordinates {(0.5,22) (1,29) (3,41) (7,53) (14,63) (30,70)};
+\addplot[black!40, mark=triangle*, mark size=1.5pt] coordinates {(0.5,21) (1,25) (3,35) (7,46) (14,55) (30,62)};
+\nextgroupplot[title={Agents}]
+\addplot[kept, mark=*, mark size=1.3pt] coordinates {(0.5,24) (1,31) (3,42) (7,53) (14,62) (30,69)};
+\addplot[black!60, mark=square*, mark size=1.2pt] coordinates {(0.5,22) (1,28) (3,38) (7,48) (14,56) (30,62)};
+\addplot[black!40, mark=triangle*, mark size=1.5pt] coordinates {(0.5,21) (1,25) (3,33) (7,42) (14,49) (30,55)};
+\nextgroupplot[title={Reasoning}]
+\addplot[kept, mark=*, mark size=1.3pt] coordinates {(0.5,38) (1,46) (3,58) (7,68) (14,75) (30,81)};
+\addplot[black!60, mark=square*, mark size=1.2pt] coordinates {(0.5,34) (1,42) (3,53) (7,63) (14,70) (30,76)};
+\addplot[black!40, mark=triangle*, mark size=1.5pt] coordinates {(0.5,30) (1,37) (3,47) (7,56) (14,63) (30,69)};
+% the one panel where ours loses: the grid shows it at a glance because the ranges are shared
+\nextgroupplot[title={Long context}]
+\addplot[kept, mark=*, mark size=1.3pt] coordinates {(0.5,36) (1,43) (3,53) (7,61) (14,67) (30,72)};
+\addplot[black!60, mark=square*, mark size=1.2pt] coordinates {(0.5,40) (1,48) (3,59) (7,68) (14,75) (30,80)};
+\addplot[black!40, mark=triangle*, mark size=1.5pt] coordinates {(0.5,32) (1,38) (3,47) (7,55) (14,61) (30,66)};
+\end{groupplot}
+% one legend for the grid, centred above the middle panel of the top row, clear of the panel titles
+\node[anchor=south] at ($(group c2r1.north)+(0,0.55cm)$) {\pgfplotslegendfromname{smlegend}};
+\end{tikzpicture}
+\end{document}

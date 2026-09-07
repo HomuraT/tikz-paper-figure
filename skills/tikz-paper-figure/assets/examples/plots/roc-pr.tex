@@ -1,0 +1,44 @@
+% roc-pr: two square panels for three classifiers, (a) ROC with the chance diagonal as `ref`, (b) precision-recall
+% with the positive rate (here 0.2) as a `ref` line labelled chance. Every label carries the AUC: it is what the text
+% quotes, and it still ranks the systems when curves cross. Read the PR panel when positives are rare: the baseline's
+% ROC looks respectable while its precision is under 0.5 over most of the recall range. In a 3.6cm panel a label is
+% wider than the gap between the curves at any x, so the three labels stand in the empty lower-right half of (a), in
+% the order and colours of the curves; with wider panels set them along the curves where these separate.
+\documentclass[10pt,tikz,border=2pt]{standalone}
+\usepackage{plotfig}
+\begin{document}
+\begin{tikzpicture}
+\begin{groupplot}[group style={group size=2 by 1, horizontal sep=1.3cm}, paper, width=3.6cm, height=3.6cm,
+  xmin=0, xmax=1, ymin=0, ymax=1, xtick={0,0.5,1}, ytick={0,0.5,1}, xticklabels={0,0.5,1}, yticklabels={0,0.5,1}]
+% ------------------------------------------------------------------ (a) ROC: binormal curves, weakest first so ours is on top
+\nextgroupplot[title={\plab{a} ROC}, xlabel={false positive rate}, ylabel={true positive rate}]
+\addplot[ref, forget plot] coordinates {(0,0) (1,1)};
+\addplot[black!45, no marks] coordinates {(0,0) (0,0.011) (0.001,0.017) (0.002,0.026) (0.003,0.039) (0.005,0.056) (0.008,0.079) (0.013,0.109) (0.02,0.146) (0.031,0.191)
+  (0.045,0.243) (0.065,0.302) (0.09,0.367) (0.123,0.436) (0.163,0.507) (0.211,0.578) (0.266,0.646) (0.328,0.71) (0.395,0.768) (0.464,0.819)
+  (0.536,0.862) (0.605,0.897) (0.672,0.926) (0.734,0.948) (0.789,0.964) (0.837,0.976) (0.877,0.985) (0.91,0.99) (0.935,0.994) (0.955,0.996)
+  (0.969,0.998) (0.98,0.999) (0.992,1) (1,1)};
+\addplot[addc, no marks] coordinates {(0,0) (0,0.044) (0.001,0.063) (0.002,0.088) (0.003,0.121) (0.005,0.16) (0.008,0.207) (0.013,0.262) (0.02,0.323) (0.031,0.39)
+  (0.045,0.46) (0.065,0.531) (0.09,0.601) (0.123,0.668) (0.163,0.73) (0.211,0.785) (0.266,0.834) (0.328,0.874) (0.395,0.907) (0.464,0.934)
+  (0.536,0.954) (0.605,0.969) (0.672,0.979) (0.734,0.987) (0.789,0.992) (0.837,0.995) (0.877,0.997) (0.91,0.998) (0.935,0.999) (0.955,0.999)
+  (0.969,1) (1,1)};
+\addplot[kept, no marks] coordinates {(0,0) (0,0.113) (0.001,0.15) (0.002,0.196) (0.003,0.249) (0.005,0.309) (0.008,0.374) (0.013,0.443) (0.02,0.514) (0.031,0.585)
+  (0.045,0.653) (0.065,0.716) (0.09,0.773) (0.123,0.823) (0.163,0.866) (0.211,0.9) (0.266,0.928) (0.328,0.95) (0.395,0.966) (0.464,0.977)
+  (0.536,0.985) (0.605,0.991) (0.672,0.994) (0.734,0.997) (0.789,0.998) (0.837,0.999) (0.877,0.999) (0.91,1) (1,1)};
+\node[dl, text=kept] at (axis cs:0.36,0.30) {Ours, AUC 0.93};
+\node[dl, text=addctext] at (axis cs:0.36,0.19) {System A, AUC 0.87};
+\node[dl, text=black!55] at (axis cs:0.36,0.08) {Baseline, AUC 0.76};
+% ------------------------------------------------------------------ (b) precision-recall at prevalence 0.2
+\nextgroupplot[title={\plab{b} precision--recall}, xlabel={recall}, ylabel={precision}]
+\addplot[ref, forget plot] coordinates {(0,0.2) (1,0.2)} node[dl, text=black!55] {chance};
+\addplot[black!45, no marks] coordinates {(0,0.945) (0.002,0.906) (0.011,0.847) (0.017,0.824) (0.026,0.8) (0.039,0.773) (0.056,0.743) (0.079,0.712) (0.109,0.679) (0.146,0.645) (0.191,0.61) (0.243,0.574)
+  (0.302,0.539) (0.367,0.504) (0.436,0.47) (0.507,0.437) (0.578,0.406) (0.646,0.378) (0.71,0.351) (0.768,0.327) (0.819,0.306) (0.862,0.287)
+  (0.897,0.27) (0.926,0.256) (0.948,0.244) (0.964,0.234) (0.976,0.226) (0.985,0.219) (0.99,0.214) (0.994,0.21) (0.996,0.207) (0.998,0.205) (1,0.2)};
+\addplot[addc, no marks] coordinates {(0.002,0.993) (0.011,0.982) (0.044,0.958) (0.063,0.946) (0.088,0.932) (0.121,0.914) (0.16,0.892) (0.207,0.866) (0.262,0.836) (0.323,0.801) (0.39,0.761) (0.46,0.718)
+  (0.531,0.672) (0.601,0.624) (0.668,0.575) (0.73,0.528) (0.785,0.482) (0.834,0.439) (0.874,0.4) (0.907,0.365) (0.934,0.334) (0.954,0.308)
+  (0.969,0.286) (0.979,0.267) (0.987,0.252) (0.992,0.239) (0.995,0.229) (0.997,0.221) (0.998,0.215) (0.999,0.211) (1,0.2)};
+\addplot[kept, no marks] coordinates {(0.008,0.998) (0.035,0.995) (0.113,0.983) (0.15,0.977) (0.196,0.968) (0.249,0.956) (0.309,0.941) (0.374,0.921) (0.443,0.896) (0.514,0.865) (0.585,0.827) (0.653,0.784)
+  (0.716,0.734) (0.773,0.681) (0.823,0.626) (0.866,0.57) (0.9,0.516) (0.928,0.466) (0.95,0.42) (0.966,0.38) (0.977,0.345) (0.985,0.315)
+  (0.991,0.29) (0.994,0.27) (0.997,0.253) (0.998,0.24) (0.999,0.23) (1,0.2)};
+\end{groupplot}
+\end{tikzpicture}
+\end{document}

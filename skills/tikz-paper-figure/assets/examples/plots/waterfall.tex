@@ -1,0 +1,40 @@
+% waterfall: how the components add up from the baseline to our final score. The first and last bars are
+% amounts and start at zero; the floating bars between them are the deltas of adding one component at a time,
+% in the order they were added (an ordered variable, never sorted), blue when positive and orange when negative,
+% thin connectors carrying the running total from row to row. The ablation chart (ablation.tex) is the same
+% question asked backwards (remove one component from the full model). Catalogues call this a bridge chart.
+\documentclass[10pt,tikz,border=2pt]{standalone}
+\usepackage{plotfig}
+\begin{document}
+\begin{tikzpicture}
+\begin{axis}[paper, width=5.8cm, height=2.7cm,
+  xmin=0, xmax=80, xtick={0,20,40,60,80}, xlabel={accuracy (\%)},
+  xmajorgrids, ymajorgrids=false, y axis hidden, axis x line*=bottom,
+  ymin=0.4, ymax=6.6, ytick={1,...,6},
+  yticklabels={Ours, + tool calls, + self-check, + reranking, + retrieval, Baseline},
+  y tick label style={text=ink, font=\fontsize{7}{8}\selectfont}]
+\addplot[draw=none, forget plot] coordinates {(0,1) (80,6)};
+% full bars: amounts from zero
+\fill[black!30] (axis cs:0,5.83) rectangle (axis cs:61.2,6.17);
+\fill[barblue]  (axis cs:0,0.83) rectangle (axis cs:73.5,1.17);
+% floating bars: the deltas, drawn from the previous running total
+\fill[barblue!65] (axis cs:61.2,4.83) rectangle (axis cs:68.6,5.17);
+\fill[barblue!65] (axis cs:68.6,3.83) rectangle (axis cs:71.7,4.17);
+\fill[barblue!65] (axis cs:71.7,2.83) rectangle (axis cs:74.3,3.17);
+\fill[addc]       (axis cs:73.5,1.83) rectangle (axis cs:74.3,2.17);
+% connectors carry the running total to the next row
+\draw[black!40, line width=0.4pt] (axis cs:61.2,5.83) -- (axis cs:61.2,5.17);
+\draw[black!40, line width=0.4pt] (axis cs:68.6,4.83) -- (axis cs:68.6,4.17);
+\draw[black!40, line width=0.4pt] (axis cs:71.7,3.83) -- (axis cs:71.7,3.17);
+\draw[black!40, line width=0.4pt] (axis cs:74.3,2.83) -- (axis cs:74.3,2.17);
+\draw[black!40, line width=0.4pt] (axis cs:73.5,1.83) -- (axis cs:73.5,1.17);
+% printed values: amounts on the full bars, signed deltas on the floating ones
+\node[dl, mono, text=black!70, xshift=2pt] at (axis cs:61.2,6) {61.2};
+\node[dl, mono, text=barblue, xshift=2pt] at (axis cs:68.6,5) {+7.4};
+\node[dl, mono, text=barblue, xshift=2pt] at (axis cs:71.7,4) {+3.1};
+\node[dl, mono, text=barblue, xshift=2pt] at (axis cs:74.3,3) {+2.6};
+\node[dl, mono, text=addctext, xshift=2pt] at (axis cs:74.3,2) {$-$0.8};
+\node[dl, mono, text=barblue, xshift=2pt] at (axis cs:73.5,1) {73.5};
+\end{axis}
+\end{tikzpicture}
+\end{document}

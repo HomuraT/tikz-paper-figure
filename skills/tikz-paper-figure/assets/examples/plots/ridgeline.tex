@@ -1,0 +1,26 @@
+% ridgeline: densities of one statistic (score) along an ordered variable (model size), one ridge per level, the
+% smallest on top, the largest at the bottom, neighbours overlapping a little. Beyond three groups the overlaid
+% curves of densities.tex become unreadable and staggered histograms turn their bar edges into noise; a ridgeline
+% keeps the order on the y axis, which carries the group names and no density numbers. One hue in a lightness
+% ladder, because the groups are ordered. (Wilke, Visualizing many distributions at once.)
+\documentclass[10pt,tikz,border=2pt]{standalone}
+\usepackage{plotfig}
+\begin{document}
+\begin{tikzpicture}
+% ridge k sits on baseline 0.6k: y = 0.6k + c exp(-(x - m)^2 / (2 s^2)) with c = 19.18/(s 2.5066), so every ridge
+% has the same area and the narrow ones are the tall ones; each path is closed along its own baseline. The top
+% ridge is drawn first and every lower ridge covers the one above it, separated by its white outline.
+\pgfplotsset{ridge/.style={domain=0:100, samples=120, no marks, draw=white, line width=0.8pt}}
+\begin{axis}[paper, width=6cm, height=4.6cm,
+  xmin=0, xmax=100, xtick={0,25,50,75,100}, xlabel={score (\%)}, axis x line*=bottom,
+  ymin=0, ymax=3.75, ytick={0,0.6,1.2,1.8,2.4,3.0}, yticklabels={30B,14B,7B,3B,1B,0.5B}, y axis hidden,
+  y tick label style={text=ink, font=\fontsize{7}{8}\selectfont}, axis on top]
+\addplot[ridge, fill=kept!25] {3.0+0.6652*exp(-(x-40)^2/(2*11.5^2))} -- (axis cs:100,3.0) -- (axis cs:0,3.0) -- cycle;
+\addplot[ridge, fill=kept!37] {2.4+0.7286*exp(-(x-47)^2/(2*10.5^2))} -- (axis cs:100,2.4) -- (axis cs:0,2.4) -- cycle;
+\addplot[ridge, fill=kept!49] {1.8+0.8053*exp(-(x-55)^2/(2*9.5^2))}  -- (axis cs:100,1.8) -- (axis cs:0,1.8) -- cycle;
+\addplot[ridge, fill=kept!61] {1.2+0.9000*exp(-(x-62)^2/(2*8.5^2))}  -- (axis cs:100,1.2) -- (axis cs:0,1.2) -- cycle;
+\addplot[ridge, fill=kept!73] {0.6+0.9808*exp(-(x-69)^2/(2*7.8^2))}  -- (axis cs:100,0.6) -- (axis cs:0,0.6) -- cycle;
+\addplot[ridge, fill=kept!85] {0.0+1.0625*exp(-(x-75)^2/(2*7.2^2))}  -- (axis cs:100,0.0) -- (axis cs:0,0.0) -- cycle;
+\end{axis}
+\end{tikzpicture}
+\end{document}

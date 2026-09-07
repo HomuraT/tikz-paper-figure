@@ -1,0 +1,34 @@
+% slope: slopegraph for paired measurements of seven systems under two conditions, one straight line per system from
+% its zero-shot value (left) to its fine-tuned value (right), the name and the left value before the left end, the
+% right value after the right end. It shows the direction and steepness of every change at once (Wilke, Visualizing
+% associations, paired data); the dumbbell (dumbbell.tex) shows the size of a gap instead. Ours in kept and thicker,
+% the two systems that got worse in addc, the rest grey; the columns are headed by the two x tick labels set at the
+% top. Values are chosen so that neither column has ends closer than 0.3cm; closer ends would need a yshift on a label.
+\documentclass[10pt,tikz,border=2pt]{standalone}
+\usepackage{plotfig}
+% left value in small grey monospace, set between the name and the dot
+\newcommand{\lv}[1]{{\fontsize{6}{6}\selectfont\ttfamily\color{black!55}#1}}
+\begin{document}
+\begin{tikzpicture}
+\begin{axis}[paper, width=4.6cm, height=4.4cm,
+  xmin=0, xmax=1, xtick={0,1}, xticklabels={zero-shot, fine-tuned},
+  axis x line*=top, x axis line style={draw=none}, xtick style={draw=none},
+  x tick label style={text=ink, font=\fontsize{7}{8}\selectfont},
+  axis y line=none, ytick=\empty, ymajorgrids=false, ymin=42, ymax=92]
+\addplot[black!45, mark=*, mark size=1.5pt, line width=0.7pt] coordinates {(0,74) (1,82)}
+  node[pos=0, dl, anchor=east, text=ink] {System A\enspace\lv{74}} node[pos=1, dl, mono, text=black!60] {82};
+\addplot[black!45, mark=*, mark size=1.5pt, line width=0.7pt] coordinates {(0,58) (1,76)}
+  node[pos=0, dl, anchor=east, text=ink] {System B\enspace\lv{58}} node[pos=1, dl, mono, text=black!60] {76};
+\addplot[black!45, mark=*, mark size=1.5pt, line width=0.7pt] coordinates {(0,62) (1,71)}
+  node[pos=0, dl, anchor=east, text=ink] {System C\enspace\lv{62}} node[pos=1, dl, mono, text=black!60] {71};
+\addplot[black!45, mark=*, mark size=1.5pt, line width=0.7pt] coordinates {(0,45) (1,60)}
+  node[pos=0, dl, anchor=east, text=ink] {System E\enspace\lv{45}} node[pos=1, dl, mono, text=black!60] {60};
+\addplot[addc, mark=*, mark size=1.5pt, line width=0.7pt] coordinates {(0,70) (1,65)}
+  node[pos=0, dl, anchor=east, text=addctext] {System D\enspace\lv{70}} node[pos=1, dl, mono, text=addctext] {65};
+\addplot[addc, mark=*, mark size=1.5pt, line width=0.7pt] coordinates {(0,52) (1,48)}
+  node[pos=0, dl, anchor=east, text=addctext] {System F\enspace\lv{52}} node[pos=1, dl, mono, text=addctext] {48};
+\addplot[kept, mark=*, mark size=1.7pt, line width=1pt] coordinates {(0,66) (1,89)}
+  node[pos=0, dl, anchor=east, text=kept] {Ours\enspace\lv{66}} node[pos=1, dl, mono, text=kept] {89};
+\end{axis}
+\end{tikzpicture}
+\end{document}

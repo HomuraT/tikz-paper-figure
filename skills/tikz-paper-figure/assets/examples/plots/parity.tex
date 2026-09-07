@@ -1,0 +1,26 @@
+% Candidate 13: parity (x = y) scatter for paired scores over many items: one dot per task, baseline score on x,
+% our score on y. Points above the dashed diagonal are tasks we improved; the distance to the diagonal is the
+% gain. No grid: the diagonal is the only reference the reader needs. Semi-transparent dots because rounded
+% scores tie. Replaces the dumbbell when there are more than about ten items or the message is a systematic
+% shift rather than the value of each item. (Wilke, Paired data; Balance the data and the context.)
+\documentclass[10pt,tikz,border=2pt]{standalone}
+\usepackage{plotfig}
+\begin{document}
+\begin{tikzpicture}
+\begin{axis}[paper, width=4.2cm, height=4.2cm, ymajorgrids=false, y label top,
+  xmin=0, xmax=100, ymin=0, ymax=100, xtick={0,25,50,75,100}, ytick={0,25,50,75,100},
+  xlabel={baseline F1 (\%)}, ylabel={our F1 (\%)}]
+\addplot[ref, forget plot] coordinates {(0,0) (100,100)};
+\node[note, anchor=south] at (axis cs:28,80) {ours better};
+\node[note, anchor=north] at (axis cs:76,22) {baseline better};
+\addplot[only marks, mark=*, mark size=1.7pt, barblue, fill opacity=0.55, draw opacity=0] coordinates {
+  (12,31) (18,29) (21,44) (25,40) (27,52) (31,47) (33,61) (36,50) (38,58) (41,55)
+  (43,70) (45,62) (47,66) (49,59) (52,74) (54,68) (56,63) (58,79) (60,71) (62,66)
+  (64,83) (66,74) (68,78) (70,69) (72,85) (74,80) (76,77) (78,91) (80,84) (82,79)
+  (84,93) (86,88) (88,86) (90,95) (92,90) (94,97) (45,38) (63,55) (71,64) (85,80)};
+% one item the text discusses
+\node[note, anchor=west] at (axis cs:53,30) {one join type\\ still fails};
+\draw[notearrow] (axis cs:52.5,31) -- (axis cs:46,37);
+\end{axis}
+\end{tikzpicture}
+\end{document}

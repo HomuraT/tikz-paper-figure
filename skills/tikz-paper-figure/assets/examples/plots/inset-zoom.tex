@@ -1,0 +1,43 @@
+% inset-zoom: a line chart with an inset that magnifies the region where the curves converge (the last 20k steps),
+% so the full run and the final ordering are read from one figure. The inset is a second axis placed inside the
+% main one, in an empty corner, with a white background, a thin frame, its own ticks, and the same colours and
+% line order as the main plot; a thin grey rectangle on the main axis marks the region it shows, and the caption
+% says what is magnified. Dense series carry no marks. (Wilke, Multi-panel figures; Visualizing trends)
+\documentclass[10pt,tikz,border=2pt]{standalone}
+\usepackage{plotfig}
+\begin{document}
+\begin{tikzpicture}
+% ------------------------------------------------------------------ main axis
+\begin{axis}[paper, name=main, width=6cm, height=4cm, y label top,
+  xlabel={training steps (k)}, ylabel={accuracy (\%)},
+  xmin=0, xmax=100, xtick={0,25,50,75,100}, ymin=25, ymax=90, ytick={40,60,80},
+  % room for the direct labels; `upper` is a flag and `value` the amount (`upper=0.28` would enlarge by the default 0.1)
+  enlarge x limits={upper, value=0.28}]
+\addplot[kept, no marks] coordinates {(0,29.9) (2.5,35.4) (5,39.8) (7.5,44.0) (10,47.7) (12.5,51.4) (15,55.0) (17.5,57.6) (20,60.4) (22.5,62.5) (25,64.7) (27.5,66.5) (30,67.6) (32.5,70.0) (35,71.3) (37.5,72.6) (40,73.0) (42.5,74.0) (45,75.3) (47.5,76.3) (50,77.3) (52.5,77.9) (55,78.7) (57.5,78.9) (60,79.8) (62.5,80.3) (65,80.3) (67.5,81.5) (70,81.5) (72.5,82.0) (75,81.7) (77.5,81.9) (80,82.3) (82.5,82.5) (85,83.0) (87.5,83.0) (90,83.0) (92.5,82.9) (95,83.2) (97.5,83.9) (100,83.3)}
+  node[dl, text=kept, xshift=1.5pt, yshift=3.5pt] {Ours};
+\addplot[black!60, no marks] coordinates {(0,30.1) (2.5,35.8) (5,40.1) (7.5,45.2) (10,49.6) (12.5,52.0) (15,55.8) (17.5,58.7) (20,61.0) (22.5,63.7) (25,65.6) (27.5,66.9) (30,69.3) (32.5,70.7) (35,72.1) (37.5,73.4) (40,74.0) (42.5,74.8) (45,75.2) (47.5,76.6) (50,76.8) (52.5,77.4) (55,77.7) (57.5,78.2) (60,78.8) (62.5,79.8) (65,79.0) (67.5,79.5) (70,80.3) (72.5,81.0) (75,80.9) (77.5,80.2) (80,80.1) (82.5,81.3) (85,81.0) (87.5,81.0) (90,81.9) (92.5,82.0) (95,81.8) (97.5,81.9) (100,82.0)}
+  node[dl, text=black!65, xshift=1.5pt] {System A};
+\addplot[black!40, no marks] coordinates {(0,28.6) (2.5,34.3) (5,39.6) (7.5,44.3) (10,47.7) (12.5,52.3) (15,55.5) (17.5,58.2) (20,59.8) (22.5,62.5) (25,65.0) (27.5,65.8) (30,67.9) (32.5,69.6) (35,70.0) (37.5,72.1) (40,72.6) (42.5,73.2) (45,74.1) (47.5,74.8) (50,75.2) (52.5,76.1) (55,75.9) (57.5,76.4) (60,77.2) (62.5,77.2) (65,77.1) (67.5,78.0) (70,78.4) (72.5,77.9) (75,77.7) (77.5,78.3) (80,78.4) (82.5,78.5) (85,79.2) (87.5,78.4) (90,79.3) (92.5,78.5) (95,78.7) (97.5,79.2) (100,79.4)}
+  node[dl, text=black!55, xshift=1.5pt, yshift=-3.5pt] {Baseline};
+% the magnified region, drawn on the main axis (paths inside an axis are drawn at \end{axis}, on top of the plots)
+\draw[black!35, line width=0.4pt] (axis cs:80,76) rectangle (axis cs:100,86);
+\coordinate (zoomcorner) at (axis cs:80,76);
+\end{axis}
+% ------------------------------------------------------------------ inset: same series, x 80 to 100, y 76 to 86
+% placed in the empty lower-right corner of the main axis; clip=true cuts the series to the window
+\begin{axis}[paper, name=inset, width=2.3cm, height=1.5cm,
+  at={(main.south east)}, anchor=south east, xshift=-0.3cm, yshift=0.4cm,
+  clip=true, axis background/.style={fill=white},
+  axis lines*=box, axis line style={black!30, line width=0.4pt}, tick style={black!30, line width=0.4pt},
+  tick label style={font=\fontsize{5.5}{6.5}\selectfont, text=black!65},
+  every axis label/.append style={font=\fontsize{5.5}{6.5}\selectfont},
+  every axis plot/.append style={line width=0.8pt},
+  xmin=80, xmax=100, xtick={80,90,100}, ymin=76, ymax=86, ytick={78,82,86}]
+\addplot[kept, no marks] coordinates {(77.5,81.9) (80,82.3) (82.5,82.5) (85,83.0) (87.5,83.0) (90,83.0) (92.5,82.9) (95,83.2) (97.5,83.9) (100,83.3)};
+\addplot[black!60, no marks] coordinates {(77.5,80.2) (80,80.1) (82.5,81.3) (85,81.0) (87.5,81.0) (90,81.9) (92.5,82.0) (95,81.8) (97.5,81.9) (100,82.0)};
+\addplot[black!40, no marks] coordinates {(77.5,78.3) (80,78.4) (82.5,78.5) (85,79.2) (87.5,78.4) (90,79.3) (92.5,78.5) (95,78.7) (97.5,79.2) (100,79.4)};
+\end{axis}
+% one connector from the marked region to the inset, on the side where it crosses no series
+\draw[black!30, line width=0.4pt] (zoomcorner) -- (inset.north west);
+\end{tikzpicture}
+\end{document}

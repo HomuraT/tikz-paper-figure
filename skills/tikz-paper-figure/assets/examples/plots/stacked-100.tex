@@ -1,0 +1,47 @@
+% Candidate 6: composition per group as 100% stacked horizontal bars; percentages printed inside the segments,
+% categories in the palette order, legend as squares above. For dataset statistics (query types per domain).
+\documentclass[10pt,tikz,border=2pt]{standalone}
+\usepackage{plotfig}
+\begin{document}
+\begin{tikzpicture}
+\begin{axis}[paper, width=8.6cm, height=2.5cm,
+  xbar stacked, bar width=0.34cm, xmin=0, xmax=100, xtick={0,25,50,75,100}, xticklabel={\pgfmathprintnumber{\tick}\%},
+  legend top,   % after xbar stacked, which sets its own legend image
+  ytick={1,2,3,4}, yticklabels={Legal, Finance, Health, Retail}, y tick label style={text=ink, font=\fontsize{7}{8}\selectfont},
+  y axis hidden, axis x line*=bottom, enlarge y limits=0.18,
+  nodes near coords, point meta=explicit, visualization depends on={value \thisrow{v} \as \segv},
+  nodes near coords={\pgfmathtruncatemacro{\vv}{\segv}\ifnum\vv>7 \segv\fi},
+  every node near coord/.append style={font=\fontsize{6}{6}\selectfont\ttfamily, text=white}]
+% inline tables: header on its own line after the brace, closing brace on its own line
+\addplot[fill=kept, draw=none] table[x=v, y=row, meta=v] {
+v row
+44 1
+38 2
+51 3
+57 4
+};
+\addplot[fill=dbA, draw=none] table[x=v, y=row, meta=v] {
+v row
+27 1
+33 2
+24 3
+22 4
+};
+\addplot[fill=addc, draw=none] table[x=v, y=row, meta=v] {
+v row
+21 1
+19 2
+17 3
+15 4
+};
+\addplot[fill=black!25, draw=none, every node near coord/.append style={text=black!70}] table[x=v, y=row, meta=v] {
+v row
+8 1
+10 2
+8 3
+6 4
+};
+\legend{Lookup, Aggregate, Join, Other}
+\end{axis}
+\end{tikzpicture}
+\end{document}

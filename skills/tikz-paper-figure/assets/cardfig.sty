@@ -1,0 +1,309 @@
+% cardfig.sty -- card-style TikZ figures for papers, built as standalone documents.
+%
+% Usage: copy this file next to the figure sources (e.g. figures/), then
+%   \documentclass[10pt,tikz,border={1pt 3.5pt 3pt 1.5pt}]{standalone}
+%   \usepackage{cardfig}
+% The border is left/bottom/right/top. Shadows are not part of the bounding box, so bottom and right
+% need room; left+right together must stay <= 4pt or three 4.35cm cards overflow a 5.5in text width.
+%
+% Everything here is a style or a macro. The figure file only places elements.
+% See SKILL.md and references/elements.md of the tikz-paper-figure skill for how the pieces are meant to be used.
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{cardfig}[2026/09/05 v1.0 card-style TikZ figures]
+\RequirePackage[default]{sourcesanspro}
+\RequirePackage[scaled=0.92]{inconsolata}
+\RequirePackage{fontawesome5}
+\RequirePackage{amsmath,amssymb}
+\RequirePackage{xcolor}
+\RequirePackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,calc,matrix,shadows,shadows.blur,backgrounds,shapes.multipart,tikzmark}
+
+% ---------------------------------------------------------------------------
+% Palette. The colours carry meaning; keep the meaning when reusing them.
+% ---------------------------------------------------------------------------
+\definecolor{hdr}{HTML}{2D3748}      % title bar of a card, stage arrows
+\definecolor{kept}{HTML}{2B6CB0}     % blue: the target side; what is kept, accepted or extracted
+\definecolor{keptfill}{HTML}{EBF4FF}
+\definecolor{addc}{HTML}{DD6B20}     % orange: the difficulty, what the input leaves open, what a step adds
+\definecolor{addfill}{HTML}{FFF1E4}
+\definecolor{dbA}{HTML}{2C7A7B}      % teal: source A (or the only source)
+\definecolor{dbAfill}{HTML}{E6FFFA}
+\definecolor{dbB}{HTML}{6B46C1}      % violet: source B, or a second kind of input
+\definecolor{dbBfill}{HTML}{F3EBFF}
+\definecolor{ink}{HTML}{1A202C}      % body text
+
+% ---------------------------------------------------------------------------
+% Card geometry. Override with \setlength before \cardpanels.
+% Width budget for a 5.5in (397.5pt) text width: n*\cardw + (n-1)*\cardgap <= 13.8cm.
+% ---------------------------------------------------------------------------
+\newlength{\cardw}\setlength{\cardw}{4.35cm}      % card width
+\newlength{\cardh}\setlength{\cardh}{4.45cm}      % card height
+\newlength{\cardgap}\setlength{\cardgap}{0.35cm}  % gap between cards (0.95cm when a stage arrow sits in it)
+\newlength{\cardhh}\setlength{\cardhh}{0.6cm}     % title bar height
+\newlength{\cardfh}\setlength{\cardfh}{0.5cm}     % footer band height (0pt removes the band)
+
+% ---------------------------------------------------------------------------
+% Layers. Shadows of inner elements are drawn on their own layer, above the card fill (background)
+% and below the elements (main). Cards themselves are drawn on the background layer.
+% ---------------------------------------------------------------------------
+\pgfdeclarelayer{shadow}
+\pgfsetlayers{background,shadow,main}
+
+% ---------------------------------------------------------------------------
+% Styles
+% ---------------------------------------------------------------------------
+\tikzset{
+  every picture/.append style={text=ink},
+  % one shadow for every inner element: 0.7pt offset, 22% black
+  sh/.style={drop shadow={shadow xshift=0.7pt, shadow yshift=-0.7pt, fill=black, opacity=0.22}},
+  % the card: white, rounded, soft blurred shadow
+  panel/.style={fill=white, rounded corners=5pt, minimum width=\cardw, minimum height=\cardh, anchor=north west, inner sep=0pt,
+                blur shadow={shadow blur steps=10, shadow blur radius=2.6pt, shadow xshift=0.6pt, shadow yshift=-1.4pt, shadow opacity=45}},
+  % title bar contents
+  badge/.style={circle, fill=white, text=hdr, font=\fontsize{7}{7}\selectfont\bfseries, inner sep=0pt, minimum size=0.32cm},
+  phead/.style={font=\fontsize{8.5}{9}\selectfont\bfseries, text=white, anchor=west, inner sep=0pt},
+  hicon/.style={font=\fontsize{9}{9}\selectfont, text=white, opacity=0.5, anchor=east, inner sep=0pt},
+  % footer band text and the orange pill note above it
+  footer/.style={font=\fontsize{6.3}{7.5}\selectfont, text=black!60, inner sep=0pt},
+  pill/.style={fill=addfill, draw=addc!70, line width=0.5pt, rounded corners=5pt, text=addc, font=\fontsize{6.5}{7.5}\selectfont,
+               inner xsep=6pt, inner ysep=2.2pt, sh},
+  % small labels
+  grp/.style={font=\fontsize{6}{6}\selectfont\scshape, text=black!55, inner sep=0pt},      % group label, e.g. SOURCES
+  note/.style={font=\fontsize{6.5}{7.5}\selectfont, text=addc, inner sep=0pt, align=center}, % free orange remark
+  lab/.style={font=\fontsize{6.5}{7.5}\selectfont\ttfamily, text=black!80, inner sep=1.5pt}, % edge label
+  tname/.style={font=\fontsize{7}{8}\selectfont\ttfamily\bfseries, inner sep=0pt},          % table name (set text=dbA/dbB)
+  % tables: a matrix of cells; give every column a text width so rows stay even; \boxshadow[]{name} afterwards
+  cell/.style={draw=black!35, line width=0.5pt, fill=white, font=\fontsize{6.5}{7.5}\selectfont\ttfamily, text=black!75,
+               inner xsep=3pt, inner ysep=0pt, minimum height=0.28cm, anchor=center, align=center},
+  tbl/.style={matrix of nodes, nodes={cell}, column sep=-0.5pt, row sep=-0.5pt, inner sep=0pt},
+  tblA/.style={tbl, row 1/.style={nodes={fill=dbAfill, text=dbA!80!black}}},
+  tblB/.style={tbl, row 1/.style={nodes={fill=dbBfill, text=dbB!80!black}}},
+  tblK/.style={tbl, row 1/.style={nodes={fill=keptfill, text=kept}}},                    % blue header: a result table on the target side
+  hi/.style={draw=addc, line width=0.8pt, fill=addfill},                                  % highlighted cell: |[hi]| value
+  tnote/.style={font=\fontsize{6}{7}\selectfont, text=black!60, inner sep=0pt, anchor=north west},   % table footnote under a table
+  % code block (SQL, a patch, a query): blue border, lines separated by \\, keywords in \textbf
+  code/.style={draw=kept, line width=0.6pt, fill=white, rounded corners=2.5pt, font=\fontsize{6.5}{8}\selectfont\ttfamily, text=black!80,
+               align=left, inner xsep=5pt, inner ysep=4pt, sh},
+  % chips: rounded tags for source-side names (colA/colB) and target-side names (prop)
+  chip/.style={line width=0.6pt, rounded corners=2.5pt, font=\fontsize{7}{8}\selectfont\ttfamily, inner xsep=4pt, inner ysep=2.5pt, sh},
+  colA/.style={chip, draw=dbA, fill=dbAfill, text=dbA!80!black},
+  colB/.style={chip, draw=dbB, fill=dbBfill, text=dbB!80!black},
+  prop/.style={chip, draw=kept, fill=keptfill, text=kept},
+  % the orange question badge and the orange connectors
+  qb/.style={circle, fill=addc, text=white, font=\fontsize{7}{7}\selectfont\bfseries, inner sep=0pt, minimum size=0.32cm, sh},
+  arr/.style={-{Latex[length=1.6mm,width=1.3mm]}, draw=addc, line width=0.8pt},
+  wire/.style={draw=addc, line width=0.8pt},
+  fed/.style={draw=addc, line width=0.8pt, dash pattern=on 2.2pt off 1.6pt, rounded corners=3pt},
+  % document page (use \docpage) and highlighted phrase inside it (\tikzmarknode[hl]{m1}{...})
+  doc/.style={draw=black!45, line width=0.5pt, fill=white, font=\fontsize{6.5}{8}\selectfont, text=black!75, align=left, inner sep=5pt,
+              execute at begin node={\hyphenpenalty=10000\relax}},
+  doclab/.style={font=\fontsize{6}{6}\selectfont\bfseries, text=black!50, inner sep=0pt, anchor=north west},
+  hl/.style={fill=addfill, draw=addc!70, line width=0.4pt, rounded corners=1.5pt, inner xsep=1.5pt, inner ysep=0.6pt, text=addc},
+  % class boxes (UML-like): two parts, name above properties; box1 has the name only
+  box/.style={rectangle split, rectangle split parts=2, rectangle split draw splits=false, line width=0.6pt, rounded corners=2.5pt,
+              font=\fontsize{6.5}{7.5}\selectfont\ttfamily, inner xsep=4pt, inner ysep=2.5pt, align=left},
+  box1/.style={line width=0.6pt, rounded corners=2.5pt, font=\fontsize{6.5}{7.5}\selectfont\ttfamily, inner xsep=4pt, inner ysep=3pt},
+  cls/.style={box, draw=kept, rectangle split part fill={keptfill,white}, text=black!80},
+  cls1/.style={box1, draw=kept, fill=keptfill, text=black!80},
+  faint/.style={draw=black!35, text=black!50},
+  faintcls/.style={box, faint, rectangle split part fill={black!7,white}},
+  faintcls1/.style={box1, faint, fill=black!7},
+  added/.style={draw=addc, dash pattern=on 2.2pt off 1.4pt},
+  addedcls/.style={box, added, rectangle split part fill={addfill,white}, text=black!80},
+  addedcls1/.style={box1, added, fill=addfill, text=black!80},
+  % edges between boxes
+  sub/.style={-{Triangle[open,length=1.8mm,width=1.5mm]}, draw=kept, line width=0.6pt},   % subclass (open triangle)
+  obj/.style={-{Latex[length=1.5mm,width=1.2mm]}, draw=kept, line width=0.6pt},           % relation between classes
+  fk/.style={-{Latex[length=1.3mm,width=1.1mm]}, draw=black!55, line width=0.6pt},        % foreign key between tables
+  pop/.style={-{Latex[length=1.5mm,width=1.2mm]}, draw=kept, densely dotted, line width=0.7pt, shorten >=1pt}, % derived from (table -> class)
+  % stage arrow between cards and its small-caps label
+  stage/.style={-{Latex[length=2.2mm,width=1.8mm]}, line width=1pt, draw=hdr},
+  stagelab/.style={font=\fontsize{6.5}{7}\selectfont\scshape, text=hdr, above=1pt, inner sep=1pt},
+  % small-caps label for an arrow inside a card, colour as argument: node[caplab=kept, right] {execute}
+  caplab/.style={font=\fontsize{6.5}{7}\selectfont\scshape, text=#1, inner sep=1.5pt},
+  caplab/.default=kept,
+  % legend pieces
+  swatch/.style={minimum width=0.36cm, minimum height=0.22cm, inner sep=0pt, rounded corners=1.5pt, line width=0.6pt, sh},
+  legtext/.style={font=\fontsize{7}{8}\selectfont, anchor=west, inner sep=2pt},
+}
+
+% ---------------------------------------------------------------------------
+% Cards
+% ---------------------------------------------------------------------------
+% \cardpanels{n}: n equal cards named P1..Pn from left to right, each with a gradient title bar,
+% a footer band (unless \cardfh is 0pt) and a border drawn last so it sits above both bands.
+\newcommand{\cardpanels}[1]{%
+  \begin{scope}[on background layer]
+    \node[panel] at (0,0) (P1) {};
+    \ifnum#1>1
+      \foreach \i [evaluate=\i as \j using int(\i-1)] in {2,...,#1} {
+        \node[panel] at ($(P\j.north east)+(\cardgap,0)$) (P\i) {};
+      }
+    \fi
+    \foreach \i in {1,...,#1} {
+      \begin{scope}
+        \clip[rounded corners=5pt] (P\i.south west) rectangle (P\i.north east);
+        \shade[top color=hdr!82!white, bottom color=hdr] (P\i.north west) rectangle ($(P\i.north east)+(0,-\cardhh)$);
+        \ifdim\cardfh>0pt
+          \fill[black!5] (P\i.south west) rectangle ($(P\i.south east)+(0,\cardfh)$);
+          \draw[black!12, line width=0.5pt] ($(P\i.south west)+(0,\cardfh)$) -- ($(P\i.south east)+(0,\cardfh)$);
+        \fi
+      \end{scope}
+      \draw[black!30, line width=0.6pt, rounded corners=5pt] (P\i.south west) rectangle (P\i.north east);
+    }
+  \end{scope}}
+% \cardhead{P1}{Title}                 title only
+% \cardheadn{P1}{1}{Title}             numbered badge + title (numbers match an enumeration in the text)
+% \cardicon{P1}{network-wired}         faint white icon at the right end of the title bar
+% \cardfoot{P1}{text}                  footer band text
+% \cardpill{P1}{text}                  orange pill note just above the footer band, same height in every card
+\newcommand{\cardhead}[2]{\node[phead] at ($(#1.north west)+(0.3cm,-0.5\cardhh)$) {#2};}
+\newcommand{\cardheadn}[3]{%
+  \node[badge] at ($(#1.north west)+(0.36cm,-0.5\cardhh)$) {#2};
+  \node[phead] at ($(#1.north west)+(0.66cm,-0.5\cardhh)$) {#3};}
+\newcommand{\cardicon}[2]{\node[hicon] at ($(#1.north east)+(-0.3cm,-0.5\cardhh)$) {\faIcon{#2}};}
+\newcommand{\cardfoot}[2]{\node[footer] at ($(#1.south)+(0,0.5\cardfh)$) {#2};}
+\newcommand{\cardpill}[2]{\node[pill] at ($(#1.south)+(0,\cardfh+0.34cm)$) {#2};}
+% \cardstage{P1}{P2}{label}: arrow across the gap, at the vertical middle of the body area
+\newcommand{\cardstage}[3]{%
+  \coordinate (cfa) at ($(#1.north)+(0,-\cardhh)$);
+  \coordinate (cfb) at ($(#1.south)+(0,\cardfh)$);
+  \coordinate (cfmid) at ($(cfa)!0.5!(cfb)$);
+  \draw[stage] (#1.east |- cfmid) -- node[stagelab] {#3} (#2.west |- cfmid);}
+% Legend: one node centred under a card, items are inline pictures.
+%   \cardlegend{P2}{\legswatch{draw=kept, fill=keptfill} extracted \legsep \legline{pop} derived from \legsep {\color{kept}\faIcon{key}}\, key}
+\newcommand{\legswatch}[1]{\tikz[baseline=-0.8ex]\node[swatch, #1]{};\,}
+\newcommand{\legline}[1]{\tikz[baseline=-0.8ex]\draw[#1] (0,0) -- (0.55cm,0);\,}
+\newcommand{\legsep}{\hspace{0.4cm}}          % \renewcommand{\legsep}{\hspace{0.3cm}} when the legend runs wide
+\newcommand{\cardlegend}[2]{\node[legtext, anchor=north, inner sep=0pt] at ($(#1.south)+(0,-0.3cm)$) {#2};}
+% \cardlegendspan{P1}{P2}{items}: centred between the left edge of P1 and the right edge of P2 (even card counts)
+\newcommand{\cardlegendspan}[3]{\node[legtext, anchor=north, inner sep=0pt] at ($(#1.south west)!0.5!(#2.south east)+(0,-0.3cm)$) {#3};}
+
+% ---------------------------------------------------------------------------
+% Shadows for things drop shadow cannot handle (matrices, rectangle split, custom outlines)
+% ---------------------------------------------------------------------------
+% \boxshadow[rounded corners=2pt]{name}: rectangle shadow under node <name>; use \boxshadow[]{m} for a matrix (square corners)
+\newcommand{\boxshadow}[2][rounded corners=2.5pt]{\begin{pgfonlayer}{shadow}
+  \path[fill=black, opacity=0.22, #1] ($(#2.south west)+(0.7pt,-0.7pt)$) rectangle ($(#2.north east)+(0.7pt,-0.7pt)$);
+\end{pgfonlayer}}
+% \pageshadow{name}{fold}: shadow of a page whose top-right corner of side <fold> is cut off
+\newcommand{\pageshadow}[2]{\begin{pgfonlayer}{shadow}
+  \path[fill=black, opacity=0.22] ($(#1.south west)+(0.7pt,-0.7pt)$) -- ($(#1.south east)+(0.7pt,-0.7pt)$)
+    -- ($(#1.north east)+(0.7pt,-0.7pt)+(0,-#2)$) -- ($(#1.north east)+(0.7pt,-0.7pt)+(-#2,0)$) -- ($(#1.north west)+(0.7pt,-0.7pt)$) -- cycle;
+\end{pgfonlayer}}
+
+% ---------------------------------------------------------------------------
+% Vector icons drawn in TikZ
+% ---------------------------------------------------------------------------
+% \foldcorner{name}{fold}: paint over the top-right corner of node <name> and draw a folded corner
+\newcommand{\foldcorner}[2]{%
+  \fill[white] ($(#1.north east)+(0.4pt,0.4pt)$) -- ++(-#2,0) -- ++(#2,-#2) -- cycle;
+  \fill[black!15] ($(#1.north east)+(-#2,0)$) -- ++(0,-#2) -- ++(#2,0) -- cycle;
+  \draw[black!45, line width=0.5pt] ($(#1.north east)+(-#2,0)$) -- ++(0,-#2) -- ++(#2,0) -- cycle;}
+% \dbicon[scale]{position}{colour}: database cylinder, 0.3cm x 0.45cm at scale 1, anchored at its bottom-left corner
+\newcommand{\dbicon}[3][1]{%
+  \begin{scope}[shift={(#2)}, scale=#1]
+    \begin{pgfonlayer}{shadow}
+      \path[fill=black, opacity=0.22, shift={(0.7pt,-0.7pt)}] (0,0.07) arc[start angle=180, end angle=360, x radius=0.15cm, y radius=0.07cm]
+        -- (0.3,0.38) arc[start angle=0, end angle=180, x radius=0.15cm, y radius=0.07cm] -- cycle;
+    \end{pgfonlayer}
+    \fill[#3] (0,0.07) arc[start angle=180, end angle=360, x radius=0.15cm, y radius=0.07cm]
+      -- (0.3,0.38) arc[start angle=0, end angle=180, x radius=0.15cm, y radius=0.07cm] -- cycle;
+    \draw[#3!45!white, line width=0.45pt] (0,0.18) arc[start angle=180, end angle=360, x radius=0.15cm, y radius=0.07cm];
+    \draw[#3!45!white, line width=0.45pt] (0,0.28) arc[start angle=180, end angle=360, x radius=0.15cm, y radius=0.07cm];
+    \fill[#3!45!white] (0.15,0.38) ellipse[x radius=0.15cm, y radius=0.07cm];
+  \end{scope}}
+% \dbchip{position}{style}{name}{colour}{text}: a chip (colA/colB) with a small cylinder inside its left end
+\newcommand{\dbchip}[5]{%
+  \node[#2, anchor=west] at (#1) (#3) {\hspace{0.3cm}#5};
+  \dbicon[0.62]{$(#3.west)+(4pt,-0.14cm)$}{#4}}
+% \keyic marks a key property inside a class box; \nokey keeps the other rows aligned
+\newcommand{\keyic}{{\fontsize{5}{5}\selectfont\color{kept}\faIcon{key}}\,}
+\newcommand{\nokey}{\phantom{\keyic}}
+
+% ---------------------------------------------------------------------------
+% Compound elements
+% ---------------------------------------------------------------------------
+% \classbox[style][split colour]{name}{position}{Name}{properties}: two-part class box with shadow and a divider line
+%   \classbox[cls, anchor=north west]{bemp}{$(P2.north west)+(0.25cm,-0.95cm)$}{Employee}{\keyic name\\ \nokey unit}
+%   \classbox[faintcls, anchor=north west][black!35]{alog}{...}{Log}{ts\\ message}
+\NewDocumentCommand{\classbox}{O{cls} O{kept} m m m m}{%
+  \node[#1] at (#4) (#3) {\textbf{#5} \nodepart{two} #6};
+  \boxshadow{#3}
+  \draw[#2, line width=0.6pt] (#3.text split west) -- (#3.text split east);}
+% \classtag[style]{name}{position}{Name}: one-part class box (name only) with shadow
+\NewDocumentCommand{\classtag}{O{cls1} m m m}{%
+  \node[#1] at (#3) (#2) {\textbf{#4}};
+  \boxshadow{#2}}
+% \docpage[text width=2cm][icon]{name}{position}{LABEL}{text}: folded page with a small label and body text,
+% anchored at its top-left corner. The icon defaults to file-alt (comment-dots for a question, book for a manual).
+% Highlight a phrase with \tikzmarknode[hl]{m1}{phrase} (needs remember picture on the tikzpicture).
+\NewDocumentCommand{\docpage}{O{text width=2cm} O{file-alt} m m m m}{%
+  \node[doc, anchor=north west, #1] at (#4) (#3) {\phantom{X}\\[-1pt] #6};
+  \pageshadow{#3}{0.2cm}
+  \foldcorner{#3}{0.2cm}
+  \node[doclab] at ($(#3.north west)+(5pt,-4.5pt)$) {\faIcon{#2}\ #5};}
+
+% ===========================================================================
+% Benchmark bar panels (second template): a grid of small panels, one benchmark per panel, one horizontal
+% bar per system, rows sorted best to worst, our system's bar in blue, the score printed at the end of
+% each bar. No axes, no grid lines, no card frame; the bold title and the aligned columns do the work.
+%   \begin{barpanel}{0}{0}{Benchmark A}            % zero-based column and row in the grid
+%     \barrow{System one}{\iconletter{S}}{73.0}
+%     \barrow[ours]{Ours}{\iconletter[kept]{O}}{70.0}
+%   \end{barpanel}
+% Width budget for a 5.5in text width: cols*\barpanelw + (cols-1)*\barcolgap <= 13.8cm.
+% scripts/bars_from_csv.py writes the whole figure from a results table, sorted, with these lengths set.
+% ===========================================================================
+\newlength{\barpanelw}\setlength{\barpanelw}{6.6cm}          % panel width, from the names to the end of the value labels
+\newlength{\barcolgap}\setlength{\barcolgap}{0.6cm}          % horizontal gap between panel columns
+\newlength{\barpanelpitch}\setlength{\barpanelpitch}{2.75cm} % vertical distance between panel rows: \bartitlegap + rows*\barrowpitch + 0.5cm
+\newlength{\barnamew}\setlength{\barnamew}{1.6cm}            % name column; about 0.115cm per character at 7pt, fit the longest name
+\newlength{\bariconw}\setlength{\bariconw}{0.4cm}            % icon column; 0pt when no row has an icon
+\newlength{\barvaluew}\setlength{\barvaluew}{0.7cm}          % room for the value label after a full-length bar
+\newlength{\barrowpitch}\setlength{\barrowpitch}{0.3cm}      % distance between bar centres
+\newlength{\barh}\setlength{\barh}{0.17cm}                   % bar thickness
+\newlength{\bartitlegap}\setlength{\bartitlegap}{0.45cm}     % from the top of the title to the centre of the first bar
+\newcommand{\barmax}{100}                                    % value that fills the track; the same in every panel so bars compare across panels
+\newcounter{barrowidx}
+% The bar palette is its own: a bright, saturated blue against light grey and black text, as in the release
+% charts this template imitates. The card blue (kept) is too dark next to a grey bar.
+\definecolor{barblue}{HTML}{007DFF}    % our system's bar
+\definecolor{bargrey}{HTML}{E7E7E7}    % every other bar
+\tikzset{
+  bartitle/.style={font=\fontsize{8}{9}\selectfont\bfseries, text=black, anchor=north west, inner sep=0pt},
+  barname/.style={font=\fontsize{7}{8}\selectfont, text=black, anchor=west, inner sep=0pt},
+  baricon/.style={font=\fontsize{6.5}{6.5}\selectfont, text=black!60, inner sep=0pt, anchor=center},
+  barvalue/.style={font=\fontsize{6}{6}\selectfont\ttfamily, text=black, anchor=west, inner sep=0pt},
+  bar/.style={fill=bargrey, rounded corners=0.5pt},          % every other system
+  ours/.style={fill=barblue},                                % our system
+  ours2/.style={fill=addc},                                  % a second system to single out (an ablation, a previous version)
+}
+% \begin{barpanel}[max]{col}{row}{Title}: one panel at grid position (col,row), both zero-based.
+% The optional max overrides \barmax for this panel only (a metric on another scale).
+\NewDocumentEnvironment{barpanel}{O{\barmax} m m m}{%
+  \setcounter{barrowidx}{0}%
+  \def\barpanelmax{#1}%
+  \begin{scope}[shift={({#2*(\barpanelw+\barcolgap)},{-#3*\barpanelpitch})}]
+    \node[bartitle] at (0,0) {#4};
+}{%
+  \end{scope}}
+% \barrow[style]{name}{icon}{value}[label]: the next bar down. [ours] paints it blue, [ours2] orange, any fill= works.
+% value is a number (bar length); the trailing optional label replaces it in print, e.g. {88.3}[88.3$^\dagger$].
+% Leave the icon argument empty when there is none.
+\NewDocumentCommand{\barrow}{O{} m m m o}{%
+  \pgfmathsetlengthmacro{\bary}{-\bartitlegap-\thebarrowidx*\barrowpitch}%
+  \pgfmathsetlengthmacro{\barlen}{(\barpanelw-\barnamew-\bariconw-\barvaluew)*(#4)/(\barpanelmax)}%
+  \node[barname] at (0,\bary) {#2};
+  \node[baricon] at (\barnamew+0.5*\bariconw,\bary) {#3};
+  \fill[bar, #1] (\barnamew+\bariconw,\bary-0.5*\barh) rectangle ++(\barlen,\barh);
+  \node[barvalue] at (\barnamew+\bariconw+\barlen+0.1cm,\bary) {\IfNoValueTF{#5}{#4}{#5}};
+  \stepcounter{barrowidx}}
+% Icons for the icon column, all about 0.24cm tall:
+%   \iconletter[colour]{K}   filled rounded square with a white letter, a stand-in for a logo (default ink)
+%   \iconfa[colour]{robot}   a fontawesome5 icon (default black!60)
+%   \iconimg{logo.pdf}       a vector or bitmap logo scaled to 0.24cm height
+\newcommand{\iconletter}[2][ink]{\tikz[baseline=-0.55ex]\node[fill=#1, text=white, rounded corners=0.8pt, inner sep=0pt, minimum size=0.24cm, font=\fontsize{5}{5}\selectfont\bfseries]{#2};}
+\newcommand{\iconfa}[2][black!60]{{\color{#1}\faIcon{#2}}}
+\newcommand{\iconimg}[1]{\includegraphics[height=0.24cm]{#1}}
+\endinput

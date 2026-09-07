@@ -1,0 +1,34 @@
+% win-tie-loss: pairwise preference of Ours against every opponent, the LLaMA-2 / MT-Bench human-evaluation
+% figure. The tie share is centred on zero, wins extend to the right in blue and losses to the left in dark grey,
+% so the right ends compare win rates and the left ends compare loss rates across rows; the plain 100% stacked
+% form is stacked-100.tex, for compositions where only the drift of shares matters. Rows sorted by win rate, the
+% percentage printed inside every segment (omit it under about 6%), tick labels print the absolute value.
+\documentclass[10pt,tikz,border=2pt]{standalone}
+\usepackage{plotfig}
+% \seg{fill}{x0}{x1}{row}{text colour}{label}: one segment as a rectangle in axis coordinates, its share centred
+\newcommand{\seg}[6]{\fill[#1] (axis cs:#2,#4-0.32) rectangle (axis cs:#3,#4+0.32);
+  \node[mono, text=#5] at ($(axis cs:#2,#4)!0.5!(axis cs:#3,#4)$) {#6};}
+\begin{document}
+\begin{tikzpicture}
+\begin{axis}[paper, width=6.2cm, height=2.8cm,
+  xmin=-60, xmax=80, xtick={-60,-40,...,80}, xticklabel={\pgfmathparse{abs(\tick)}\pgfmathprintnumber{\pgfmathresult}},
+  xlabel={share of comparisons (\%)},
+  y axis hidden, axis x line*=bottom,
+  ytick={1,...,5}, yticklabels={vs Baseline, vs System C, vs System B, vs System A, vs Prior best},
+  y tick label style={text=ink, font=\fontsize{7}{8}\selectfont},
+  ymin=0.4, ymax=5.6,
+  legend top]
+% column headers as legend squares, no plot behind them
+\addlegendimage{fill=black!45, draw=none}\addlegendentry{loss}
+\addlegendimage{fill=black!12, draw=none}\addlegendentry{tie}
+\addlegendimage{fill=barblue, draw=none}\addlegendentry{win}
+\addplot[draw=none, mark=none, forget plot] coordinates {(-60,0.4) (80,5.6)};
+% edges per row: tie from -t/2 to t/2, loss from -t/2-l to -t/2, win from t/2 to t/2+w
+\seg{black!45}{-26.5}{-11.5}{5}{white}{15} \seg{black!12}{-11.5}{11.5}{5}{ink}{23} \seg{barblue}{11.5}{73.5}{5}{white}{62}
+\seg{black!45}{-31.5}{-13.5}{4}{white}{18} \seg{black!12}{-13.5}{13.5}{4}{ink}{27} \seg{barblue}{13.5}{68.5}{4}{white}{55}
+\seg{black!45}{-37}{-14}{3}{white}{23}     \seg{black!12}{-14}{14}{3}{ink}{28}     \seg{barblue}{14}{63}{3}{white}{49}
+\seg{black!45}{-41.5}{-15.5}{2}{white}{26} \seg{black!12}{-15.5}{15.5}{2}{ink}{31} \seg{barblue}{15.5}{58.5}{2}{white}{43}
+\seg{black!45}{-51}{-15}{1}{white}{36}     \seg{black!12}{-15}{15}{1}{ink}{30}     \seg{barblue}{15}{49}{1}{white}{34}
+\end{axis}
+\end{tikzpicture}
+\end{document}

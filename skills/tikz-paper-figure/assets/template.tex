@@ -1,0 +1,60 @@
+% Card-style figure skeleton. Copy next to cardfig.sty, rename, fill the card bodies.
+% Build:  python <skill>/scripts/build_figure.py <name>.tex     (compiles, cleans, checks width, renders a PNG)
+% Include: \includegraphics{<name>.pdf}  with no width option; the figure is designed at text width.
+%
+% Comment block for the paper repository goes here: what each card shows, what the colours mean,
+% which listing or table the example comes from, and any decision a reader of the source should know.
+%
+% Revision contract: free to change are the number of cards, titles, icons, body content, pills and footers.
+% Keep the width budget below, the type sizes and shadow styles of cardfig.sty, the border, and the meaning of
+% the colours (orange = the one hard thing, blue = target side). Change one of those only when asked to.
+\documentclass[10pt,tikz,border={1pt 3.5pt 3pt 1.5pt}]{standalone}
+\usepackage{cardfig}
+% Width budget at 5.5in text width: n*\cardw + (n-1)*\cardgap <= 13.8cm.
+% Three cards: 4.35cm + 0.35cm gaps (parallel points) or 3.95cm + 0.95cm gaps (room for stage arrows).
+\setlength{\cardw}{4.35cm}
+\setlength{\cardh}{4.45cm}
+\setlength{\cardgap}{0.35cm}
+\begin{document}
+\begin{tikzpicture}[remember picture]   % remember picture is needed only for \tikzmarknode highlights
+\cardpanels{3}
+% ---- title bars: numbered badge when the cards match an enumeration in the text, plain title otherwise
+\cardheadn{P1}{1}{First point}   \cardicon{P1}{database}
+\cardheadn{P2}{2}{Second point}  \cardicon{P2}{cubes}
+\cardheadn{P3}{3}{Third point}   \cardicon{P3}{book-open}
+% ---- footer bands: the baseline the card is contrasted with (earlier work, the input, the previous stage)
+\cardfoot{P1}{earlier work: ...}
+\cardfoot{P2}{earlier work: ...}
+\cardfoot{P3}{earlier work: ...}
+% ---- orange pills: the difficulty of each card in one short line, same height everywhere
+\cardpill{P1}{what is hard here}
+\cardpill{P2}{what is hard here}
+\cardpill{P3}{what is hard here}
+% ---- stage arrows instead of pills when the cards are stages of a process (then set \cardgap to 0.95cm)
+% \cardstage{P1}{P2}{extract}
+% \cardstage{P2}{P3}{merge}
+
+% ================= card 1 body. Place everything relative to P1; keep 0.25-0.3cm from the card edge.
+% Body area runs from y=-\cardhh (title bar) down to y=-\cardh+\cardfh (footer); pills take the last 0.6cm.
+% \dbicon{$(P1.north west)+(0.9cm,-1.2cm)$}{dbA}
+% \node[tname, text=dbA, anchor=south west] at ($(P1.north west)+(1.3cm,-1.14cm)$) {orders};
+% \matrix[tblA, anchor=north west, column 1/.style={nodes={text width=0.4cm}}, column 2/.style={nodes={text width=0.8cm}}]
+%   at ($(P1.north west)+(0.9cm,-1.24cm)$) (ta) { id & city \\ |[hi]| 17 & Paris \\ };
+% \boxshadow[]{ta}
+
+% ================= card 2 body
+% \node[colA, anchor=west] at ($(P2.north west)+(0.3cm,-1.4cm)$) (c1) {input a};
+% \node[prop, anchor=east] at ($(P2.north east)+(-0.3cm,-1.4cm)$) (a1) {result};
+% \node[qb] at ($(P2.north)+(0,-1.4cm)$) (q1) {?};
+% \draw[wire] (c1.east) -- (q1);  \draw[arr] (q1) -- (a1.west);
+
+% ================= card 3 body
+% \docpage[text width=2cm]{d}{$(P3.north west)+(0.28cm,-0.95cm)$}{NOTE}{Text with a \tikzmarknode[hl]{m1}{highlight}.}
+% \coordinate (bx) at ($(P3.north east)+(-0.3cm,0)$);
+% \node[prop, anchor=east, overlay] at (bx |- m1.center) (b1) {result};
+% \draw[arr, overlay] (d.east |- m1.center) -- (b1.west);
+
+% ---- legend (optional), centred under the middle card; \cardlegendspan{P1}{P2}{...} for an even number of cards
+% \cardlegend{P2}{\legswatch{draw=kept, fill=keptfill} kept\legsep \legswatch{added, fill=addfill} added\legsep \legline{pop} derived from}
+\end{tikzpicture}
+\end{document}

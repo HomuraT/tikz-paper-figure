@@ -1,0 +1,64 @@
+% Example 1: a Figure 1 teaser with three parallel points, one per card, for a fictitious benchmark on
+% repairing a repository from an issue report. The cards follow the task left to right: the input (an issue),
+% the output (a patch) and the judgement (hidden tests). Numbered badges match an enumeration in the text.
+% Orange marks the open decision in each card; the pill states it in one line; the footer band gives the baseline.
+% Build:  python <skill>/scripts/build_figure.py teaser-points.tex
+\documentclass[10pt,tikz,border={1pt 3.5pt 3pt 1.5pt}]{standalone}
+\usepackage{cardfig}
+\setlength{\cardw}{4.35cm}
+\setlength{\cardh}{4.45cm}
+\setlength{\cardgap}{0.35cm}
+\begin{document}
+\begin{tikzpicture}[remember picture]
+\cardpanels{3}
+\cardheadn{P1}{1}{Issue}  \cardicon{P1}{bug}
+\cardheadn{P2}{2}{Patch}  \cardicon{P2}{code}
+\cardheadn{P3}{3}{Tests}  \cardicon{P3}{vial}
+\cardfoot{P1}{earlier work: the file to edit is given}
+\cardfoot{P2}{earlier work: one candidate per task}
+\cardfoot{P3}{earlier work: tests shown to the system}
+\cardpill{P1}{the issue names no file}
+\cardpill{P2}{many candidates, one is right}
+\cardpill{P3}{hidden tests decide}
+% ================= card 1: the issue text on the left, the repository files on the right, the file choice open
+\docpage[text width=1.55cm]{d}{$(P1.north west)+(0.28cm,-0.95cm)$}{ISSUE}{%
+  Empty input makes \tikzmarknode[hl]{m1}{parse()} raise KeyError. Seen since \tikzmarknode[hl]{m2}{v2.3}.}
+\node[grp, anchor=east] at ($(P1.north east)+(-0.3cm,-0.92cm)$) {\faIcon{code-branch}\ repository};
+\node[colA, anchor=east] at ($(P1.north east)+(-0.3cm,-1.5cm)$) (f1) {parse.py};
+\node[colA, anchor=east] at ($(P1.north east)+(-0.3cm,-2.05cm)$) (f2) {io.py};
+\node[colA, anchor=east] at ($(P1.north east)+(-0.3cm,-2.6cm)$) (f3) {cli.py};
+% the badge sits on the connector between the highlighted phrase and the files; positions from marks need overlay
+\coordinate (qx) at ($(P1.north west)+(2.55cm,0)$);
+\node[qb, overlay] at (qx |- m1.center) (q1) {?};
+\draw[wire, overlay] (d.east |- m1.center) -- (q1);
+\draw[arr, overlay] (q1) -- (f1.west);
+\draw[arr, overlay] (q1) -- (f2.west);
+\draw[arr, overlay] (q1) -- (f3.west);
+% ================= card 2: several candidate patches, one accepted
+\node[grp, anchor=west] at ($(P2.north west)+(0.3cm,-0.92cm)$) {\faIcon{layer-group}\ candidates};
+\node[grp, anchor=east] at ($(P2.north east)+(-0.3cm,-0.92cm)$) {{\color{kept}\faIcon{check}}\ accepted};
+\node[colB, anchor=west] at ($(P2.north west)+(0.3cm,-1.4cm)$)  (c1) {patch A};
+\node[colB, anchor=west] at ($(P2.north west)+(0.3cm,-1.95cm)$) (c2) {patch B};
+\node[colB, anchor=west] at ($(P2.north west)+(0.3cm,-2.5cm)$)  (c3) {patch C};
+\node[prop, anchor=east] at ($(P2.north east)+(-0.3cm,-1.95cm)$) (a1) {patch};
+\node[qb] at ($(P2.north)+(0,-1.95cm)$) (q2) {?};
+\draw[wire] (c1.east) -- (q2);
+\draw[wire] (c2.east) -- (q2);
+\draw[wire] (c3.east) -- (q2);
+\draw[arr] (q2) -- (a1.west);
+% ================= card 3: the hidden tests, the one that flips is highlighted
+\node[tname, text=dbA, anchor=south west] at ($(P3.north west)+(0.45cm,-1.14cm)$) {\faIcon{eye-slash}\ hidden tests};
+\matrix[tblA, anchor=north west,
+  column 1/.style={nodes={text width=1.35cm}}, column 2/.style={nodes={text width=0.75cm}}, column 3/.style={nodes={text width=0.75cm}}]
+  at ($(P3.north west)+(0.45cm,-1.24cm)$) (tt) {
+  test & before & after \\
+  test\_empty & fail & |[hi]| pass \\
+  test\_parse & pass & pass \\
+  test\_cli & pass & pass \\
+};
+\boxshadow[]{tt}
+% the verdict chip under the column that flipped; the arrow leaves the table bottom under that column
+\node[prop, anchor=north east] at ($(tt.south east)+(0,-0.35cm)$) (r1) {resolved};
+\draw[arr] (tt.south -| tt-2-3) -- (r1.north -| tt-2-3);
+\end{tikzpicture}
+\end{document}

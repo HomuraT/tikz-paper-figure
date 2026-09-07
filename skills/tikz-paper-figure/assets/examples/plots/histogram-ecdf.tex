@@ -1,0 +1,35 @@
+% Candidate 11: two dataset-statistics panels as a compound figure with (a)/(b) letters in the titles.
+% (a) histogram of a small-integer statistic: one bar per integer, bars touching, a single fill, y from zero,
+%     the count axis kept because the shape is the message and no value will be quoted.
+% (b) empirical cumulative distribution of a heavy-tailed statistic per system: step lines on a log x axis,
+%     y = cumulative fraction, direct labels at the line ends; no bin width to choose, all the data shown.
+% Two separate axis environments placed with name/at, not a groupplot: a groupplot cannot switch one panel to a
+% log axis. The panel title names the y quantity, so no y label competes with it at the top left.
+% (Wilke, Visualizing distributions I and II.)
+\documentclass[10pt,tikz,border=2pt]{standalone}
+\usepackage{plotfig}
+\begin{document}
+\begin{tikzpicture}
+% ------------------------------------------------------------------ (a) histogram
+\begin{axis}[paper, name=hist, width=4.6cm, height=3.2cm,
+  title={\plab{a} queries by tables joined}, xlabel={tables joined},
+  ybar, bar width=0.30cm, ymin=0, ymax=3200, ytick={0,1000,2000,3000},
+  xmin=0.4, xmax=8.6, xtick={1,...,8}, x tick label style={text=ink}]
+\addplot[fill=kept, draw=none] coordinates {(1,1010) (2,2890) (3,2410) (4,1620) (5,930) (6,470) (7,210) (8,120)};
+\end{axis}
+% ------------------------------------------------------------------ (b) ECDF
+\begin{axis}[paper, width=4.6cm, height=3.2cm, at={($(hist.east)+(1.3cm,0)$)}, anchor=west,
+  title={\plab{b} cumulative fraction of queries}, xlabel={query length (tokens)},
+  xmode=log, log ticks x, xmin=8, xmax=1200, xtick={10,100,1000},
+  ymin=0, ymax=1, ytick={0,0.5,1}, yticklabels={0,0.5,1}]
+\addplot[kept, ecdf] coordinates {(8,0) (12,0.06) (18,0.17) (27,0.34) (40,0.53) (60,0.69) (90,0.82) (135,0.91) (200,0.96) (300,0.985) (450,0.996) (700,1)};
+\addplot[addc, ecdf] coordinates {(8,0) (12,0.03) (18,0.09) (27,0.20) (40,0.35) (60,0.52) (90,0.68) (135,0.80) (200,0.89) (300,0.95) (450,0.98) (700,0.995) (1000,1)};
+\addplot[dbA, ecdf] coordinates {(8,0) (12,0.10) (18,0.26) (27,0.46) (40,0.64) (60,0.78) (90,0.88) (135,0.94) (200,0.97) (300,0.99) (450,1)};
+% every ECDF ends at 1, so line-end labels collide: name the curves where they are apart, above-left of the
+% leftmost step, below-right of the rightmost, and at the end only for the one that reaches 1 last but one
+\node[dl, text=dbA, anchor=east] at (axis cs:39,0.70) {System B};
+\node[dl, text=kept, anchor=north west, yshift=-1pt] at (axis cs:700,1) {Ours};
+\node[dl, text=addctext] at (axis cs:95,0.50) {System A};
+\end{axis}
+\end{tikzpicture}
+\end{document}

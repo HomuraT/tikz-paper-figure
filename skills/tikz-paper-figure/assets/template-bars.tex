@@ -1,0 +1,40 @@
+% Benchmark bar-panel skeleton. Copy next to cardfig.sty, rename, fill the rows best first.
+% Faster: keep the numbers in a CSV and run
+%   python <skill>/scripts/bars_from_csv.py results.csv --ours "Ours" --out figures/<name>.tex
+% which writes this whole file, sorted, with the lengths below computed from the data.
+% Build:  python <skill>/scripts/build_figure.py <name>.tex
+% Include: \includegraphics{<name>.pdf} with no width option.
+%
+% Comment block for the paper repository goes here: which table the numbers come from, which metric each
+% panel shows, why the blue system is the one singled out.
+%
+% Revision contract: rows, values, icons and panel order follow the CSV or the table they come from, and the
+% lengths below adapt to them. Keep the colours (blue = ours, grey = the rest), the shared scale and the
+% best-first order unless the rows are an ordered variable. Never change a number by hand; fix the CSV and rerun.
+\documentclass[10pt,tikz,border=1pt]{standalone}
+\usepackage{cardfig}
+% Width budget at 5.5in text width: cols*\barpanelw + (cols-1)*\barcolgap <= 13.8cm.
+\setlength{\barpanelw}{6.6cm}        % two columns; 4.2cm for three columns
+\setlength{\barcolgap}{0.6cm}
+\setlength{\barnamew}{1.6cm}         % fit the longest system name, about 0.115cm per character
+\setlength{\barpanelpitch}{2.75cm}   % \bartitlegap + rows*\barrowpitch + 0.5cm (six rows here)
+\renewcommand{\barmax}{100}          % value that fills the track; 1 for scores in [0,1]
+\begin{document}
+\begin{tikzpicture}
+% ---- grid position is {col}{row}, zero-based; rows go best first; [ours] paints the bar blue
+\begin{barpanel}{0}{0}{Benchmark A}
+  \barrow{System one}{\iconletter{S}}{73.0}
+  \barrow[ours]{Ours}{\iconletter{O}}{70.0}
+  \barrow{System two}{\iconfa[addc]{sun}}{67.5}
+  \barrow{System three}{}{46.2}
+\end{barpanel}
+\begin{barpanel}{1}{0}{Benchmark B}
+  \barrow[ours]{Ours}{\iconletter{O}}{88.3}
+  \barrow{System one}{\iconletter{S}}{84.6}
+  \barrow{System two}{\iconfa[addc]{sun}}{83.4}
+  \barrow{System three}{}{82.7}
+\end{barpanel}
+% ---- a panel on another scale keeps its own maximum: \begin{barpanel}[10]{0}{1}{Latency (s)} ...
+% ---- a printed label that differs from the number: \barrow{System one}{}{88.3}[88.3$^\dagger$]
+\end{tikzpicture}
+\end{document}

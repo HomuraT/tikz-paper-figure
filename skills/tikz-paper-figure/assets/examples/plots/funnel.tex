@@ -1,0 +1,32 @@
+% funnel: yield of a dataset-construction pipeline as horizontal bars, one per stage, in process order from top
+% to bottom and never sorted by value (an ordered variable keeps its order; Wilke, Visualizing amounts). Every
+% bar from zero, the released stage in blue, the count at the bar end and, after it in small grey, the share kept
+% from the previous stage. A Sankey (flows.tex) is the alternative when items branch or merge between stages.
+\documentclass[10pt,tikz,border=2pt]{standalone}
+\usepackage{plotfig}
+\begin{document}
+\begin{tikzpicture}
+\begin{axis}[paper, width=6cm, height=2.3cm, xbars labelled,
+  xbar, bar width=0.25cm, xmax=48200, point meta=x,   % xbar labels read y (the row) unless point meta says x
+  /pgf/number format/precision=0, /pgf/number format/fixed zerofill=false,   % counts, not scores
+  ytick={1,...,6}, yticklabels={released, verified, annotated, passed filters, deduplicated, collected},
+  y tick label style={text=ink, font=\fontsize{7}{8}\selectfont},
+  ymin=0.4, ymax=6.6,
+  % the share is a text column of the table, read as written ({} leaves a row without one)
+  visualization depends on={value \thisrow{s} \as \share},
+  nodes near coords={\pgfmathprintnumber{\pgfplotspointmeta}\hspace{2.5pt}{\fontsize{5.2}{5.5}\selectfont\color{black!55}\share}}]
+\addplot[fill=black!30, draw=none, bar shift=0pt] table[x=v, y=row] {
+v row s
+48200 6 {}
+31050 5 64\%
+12400 4 40\%
+4120 3 33\%
+3215 2 78\%
+};
+\addplot[fill=barblue, draw=none, bar shift=0pt, every node near coord/.append style={text=barblue}] table[x=v, y=row] {
+v row s
+2980 1 93\%
+};
+\end{axis}
+\end{tikzpicture}
+\end{document}

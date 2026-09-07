@@ -1,0 +1,27 @@
+% Candidate 10: dot plot for values that all lie close together (every system between 84 and 92). Bars from
+% zero would all be nearly the same length and the eye would go to their middles; dots on an axis cut to the
+% data range show the differences. Rows sorted by value, ours in blue, the value printed beside every dot so
+% the truncated axis cannot mislead. (Wilke, Visualizing amounts: dot plots.)
+\documentclass[10pt,tikz,border=2pt]{standalone}
+\usepackage{plotfig}
+\begin{document}
+\begin{tikzpicture}
+\begin{axis}[paper, width=5.4cm, height=2.9cm,
+  xmin=82, xmax=94, xtick={82,84,...,94}, xlabel={exact match (\%)},
+  xmajorgrids, y axis hidden, axis x line*=bottom,
+  ytick={1,...,8}, yticklabels={System F, System E, System D, System C, System B, System A, Prior best, Ours},
+  y tick label style={text=ink, font=\fontsize{7}{8}\selectfont},
+  ymin=0.4, ymax=8.6]
+\addplot[only marks, mark=*, mark size=2.1pt, black!45] coordinates {(84.6,1) (85.9,2) (86.7,3) (87.4,4) (88.2,5) (89.5,6) (90.1,7)};
+\addplot[only marks, mark=*, mark size=2.1pt, barblue] coordinates {(91.8,8)};
+\node[dl, mono, text=black!70, xshift=2.5pt] at (axis cs:84.6,1) {84.6};
+\node[dl, mono, text=black!70, xshift=2.5pt] at (axis cs:85.9,2) {85.9};
+\node[dl, mono, text=black!70, xshift=2.5pt] at (axis cs:86.7,3) {86.7};
+\node[dl, mono, text=black!70, xshift=2.5pt] at (axis cs:87.4,4) {87.4};
+\node[dl, mono, text=black!70, xshift=2.5pt] at (axis cs:88.2,5) {88.2};
+\node[dl, mono, text=black!70, xshift=2.5pt] at (axis cs:89.5,6) {89.5};
+\node[dl, mono, text=black!70, xshift=2.5pt] at (axis cs:90.1,7) {90.1};
+\node[dl, mono, text=barblue, xshift=2.5pt] at (axis cs:91.8,8) {91.8};
+\end{axis}
+\end{tikzpicture}
+\end{document}

@@ -1,0 +1,66 @@
+% Example 3: two cards, input and output of one step, read through the stage arrow. The figure does not fill
+% the text width (2 x 4.8cm + 0.95cm = 10.55cm of the 13.8cm budget), which is fine for a two-card figure.
+% Card 1 (Input): the question as a document page with the spans to ground in orange, and the schema as two
+% teal tables joined by a foreign key. Card 2 (Output): the generated SQL in a code box, the tokens the spans
+% become in orange, and the rows it returns in a blue-headed table under an "execute" arrow.
+% The legend spans both cards (even card count, so no middle card to centre under).
+% Build:  python <skill>/scripts/build_figure.py io-two-cards.tex
+\documentclass[10pt,tikz,border={1pt 3.5pt 3pt 1.5pt}]{standalone}
+\usepackage{cardfig}
+\setlength{\cardw}{4.8cm}
+\setlength{\cardh}{4.65cm}
+\setlength{\cardgap}{0.95cm}
+\renewcommand{\legsep}{\hspace{0.3cm}}   % four legend items have to fit inside the width of the two cards
+\begin{document}
+\begin{tikzpicture}[remember picture]
+\cardpanels{2}
+\cardhead{P1}{Input}   \cardicon{P1}{sign-in-alt}
+\cardhead{P2}{Output}  \cardicon{P2}{sign-out-alt}
+\cardfoot{P1}{a question over a two-table schema}
+\cardfoot{P2}{the SQL and the rows it returns}
+\cardstage{P1}{P2}{generate}
+% ================= card 1: the question above, the schema below
+\docpage[text width=3.85cm][comment-dots]{q}{$(P1.north west)+(0.3cm,-0.9cm)$}{QUESTION}{%
+  Which \tikzmarknode[hl]{m1}{employees} work in \tikzmarknode[hl]{m2}{R\&D}?}
+\dbicon[0.72]{$(P1.north west)+(0.3cm,-2.54cm)$}{dbA}
+\node[tname, text=dbA, anchor=south west] at ($(P1.north west)+(0.58cm,-2.5cm)$) {emp};
+\matrix[tblA, anchor=north west, column 1/.style={nodes={text width=0.3cm}}, column 2/.style={nodes={text width=0.65cm}}, column 3/.style={nodes={text width=0.45cm}}]
+  at ($(P1.north west)+(0.3cm,-2.58cm)$) (temp) {
+  id & name & unit \\
+  7 & Ada & 2 \\
+  9 & Bob & 2 \\
+};
+\boxshadow[]{temp}
+\node[tname, text=dbA, anchor=south east] at ($(P1.north east)+(-0.3cm,-2.5cm)$) (tun) {unit};
+\dbicon[0.72]{$(tun.south west)+(-0.28cm,-0.04cm)$}{dbA}
+\matrix[tblA, anchor=north east, column 1/.style={nodes={text width=0.3cm}}, column 2/.style={nodes={text width=0.65cm}}]
+  at ($(P1.north east)+(-0.3cm,-2.58cm)$) (tunit) {
+  id & name \\
+  2 & R\&D \\
+  3 & Ops \\
+};
+\boxshadow[]{tunit}
+\draw[fk] (temp-1-3.east) -- (tunit-1-1.west);
+% ================= card 2: the SQL above, the rows it returns below
+\node[grp, anchor=south west] at ($(P2.north west)+(0.3cm,-0.97cm)$) {{\color{kept}\faIcon{code}}\ sql};
+\node[code, anchor=north west, text width=3.85cm] at ($(P2.north west)+(0.3cm,-1.02cm)$) (s) {%
+  \textbf{SELECT} \tikzmarknode[hl]{s1}{e.name}\\
+  \textbf{FROM} emp e\\
+  \textbf{JOIN} unit u \textbf{ON} e.unit = u.id\\
+  \textbf{WHERE} u.name = \tikzmarknode[hl]{s2}{\textquotesingle R\&D\textquotesingle}};
+\matrix[tblK, anchor=north, column 1/.style={nodes={text width=0.7cm}}]
+  at ($(P2.north)+(0,-3.05cm)$) (r) {
+  name \\
+  Ada \\
+  Bob \\
+};
+\boxshadow[]{r}
+\draw[obj] (s.south -| r.north) -- node[caplab, right] {execute} (r.north);
+% ================= legend spanning both cards
+\cardlegendspan{P1}{P2}{%
+  \legswatch{draw=dbA, fill=dbAfill} schema table\legsep
+  \legswatch{draw=kept, fill=keptfill} SQL and result\legsep
+  \legswatch{hl} question span and its SQL token\legsep
+  \legline{fk} foreign key}
+\end{tikzpicture}
+\end{document}

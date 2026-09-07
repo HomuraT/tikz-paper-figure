@@ -1,0 +1,43 @@
+% Candidate 5: dumbbell (paired dot) plot. One row per benchmark, grey dot = baseline, blue dot = ours, the gain
+% printed after the pair; rows sorted by gain, a regression in orange. The whisker at the blue dot is the 95%
+% CI of the gain (ours minus baseline), not of our score: a whisker that reaches back to the grey dot means the
+% gain does not exclude zero. Two separate CIs compared by eye would not say that (Wilke, Visualizing the
+% uncertainty of point estimates). Replaces a grouped bar chart when the question is "how much did we gain,
+% where"; with more than about ten rows, or when the message is a systematic shift, use parity.tex instead.
+\documentclass[10pt,tikz,border=2pt]{standalone}
+\usepackage{plotfig}
+\begin{document}
+\begin{tikzpicture}
+\begin{axis}[paper, width=6.2cm, height=4cm,
+  xmin=20, xmax=100, xtick={20,40,60,80,100}, xlabel={score (\%)},
+  xmajorgrids, y axis hidden, axis x line*=bottom,
+  ytick={1,...,7}, yticklabels={Summaries, Chat, Retrieval, Long context, Math, Code, Agents},
+  y tick label style={text=ink, font=\fontsize{7}{8}\selectfont},
+  ymin=0.4, ymax=7.6]
+% connectors first so the dots sit on top
+\draw[black!22, line width=1.6pt] (axis cs:28,7) -- (axis cs:51,7);
+\draw[black!22, line width=1.6pt] (axis cs:45,6) -- (axis cs:63,6);
+\draw[black!22, line width=1.6pt] (axis cs:52,5) -- (axis cs:66,5);
+\draw[black!22, line width=1.6pt] (axis cs:60,4) -- (axis cs:71,4);
+\draw[black!22, line width=1.6pt] (axis cs:66,3) -- (axis cs:74,3);
+\draw[black!22, line width=1.6pt] (axis cs:78,2) -- (axis cs:82,2);
+\draw[addc!35, line width=1.6pt] (axis cs:80,1) -- (axis cs:81,1);
+\addplot[only marks, mark=*, mark size=2.1pt, black!45] coordinates {(28,7) (45,6) (52,5) (60,4) (66,3) (78,2) (81,1)};
+\addplot[only marks, mark=*, mark size=2.1pt, barblue,
+  error bars/.cd, x dir=both, x explicit, error bar style={barblue, line width=0.6pt}, error mark options={rotate=90, barblue, mark size=1.3pt}]
+  coordinates {(51,7) +- (3.8,0) (63,6) +- (3.1,0) (66,5) +- (2.6,0) (71,4) +- (2.4,0) (74,3) +- (2.0,0) (82,2) +- (1.8,0)};
+\addplot[only marks, mark=*, mark size=2.1pt, addc,
+  error bars/.cd, x dir=both, x explicit, error bar style={addc, line width=0.6pt}, error mark options={rotate=90, addc, mark size=1.3pt}]
+  coordinates {(80,1) +- (1.5,0)};
+\node[dl, mono, text=barblue] at (axis cs:55.8,7) {+23};
+\node[dl, mono, text=barblue] at (axis cs:67.1,6) {+18};
+\node[dl, mono, text=barblue] at (axis cs:69.6,5) {+14};
+\node[dl, mono, text=barblue] at (axis cs:74.4,4) {+11};
+\node[dl, mono, text=barblue] at (axis cs:77,3) {+8};
+\node[dl, mono, text=barblue] at (axis cs:84.8,2) {+4};
+\node[dl, mono, text=addc] at (axis cs:83.5,1) {$-$1};
+\node[anchor=south west, font=\fontsize{6.5}{7}\selectfont, text=black!70, inner sep=0pt] at (rel axis cs:0,1) [yshift=4pt]
+  {\tikz[baseline=-0.6ex]\fill[black!45] circle (1.5pt);\, baseline\hspace{0.35cm}\tikz[baseline=-0.6ex]\fill[barblue] circle (1.5pt);\, ours, whisker = 95\% CI of the gain};
+\end{axis}
+\end{tikzpicture}
+\end{document}

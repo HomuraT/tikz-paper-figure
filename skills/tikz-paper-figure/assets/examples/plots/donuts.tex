@@ -1,0 +1,27 @@
+% Candidate 8: composition donuts, one per dimension of a dataset, the total in the hole, labels outside with
+% percentages. Slices in the palette order, white gaps between slices. Pure TikZ, no pgfplots.
+\documentclass[10pt,tikz,border=2pt]{standalone}
+\usepackage{plotfig}
+% \donut{position}{centre text}{title}{value/colour/label, ...}   values in percent, drawn clockwise from the top
+\newcommand{\donut}[4]{%
+  \begin{scope}[shift={(#1)}]
+    \xdef\dA{90}
+    \foreach \v/\c/\l in {#4} {
+      \pgfmathsetmacro{\dB}{\dA-\v*3.6}
+      \fill[\c, draw=white, line width=1pt] (\dA:0.62) arc (\dA:\dB:0.62) -- (\dB:1.0) arc (\dB:\dA:1.0) -- cycle;
+      \pgfmathsetmacro{\dM}{(\dA+\dB)/2}
+      \pgfmathsetmacro{\dX}{cos(\dM)}
+      \ifdim\dX pt<0pt \def\anc{east}\else \def\anc{west}\fi
+      \node[font=\fontsize{6.5}{7}\selectfont, text=ink, anchor=\anc, inner sep=1pt] at (\dM:1.12) {\l\ {\color{black!55}\v\%}};
+      \xdef\dA{\dB}
+    }
+    \node[font=\fontsize{6.5}{7}\selectfont, text=ink, align=center] at (0,0) {#2};
+    \node[font=\fontsize{8}{9}\selectfont\bfseries, text=ink, anchor=south] at (0,1.25) {#3};
+  \end{scope}}
+\begin{document}
+\begin{tikzpicture}
+\donut{0,0}{9.7k\\[-1pt]{\color{black!55}queries}}{Domain}{34/kept/Retail, 26/dbA/Health, 22/addc/Finance, 18/dbB/Legal}
+\donut{4.6,0}{9.7k\\[-1pt]{\color{black!55}queries}}{Query type}{45/kept/Lookup, 30/dbA/Aggregate, 25/addc/Join}
+\donut{9.2,0}{312\\[-1pt]{\color{black!55}tables}}{Difficulty}{40/kept/Easy, 38/dbA/Medium, 22/addc/Hard}
+\end{tikzpicture}
+\end{document}

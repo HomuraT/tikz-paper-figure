@@ -1,0 +1,72 @@
+% mixed-panels: three panels of three chart types in one row, answering one question together (how good is the
+% system, how does it scale, how does it transfer): (a) grouped bars with printed values, (b) a line chart on a
+% log x axis with direct labels and a reference line, (c) an annotated heat map. The panels are separate axis
+% environments built in one standalone and placed with name/at, so their baselines and tops coincide and the
+% letters are set in the figure's own font, not bold; the same system keeps its colour in (a) and (b), and one
+% legend serves the figure. (Wilke, Multi-panel figures)
+\documentclass[10pt,tikz,border=2pt]{standalone}
+\usepackage{plotfig}
+\begin{document}
+\begin{tikzpicture}
+% ------------------------------------------------------------------ (a) grouped bars, values printed
+% the legend sits inside the plot area at the top, under the title, where no bar reaches (ymax leaves the room)
+\begin{axis}[paper, name=a, width=3.8cm, height=3.2cm, bars labelled,
+  title={\plab{a} accuracy (\%)},
+  ybar, bar width=0.3cm, ymin=0, ymax=100,
+  legend top, legend style={at={(0.5,1)}, anchor=north, yshift=-1pt},
+  symbolic x coords={Retrieval, Code, Math}, xtick=data,
+  x tick label style={text=ink, font=\fontsize{7}{8}\selectfont},
+  enlarge x limits=0.22]
+\addplot[fill=black!30, draw=none] coordinates {(Retrieval,58.2) (Code,51.3) (Math,44.1)};
+\addplot[fill=barblue, draw=none] coordinates {(Retrieval,74.1) (Code,72.5) (Math,61.7)};
+\legend{Baseline, Ours}
+\end{axis}
+% ------------------------------------------------------------------ (b) lines on a log x axis
+\begin{axis}[paper, name=b, width=4cm, height=3.2cm, at={($(a.south east)+(1.35cm,0)$)}, anchor=south west,
+  title={\plab{b} accuracy vs data}, xlabel={training examples},
+  xmode=log, log ticks x, xtick={100,1000,10000},
+  ymin=20, ymax=90, ytick={20,40,60,80},
+  % explicit xmax, not enlarge x limits: the direct labels must stay inside this panel's width, clear of (c)
+  xmin=70, xmax=250000]
+\addplot[ref, forget plot] coordinates {(100,86) (30000,86)} node[dl, text=black!55, yshift=2pt] {human};
+\addplot[kept, mark=*, mark size=1.3pt] coordinates {(100,42) (300,55) (1000,66) (3000,74) (10000,79) (30000,82)} node[dl, text=kept, yshift=-2pt] {Ours};
+\addplot[black!45, mark=triangle*, mark size=1.5pt] coordinates {(100,32) (300,41) (1000,52) (3000,61) (10000,67) (30000,71)} node[dl, text=black!55] {Baseline};
+\end{axis}
+% ------------------------------------------------------------------ (c) transfer matrix, values printed, so no colour bar
+\begin{axis}[paper, name=c, width=3.2cm, height=3.2cm, at={($(b.south east)+(1.35cm,0)$)}, anchor=south west,
+  title={\plab{c} transfer (\%)},
+  axis line style={draw=none}, tick style={draw=none}, ymajorgrids=false,
+  xtick=data, ytick=data, xticklabels={news, code, chat, math}, yticklabels={news, code, chat, math},
+  x tick label style={text=ink, font=\fontsize{7}{8}\selectfont, yshift=1pt}, y tick label style={text=ink, font=\fontsize{7}{8}\selectfont},
+  xlabel={tested on}, ylabel={trained on}, y dir=reverse, enlargelimits=false,
+  colormap name=paperblues, point meta min=0, point meta max=100,
+  visualization depends on={value \thisrow{v} \as \cellv},
+  nodes near coords={\pgfmathtruncatemacro{\ci}{\cellv}\ifnum\ci>55 \color{white}\fi\cellv},
+  every node near coord/.append style={anchor=center, font=\fontsize{6.2}{6}\selectfont\ttfamily, text=black!80}]
+\addplot[matrix plot*, mesh/cols=4, point meta=explicit] table[meta=v] {
+x y v
+0 0 91
+1 0 21
+2 0 57
+3 0 30
+0 1 25
+1 1 93
+2 1 33
+3 1 52
+0 2 61
+1 2 31
+2 2 86
+3 2 34
+0 3 29
+1 3 49
+2 3 36
+3 3 89
+};
+\pgfplotsinvokeforeach{0.5,1.5,2.5}{
+  \draw[white, line width=1pt] (axis cs:#1,-0.5) -- (axis cs:#1,3.5);
+  \draw[white, line width=1pt] (axis cs:-0.5,#1) -- (axis cs:3.5,#1);}
+\pgfplotsinvokeforeach{0,1,2,3}{
+  \draw[ink, line width=0.6pt] (axis cs:#1-0.5,#1-0.5) rectangle (axis cs:#1+0.5,#1+0.5);}
+\end{axis}
+\end{tikzpicture}
+\end{document}

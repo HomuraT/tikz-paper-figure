@@ -1,0 +1,6 @@
+system,icon,Math Word Problems,Code Repair,Table QA,Latency (s)
+Ours,letter:O,84.2,61.5,77.8,3.4
+Nimbus,fa:cloud:dbA,86.9,58.0,71.3,5.1
+Corvid 2,fa:crow:dbB,79.5,64.8,74.0,2.7
+Halo-7B,letter:H:black!60,72.1,49.3,66.5,1.9
+Pico,letter:P:addc,63.7,41.0,58.2,1.2

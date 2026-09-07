@@ -1,0 +1,34 @@
+% ablation: leave-one-out ablation as horizontal bars. The full model on top in blue, every "w/o X" variant in
+% grey sorted by score (variants are unordered, so they are sorted by value; Wilke, Visualizing amounts), the
+% score at the bar end and the drop against the full model in orange after it, one dashed ref line at the full
+% score so every gap is read against the same line. grouped-bars.tex compares systems across benchmarks; this
+% compares variants of one system on one score. The numbers carry a white fill, so the ref line stops at them.
+\documentclass[10pt,tikz,border=2pt]{standalone}
+\usepackage{plotfig}
+\begin{document}
+\begin{tikzpicture}
+\begin{axis}[paper, width=6cm, height=2.7cm, xbars labelled,
+  xbar, bar width=0.25cm, xmax=80, point meta=x,   % xbar labels read y (the row) unless point meta says x
+  ytick={1,...,7}, yticklabels={w/o retrieval, w/o reranking, w/o self-check, w/o long context, w/o tool calls, w/o fine-tuning, Full model},
+  y tick label style={text=ink, font=\fontsize{7}{8}\selectfont},
+  ymin=0.4, ymax=7.6,
+  every node near coord/.append style={fill=white, inner xsep=1.5pt, inner ysep=0.4pt, xshift=1pt}]
+% the reference line first, so the bars and the white-filled numbers sit on top of it
+\draw[ref] (axis cs:78.4,0.4) -- (axis cs:78.4,6.6);
+\addplot[fill=barblue, draw=none, bar shift=0pt, every node near coord/.append style={text=barblue}] coordinates {(78.4,7)};
+% the drop is a text column of the table, read as written and printed after the score
+\addplot[fill=black!30, draw=none, bar shift=0pt,
+  visualization depends on={value \thisrow{d} \as \dropv},
+  nodes near coords={\pgfmathprintnumber{\pgfplotspointmeta}\hspace{2pt}\textcolor{addctext}{\textminus\dropv}}]
+  table[x=v, y=row] {
+v row d
+75.2 6 3.2
+73.9 5 4.5
+71.6 4 6.8
+69.3 3 9.1
+66.1 2 12.3
+58.7 1 19.7
+};
+\end{axis}
+\end{tikzpicture}
+\end{document}

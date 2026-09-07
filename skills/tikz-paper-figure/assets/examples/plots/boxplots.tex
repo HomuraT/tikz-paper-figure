@@ -1,0 +1,26 @@
+% Candidate 12: box plots for the spread of a per-item score across systems (here F1 per test schema,
+% n = 51 schemas per box). Horizontal because the row names are long; rows sorted by median, ours on top in
+% blue, the rest in grey; box = quartiles, whiskers to the last value within 1.5 IQR, dots = the items beyond.
+% Replaces "mean +- error bar", which shows neither the spread nor the skew. With fewer than about 10 items per
+% group draw the items as jittered dots instead. (Wilke, Visualizing many distributions at once.)
+\documentclass[10pt,tikz,border=2pt]{standalone}
+\usepackage{plotfig}
+\begin{document}
+\begin{tikzpicture}
+\begin{axis}[paper, width=6cm, height=3.1cm,
+  xmin=0, xmax=100, xtick={0,20,...,100}, xlabel={F1 per schema (\%)},
+  xmajorgrids, y axis hidden, axis x line*=bottom,
+  ytick={1,...,5}, yticklabels={Baseline, System C, System B, System A, Ours},
+  y tick label style={text=ink, font=\fontsize{7}{8}\selectfont},
+  ymin=0.4, ymax=5.6, boxes]
+\addplot[boxplot prepared={draw position=1, lower whisker=12, lower quartile=31, median=42, upper quartile=55, upper whisker=84}] coordinates {};
+\addplot[boxplot prepared={draw position=2, lower whisker=20, lower quartile=40, median=51, upper quartile=62, upper whisker=90}] coordinates {};
+\addplot[boxplot prepared={draw position=3, lower whisker=26, lower quartile=47, median=58, upper quartile=68, upper whisker=93}] coordinates {};
+\addplot[boxplot prepared={draw position=4, lower whisker=33, lower quartile=54, median=64, upper quartile=73, upper whisker=95}] coordinates {};
+\addplot[box ours, boxplot prepared={draw position=5, lower whisker=41, lower quartile=63, median=74, upper quartile=82, upper whisker=98}] coordinates {};
+% items beyond the whiskers, drawn as a separate plot so their positions are explicit
+\addplot[only marks, mark=*, mark size=0.9pt, black!45] coordinates {(3,1) (6,1) (97,1) (8,2) (99,2) (10,3) (14,4) (100,4)};
+\addplot[only marks, mark=*, mark size=0.9pt, barblue] coordinates {(21,5) (27,5)};
+\end{axis}
+\end{tikzpicture}
+\end{document}
