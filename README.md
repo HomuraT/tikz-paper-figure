@@ -10,7 +10,7 @@ Paper figures in TikZ and pgfplots that share one style: the teaser cards of Fig
 
 ![Two panels of score curves with confidence bands and labels at the line ends](skills/tikz-paper-figure/assets/examples/plots/curves-bands.png)
 
-Cards for a schematic, panels for a leaderboard, curves for a trend. All 36 examples are in the [gallery](skills/tikz-paper-figure/references/gallery.md), each with the question it answers and its source file.
+Cards for a schematic, panels for a leaderboard, curves for a trend. The other 33 examples are in the [gallery](#gallery) below.
 
 ## What is in the box
 
@@ -74,6 +74,12 @@ The skill picks the chart from the question the paragraph asks, copies the neare
 | Python | 3.9 or later; Pillow only for `gallery_sheet.py` |
 
 Tested on Windows 11 with TeX Live 2025, Python 3.13 and Claude Code. `SKILL.md` follows the [Agent Skills](https://agentskills.io/specification) format, so other agents that read that format should load it; only Claude Code has been tried.
+
+## Gallery
+
+Every example on one page: [`references/gallery.md`](skills/tikz-paper-figure/references/gallery.md) shows each render with the question it answers, its source file and the recipe to read. The contact sheet below holds the same 36 figures in one image, grouped by template; `gallery_sheet.py` regenerates it after an example is added.
+
+![Contact sheet of the 36 example renders, grouped by template](skills/tikz-paper-figure/assets/examples/gallery.png)
 
 ## Examples and tests
 

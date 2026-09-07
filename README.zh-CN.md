@@ -10,7 +10,7 @@
 
 ![两块分数曲线面板，带置信带，系列名标在线尾](skills/tikz-paper-figure/assets/examples/plots/curves-bands.png)
 
-卡片画示意，面板画榜单，曲线画趋势。36 个范例都在[图库](skills/tikz-paper-figure/references/gallery.md)里，每张写明它回答什么问题、源码在哪。
+卡片画示意，面板画榜单，曲线画趋势。其余 33 个范例见下文[图库](#图库)。
 
 ## 内容
 
@@ -74,6 +74,12 @@ skill 按段落要回答的问题选图，复制最近的范例，编译，读�
 | Python | 3.9 或更新；Pillow 只有 `gallery_sheet.py` 用到 |
 
 在 Windows 11、TeX Live 2025、Python 3.13 和 Claude Code 上测过。`SKILL.md` 遵循 [Agent Skills](https://agentskills.io/specification) 格式，读这种格式的其他 agent 应该也能加载，只试过 Claude Code。
+
+## 图库
+
+全部范例在一页里：[`references/gallery.md`](skills/tikz-paper-figure/references/gallery.md) 给每张渲染图配上它回答的问题、源码路径和该读的配方。下面这张拼图是同一批 36 张图的总览，按模板分组；新增范例后用 `gallery_sheet.py` 重新生成。
+
+![36 个范例渲染图的拼图，按模板分组](skills/tikz-paper-figure/assets/examples/gallery.png)
 
 ## 范例与测试
 
