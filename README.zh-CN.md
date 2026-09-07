@@ -93,8 +93,14 @@ skill 按段落要回答的问题选图，复制最近的范例，编译，读�
 - [tikz-diagrams-skill](https://github.com/Patrick-Healy/tikz-diagrams-skill)：从文字、截图和手绘到 TikZ，带编译、渲染、检查脚本。
 - [scientific-plotting-skill](https://github.com/dazhiyang/scientific-plotting-skill)：ggplot2 与 plotnine 的出版规范，只有一个 `SKILL.md`。
 
+## 赞赏
+
+项目免费使用。如果这套模板帮你省了一个下午，欢迎用下面的微信赞赏码请我喝杯咖啡。
+
+<img src="docs/sponsor/wechat-reward.png" width="240" alt="微信赞赏码">
+
 ## 许可证
 
-脚本、`SKILL.md` 和参考文档采用 [MIT 许可证](LICENSE)。`skills/tikz-paper-figure/assets/` 下的全部内容（两个样式包、模板、范例源码及其渲染图）以 [CC0 1.0](LICENSE-ASSETS) 放入公有领域，论文仓库复制它们不必附带任何声明。
+脚本、`SKILL.md` 和参考文档采用 [MIT 许可证](LICENSE)。`docs/sponsor/` 下的赞赏码不在两份许可证的范围内。`skills/tikz-paper-figure/assets/` 下的全部内容（两个样式包、模板、范例源码及其渲染图）以 [CC0 1.0](LICENSE-ASSETS) 放入公有领域，论文仓库复制它们不必附带任何声明。
 
 未打包进仓库的部分：字体（Source Sans Pro、Inconsolata）和 Font Awesome 图标来自 TeX Live 宏包，各有自己的许可证。Wilke 的书是 CC BY-NC-ND 4.0，本仓库只转述其规则并链接到章节，不复制其文字或图片。

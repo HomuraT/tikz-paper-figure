@@ -93,8 +93,14 @@ The reasoning behind the style, the palette and the chart choices is in a blog p
 - [tikz-diagrams-skill](https://github.com/Patrick-Healy/tikz-diagrams-skill): TikZ from text, screenshots and sketches, with compile, render and check scripts.
 - [scientific-plotting-skill](https://github.com/dazhiyang/scientific-plotting-skill): publication rules for ggplot2 and plotnine in a single `SKILL.md`.
 
+## Support
+
+The project is free to use. If these templates saved you an afternoon, you can leave a tip through the WeChat reward code below.
+
+<img src="docs/sponsor/wechat-reward.png" width="240" alt="WeChat reward code">
+
 ## License
 
-Scripts, `SKILL.md` and the reference files are under the [MIT License](LICENSE). Everything under `skills/tikz-paper-figure/assets/` (the two style files, the templates, the example sources and their renders) is dedicated to the public domain under [CC0 1.0](LICENSE-ASSETS), so a paper repository can copy them without carrying a notice.
+Scripts, `SKILL.md` and the reference files are under the [MIT License](LICENSE). The reward code under `docs/sponsor/` is not part of either license. Everything under `skills/tikz-paper-figure/assets/` (the two style files, the templates, the example sources and their renders) is dedicated to the public domain under [CC0 1.0](LICENSE-ASSETS), so a paper repository can copy them without carrying a notice.
 
 Not bundled: the fonts (Source Sans Pro, Inconsolata) and the Font Awesome icons come from TeX Live packages under their own licenses. Wilke's book is CC BY-NC-ND 4.0; this repository paraphrases its rules and links to the chapters, and reproduces none of its text or figures.
