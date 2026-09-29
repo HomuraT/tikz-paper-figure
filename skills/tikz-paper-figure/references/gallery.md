@@ -1,17 +1,19 @@
 # Gallery: every example in this skill
 
-All fifty-four renders on one page, with the question each answers and where its source and recipe live, in
+All fifty-seven renders on one page, with the question each answers and where its source and recipe live, in
 two styles: the house style (card figures, bar panels, `plotfig.sty` data plots) and the classic style
-(`classicfig.sty`, Matplotlib's look). Paths are relative to the skill root. Open the render closest to the
-figure at hand before drawing; it is the target. `assets/examples/gallery.png` tiles the house-style renders
-into one image and `assets/examples/classic/gallery.png` the classic ones; regenerate both with
-`python scripts/gallery_sheet.py` after adding or re-rendering an example.
+(`classicfig.sty`, Matplotlib's look), plus three ontology and RDF diagrams across both. Paths are relative
+to the skill root. Open the render closest to the figure at hand before drawing; it is the target.
+`assets/examples/gallery.png` tiles the house-style renders into one image and
+`assets/examples/classic/gallery.png` the classic ones, `assets/examples/ontology/gallery.png` the three
+ontology diagrams; regenerate them with `python scripts/gallery_sheet.py`
+after adding or re-rendering an example.
 
 Contents: [Card figures](#card-figures-cardfigsty) (3) · [Bar panels](#benchmark-bar-panels-cardfigsty) (1) ·
 [Data plots](#data-plots-plotfigsty) (28): amounts, gains and paired data, trends, classifier quality,
 distributions, composition, matrices · [Composite figures](#composite-figures) (4) ·
 [Classic style](#classic-style-classicfigsty) (18): lines and points, distributions, categories and fields,
-composite figures.
+composite figures · [Ontology and RDF diagrams](#ontology-and-rdf-diagrams) (3).
 
 ## Card figures (cardfig.sty)
 
@@ -491,6 +493,39 @@ A mosaic of a tall light-off panel and two short ones (a semilog Arrhenius plot,
 regeneration event), one legend for the figure (`mpl figure legend`), the three catalysts in the same colours
 in every panel, panel letters on the title baselines, the T₅₀ values in a key in an empty corner.
 
+## Ontology and RDF diagrams
+
+Three published notations for the three things a knowledge-graph or ontology paper has to show. Two are
+plain TikZ on `classicfig.sty` (classic style), one uses cardfig's class boxes and chips without the cards
+(house style). Which to open, what each notation prescribes and where it comes from, the layout rules, the
+styles and a checklist are in `references/ontology.md`. Sources are `assets/examples/ontology/<name>.tex`;
+`assets/examples/ontology/gallery.png` tiles the three.
+
+#### rdf-triples: the triples about one resource
+
+![rdf-triples](../assets/examples/ontology/rdf-triples.png)
+
+RDF data in the W3C convention: IRIs in ovals (the resource the figure is about with a thicker one), literals
+in rectangles with their language tag or datatype, a blank node for an n-ary relation (an award with its year
+and co-winner), predicates as labelled arrows, a key and the prefixes in a wheat box below. Classic style.
+
+#### vowl-schema: an ontology's classes and properties
+
+![vowl-schema](../assets/examples/ontology/vowl-schema.png)
+
+A TBox in VOWL 2, as WebVOWL draws it: class circles sized by instance count, an external class in dark blue,
+object properties as labels on their edges, datatype properties in green ending in yellow datatypes, a dashed
+"Subclass of" edge, a loop for a property within one class, VOWL's own colours. Classic style.
+
+#### tbox-abox: a schema and the individuals that instantiate it
+
+![tbox-abox](../assets/examples/ontology/tbox-abox.png)
+
+Classes as name-only boxes, datatype properties as arrows to datatypes, subclasses as open triangles in the
+TBox; individuals in the ABox below a faint rule, each in the column of its class with a vertical rdf:type
+link, each assertion routed as the axiom it instantiates. Black outlines on tab20's light shades (class
+blue, individual orange, datatype green). House style (cardfig's fonts).
+
 ## Regenerating a render
 
 ```
@@ -499,7 +534,8 @@ python scripts/gallery_sheet.py
 ```
 
 The first command rebuilds one example and writes its PNG next to the source; the second retiles both contact
-sheets (`--style house` or `--style classic` for one). Generated examples are rebuilt from their CSV first
+sheets (`--style house`, `--style classic` or `--style ontology` for one); the ontology examples have their own
+sheet and build with `--png-dir assets/examples/ontology`. Generated examples are rebuilt from their CSV first
 (`flows_from_csv.py`, `treemap_from_csv.py`, `bars_from_csv.py`). Classic examples build the same way
 (`--png-dir assets/examples/classic`; the build runs in the figure's directory, so `data/*.dat` resolves).
 Their data come from `data/make_data.py` (numpy only, fixed seeds; it writes the `.dat` files beside itself and

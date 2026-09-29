@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.2.1 (2026-09-29)
+
+Ontology and RDF diagrams.
+
+- Three examples in `assets/examples/ontology/`, each in a published notation: `rdf-triples` (the W3C convention for RDF graphs: IRIs in ovals, literals in rectangles, a blank node, a prefixes box) and `vowl-schema` (VOWL 2 as WebVOWL draws it, in VOWL's own colours) in the classic style, `tbox-abox` (name-only class boxes, datatype properties as arrows to datatypes, individuals under their classes with rdf:type links) in the house style.
+- `classicfig.sty`: styles `rdf iri`, `rdf focus`, `rdf literal`, `rdf blank`, `rdf edge`, `rdf pred`, `rdf prefixes`, the `vowl ...` styles with VOWL's colours, `graph key` and `\graphkey`; loads DejaVu Sans Mono and `shapes.geometric`. `cardfig.sty`: the `onto ...` styles (black outlines on tab20's light shades). No existing style changed; every other example renders pixel for pixel as before.
+- Fix: `\legswatch` sets `anchor=center`; under `\cardlegend` the swatch had inherited `anchor=north` and sat half its height below the text (`io-two-cards` and `pipeline-stages` re-rendered).
+- References: `ontology.md` (which notation for which figure, the notations and their sources, layout rules, styles, checklist); an ontology section in `pitfalls.md` and `gallery.md`; `SKILL.md` section. `gallery_sheet.py` writes a third contact sheet, `assets/examples/ontology/gallery.png` (`--style ontology`). The READMEs show the contact sheets directly instead of folding them.
+
 ## 0.2.0 (2026-09-29)
 
 A second style next to the house style.

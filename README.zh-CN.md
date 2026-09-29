@@ -2,7 +2,7 @@
 
 ![二次元学术工作台：用 TikZ 与 pgfplots 将想法绘成论文配图，两种风格、54 个范例、可编辑 TeX](docs/images/repository-banner.png)
 
-用 TikZ 和 pgfplots 绘制论文配图。从卡片示意图、实验数据图到多面板组合图，提供两种风格、54 个已编译范例，以及从数据到渲染图的 agent 工作流。
+用 TikZ 和 pgfplots 绘制论文配图。从卡片示意图、实验数据图到多面板组合图，提供两种风格、57 个已编译范例，以及从数据到渲染图的 agent 工作流。
 
 [English](README.md) · [安装](#安装) · [快速上手](#快速上手) · [完整图库](skills/tikz-paper-figure/references/gallery.md)
 
@@ -10,9 +10,9 @@
 
 - 样式包。`cardfig.sty` 提供带深色标题栏、标签条、脚注带和阴影的卡片，以及基准条形面板；`plotfig.sty` 给 pgfplots 一个 `paper` 坐标轴样式，同一套字体与配色，系列名直接标在图上，柱从零起，灰色刻度，数字用正文字体。
 - 经典风格 `classicfig.sty`：把 Matplotlib 的默认参数（rcParams）搬进 pgfplots（DejaVu Sans、四边框、tab10 配色、圆角图例框），并为认真的 Matplotlib 用户常加的每一处打磨配一个键或宏：浅色网格、白边标记点、文字白色描边、区间色带、文本框、显著性括号、断轴、整张组合图共用的图例。
-- 三个模板（`template.tex`、`template-bars.tex`、`template-plot.tex`）和 54 个带渲染图的范例：统一风格（卡片与数据图共用字体配色的那一套）3 张卡片图、1 张条形面板、28 张数据图、4 张组合图；经典风格 13 张单图和 5 张组合图（拟合加残差、散点加边际分布、局部放大插图、断轴、拼图），附生成数据的 numpy 脚本。
+- 三个模板（`template.tex`、`template-bars.tex`、`template-plot.tex`）和 57 个带渲染图的范例：统一风格（卡片与数据图共用字体配色的那一套）3 张卡片图、1 张条形面板、28 张数据图、4 张组合图；经典风格 13 张单图和 5 张组合图（拟合加残差、散点加边际分布、局部放大插图、断轴、拼图），附生成数据的 numpy 脚本；另有 3 张按公开记法绘制的本体与 RDF 图（W3C RDF 图、VOWL 本体结构图、TBox 与 ABox 对照图），分属两种风格。
 - 脚本。`build_figure.py` 编译（默认 pdflatex，文件要求时用 LuaLaTeX）、清理、对照正文宽度检查尺寸并输出 PNG；`bars_from_csv.py`、`flows_from_csv.py`、`treemap_from_csv.py` 从数据生成图；`palette_check.py` 在模拟色觉缺陷下测量配色距离；`compare_sheet.py` 把两版图叠成一张对照；`gallery_sheet.py` 拼出范例总览；`check_env.py` 列出本机装了什么。
-- 参考文档。Wilke《Fundamentals of Data Visualization》的要点笔记与选图决策表、卡片元素目录、每种图一份配方、经典风格的工作流与画图技巧（整理自 Rougier《Scientific Visualization: Python + Matplotlib》和 Matplotlib 官方图库）、常见问题与修法。
+- 参考文档。Wilke《Fundamentals of Data Visualization》的要点笔记与选图决策表、卡片元素目录、每种图一份配方、经典风格的工作流与画图技巧（整理自 Rougier《Scientific Visualization: Python + Matplotlib》和 Matplotlib 官方图库）、本体图的记法与布局规则、常见问题与修法。
 - `SKILL.md`：agent 从选风格、确定内容到交付渲染图的工作流。
 
 ## 安装
@@ -80,26 +80,25 @@ skill 按论文定风格，按段落要回答的问题选图，复制最近的�
 
 点击预览查看原图。
 
-[浏览全部 54 个范例与源码 →](skills/tikz-paper-figure/references/gallery.md) 每张图都附有适用问题、源码路径和对应配方。
+[浏览全部 57 个范例与源码 →](skills/tikz-paper-figure/references/gallery.md) 每张图都附有适用问题、源码路径和对应配方。
 
 | 风格 | 范例 | 说明 |
 | --- | --- | --- |
 | 统一风格 | 36 张：卡片、条形面板、数据图与组合图 | [选图与配方](skills/tikz-paper-figure/references/gallery.md) |
 | Classic 风格 | 18 张：线与点、分布、类别与场、组合图 | [经典风格指南](skills/tikz-paper-figure/references/classic.md) |
+| 本体图 | 3 张：W3C RDF 图与 VOWL 本体结构图（经典风格）、TBox 与 ABox 对照图（统一风格） | [本体图指南](skills/tikz-paper-figure/references/ontology.md) |
 
-<details>
-<summary>展开统一风格总览 · 36 张图</summary>
+**统一风格总览 · 36 张图**
 
 ![36 个统一风格范例，按模板分组](skills/tikz-paper-figure/assets/examples/gallery.png)
 
-</details>
-
-<details>
-<summary>展开 Classic 风格总览 · 18 张图</summary>
+**Classic 风格总览 · 18 张图**
 
 ![18 个经典风格范例，按图型分组](skills/tikz-paper-figure/assets/examples/classic/gallery.png)
 
-</details>
+**本体与 RDF 图总览 · 3 张图**
+
+![3 个本体与 RDF 图范例：W3C RDF、VOWL 与类框记法](skills/tikz-paper-figure/assets/examples/ontology/gallery.png)
 
 新增范例后，用 `gallery_sheet.py` 重新生成总览图。
 

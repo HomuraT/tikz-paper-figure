@@ -1,0 +1,59 @@
+% tbox-abox: an ontology and its individuals in one figure, cardfig's class boxes and chips without the
+% cards. Laid out as the OWL notations draw a schema (Graffoo, Chowlk, VOWL): classes are name-only boxes,
+% an object property is an arrow between classes, a datatype property an arrow from its class to a datatype,
+% rdfs:subClassOf an open triangle. The fill says what a node is (class blue, individual orange, datatype or
+% literal green), every outline is black. TBox above, ABox below a faint rule: each individual sits in the
+% column of its class and is tied to it by a dotted rdf:type link, and each assertion is routed as the axiom
+% it instantiates (received left, discovered right, bornIn around the row), so the two layers read against
+% each other. Columns 0.9 | 4.4 | 7.9 | 11.2 cm; rows 0 and -1.5 (TBox), -3.4 and -4.6 (ABox).
+% Build:  python <skill>/scripts/build_figure.py tbox-abox.tex
+\documentclass[10pt,tikz,border=4pt]{standalone}
+\usepackage{cardfig}
+\begin{document}
+\begin{tikzpicture}
+% ================= TBox: row 0 superclasses and datatypes, row 1 the classes the individuals belong to
+\node[onto datatype] (gy)  at (0.9,0) {xsd:gYear};
+\classtag[onto class]{per}{4.4,0}{Person}
+\node[onto datatype] (str) at (7.7,0) {xsd:string};
+\classtag[onto class]{plc}{11.2,0}{Place}
+\classtag[onto class]{awd}{0.9,-1.5}{Award}
+\classtag[onto class]{sci}{4.4,-1.5}{Scientist}
+\classtag[onto class]{ele}{7.9,-1.5}{Element}
+\classtag[onto class]{cty}{11.2,-1.5}{City}
+\draw[onto sub] (sci) -- (per);
+\draw[onto sub] (cty) -- (plc);
+\draw[onto obj] (sci) -- node[onto lab, above] {received} (awd);
+\draw[onto obj] (sci) -- node[onto lab, above] {discovered} (ele);
+% over the class row, entering City beside its subclass arrow
+\draw[onto obj] ([xshift=-6pt]sci.north east) |- (10.1,-0.75) -| node[onto lab, pos=0.25, above] {bornIn} ([xshift=-10pt]cty.north);
+\draw[onto data] (awd) -- node[onto dlab, right] {year} (gy);
+\draw[onto data] (per) -- node[onto dlab, above] {name} (str);
+% ================= the rule and the layer names, right of the first rdf:type link
+\draw[onto rule] (-0.2,-2.4) -- (12.1,-2.4);
+\node[grp, anchor=south west] at (1.5,-2.35) {tbox \,$\cdot$\, classes and properties};
+\node[grp, anchor=north west] at (1.5,-2.45) {abox \,$\cdot$\, individuals};
+% ================= ABox: each individual under its class
+\node[onto individual] (np) at (0.9,-3.4)  {Nobel1903};
+\node[onto individual] (mc) at (4.4,-3.4)  {MarieCurie};
+\node[onto individual] (ra) at (7.9,-3.4)  {Radium};
+\node[onto individual] (wa) at (11.2,-3.4) {Warsaw};
+\node[onto datatype]   (yr) at (0.9,-4.6)  {"1903"};
+\draw[onto obj] (mc) -- node[onto lab, above] {received} (np);
+\draw[onto obj] (mc) -- node[onto lab, above] {discovered} (ra);
+% under the individual row, mirroring the TBox route
+\draw[onto obj] (mc.south) |- (10.1,-4.25) -| node[onto lab, pos=0.25, below] {bornIn} ([xshift=-10pt]wa.south);
+\draw[onto data] (np) -- node[onto dlab, right] {year} (yr);
+% rdf:type, individual -> class
+\draw[onto type] (np) -- (awd);
+\draw[onto type] (mc) -- (sci);
+\draw[onto type] (ra) -- (ele);
+\draw[onto type] (wa) -- (cty);
+% ================= legend
+\node[legtext, anchor=north, inner sep=0pt] at (5.95,-5.15) {%
+  \legswatch{draw=black, fill=ontoclass!70} class\legsep
+  \legswatch{draw=black, fill=ontoind!60} individual\legsep
+  \legswatch{draw=black, fill=ontodata!60} datatype, literal\legsep
+  \legline{onto sub} subclass of\legsep
+  \legline{onto type} rdf:type};
+\end{tikzpicture}
+\end{document}

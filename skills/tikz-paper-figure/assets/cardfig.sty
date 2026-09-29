@@ -9,7 +9,7 @@
 % Everything here is a style or a macro. The figure file only places elements.
 % See SKILL.md and references/elements.md of the tikz-paper-figure skill for how the pieces are meant to be used.
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{cardfig}[2026/09/05 v1.0 card-style TikZ figures]
+\ProvidesPackage{cardfig}[2026/09/29 v1.1 card-style TikZ figures]
 \RequirePackage[default]{sourcesanspro}
 \RequirePackage[scaled=0.92]{inconsolata}
 \RequirePackage{fontawesome5}
@@ -172,12 +172,39 @@
   \draw[stage] (#1.east |- cfmid) -- node[stagelab] {#3} (#2.west |- cfmid);}
 % Legend: one node centred under a card, items are inline pictures.
 %   \cardlegend{P2}{\legswatch{draw=kept, fill=keptfill} extracted \legsep \legline{pop} derived from \legsep {\color{kept}\faIcon{key}}\, key}
-\newcommand{\legswatch}[1]{\tikz[baseline=-0.8ex]\node[swatch, #1]{};\,}
+% anchor=center: the swatch sits inside the legend node and would inherit its anchor (north), dropping it
+% half its height below the text
+\newcommand{\legswatch}[1]{\tikz[baseline=-0.8ex]\node[swatch, anchor=center, #1]{};\,}
 \newcommand{\legline}[1]{\tikz[baseline=-0.8ex]\draw[#1] (0,0) -- (0.55cm,0);\,}
 \newcommand{\legsep}{\hspace{0.4cm}}          % \renewcommand{\legsep}{\hspace{0.3cm}} when the legend runs wide
 \newcommand{\cardlegend}[2]{\node[legtext, anchor=north, inner sep=0pt] at ($(#1.south)+(0,-0.3cm)$) {#2};}
 % \cardlegendspan{P1}{P2}{items}: centred between the left edge of P1 and the right edge of P2 (even card counts)
 \newcommand{\cardlegendspan}[3]{\node[legtext, anchor=north, inner sep=0pt] at ($(#1.south west)!0.5!(#2.south east)+(0,-0.3cm)$) {#3};}
+
+% ---------------------------------------------------------------------------
+% Ontology diagrams without cards: a TBox (classes, properties, datatypes) above an ABox (individuals,
+% literals), laid out as the OWL notations do (Graffoo, Chowlk, VOWL): name-only class boxes, a datatype
+% property as an arrow to its datatype, rdfs:subClassOf an open triangle, rdf:type dotted. Black outlines
+% on tab20's light shades; the fill says what a node is (class blue, individual orange, datatype or literal
+% green), so these styles carry no kept/added meaning. See references/ontology.md and
+% assets/examples/ontology/tbox-abox.tex.
+%   \classtag[onto class]{sci}{4.4,-1.5}{Scientist}     \node[onto individual] (mc) at (4.4,-3.4) {MarieCurie};
+% ---------------------------------------------------------------------------
+\definecolor{ontoclass}{HTML}{AEC7E8}   % tab20 light blue
+\definecolor{ontoind}{HTML}{FFBB78}     % tab20 light orange
+\definecolor{ontodata}{HTML}{98DF8A}    % tab20 light green
+\tikzset{
+  onto class/.style={box1, draw=black, fill=ontoclass!70, text=black},
+  onto individual/.style={chip, draw=black, fill=ontoind!60, text=black},
+  onto datatype/.style={chip, draw=black, fill=ontodata!60, text=black},        % a datatype or a literal
+  onto obj/.style={-{Latex[length=1.5mm,width=1.2mm]}, draw=black, line width=0.6pt},   % object property, assertion
+  onto data/.style={onto obj, draw=black!60},                                   % datatype property, data assertion
+  onto sub/.style={-{Triangle[open,length=1.8mm,width=1.5mm]}, draw=black, line width=0.6pt},
+  onto type/.style={-{Latex[length=1.5mm,width=1.2mm]}, draw=black!60, densely dotted, line width=0.7pt, shorten >=1pt},
+  onto lab/.style={font=\fontsize{6.5}{7.5}\selectfont\ttfamily, text=black, inner sep=1.5pt},   % property name
+  onto dlab/.style={onto lab, text=black!70},                                   % datatype property name
+  onto rule/.style={draw=black!20, line width=0.6pt, dash pattern=on 3pt off 2pt},    % between TBox and ABox
+}
 
 % ---------------------------------------------------------------------------
 % Shadows for things drop shadow cannot handle (matrices, rectangle split, custom outlines)

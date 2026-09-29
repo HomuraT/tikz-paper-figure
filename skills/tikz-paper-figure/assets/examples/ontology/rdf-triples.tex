@@ -1,0 +1,49 @@
+% rdf-triples: RDF data about one resource in the W3C convention (RDF 1.1 XML Syntax, Fig. 1; the RDF
+% Primer's diagrams): IRIs in ovals, literals in rectangles, a blank node as a small empty circle, each
+% predicate a labelled arrow from subject to object. The resource the figure is about has the thicker oval
+% (`rdf focus`); the blank node _:b1 shows the n-ary pattern, an award with its year and its co-winner.
+% Key and prefixes below the graph; the prefixes box is the wheat box of Matplotlib's "Placing text boxes".
+% Predicate labels sit on a white patch in the middle of their arrow; the one short horizontal arrow
+% (dbo:spouse) takes its label above instead, or the patch would hide the arrowhead.
+% Build:  python <skill>/scripts/build_figure.py rdf-triples.tex
+\documentclass[10pt,tikz,border=4pt]{standalone}
+\usepackage{classicfig}
+\begin{document}
+\begin{tikzpicture}
+\node[rdf focus]   (MC)  at (0,0)       {ex:MarieCurie};
+\node[rdf iri]     (SCI) at (-2.8,2.2)  {dbo:Scientist};
+\node[rdf literal] (NM)  at (2.8,2.2)   {"Marie Curie"@en};
+\node[rdf iri]     (WAR) at (4.4,-1.9)  {ex:Warsaw};
+\node[rdf iri]     (POL) at (4.4,-3.9)  {ex:Poland};
+\node[rdf iri]     (PC)  at (-5.0,0)    {ex:PierreCurie};
+\node[rdf literal] (PN)  at (-5.0,-2.1) {"Pierre Curie"@en};
+\node[rdf blank]   (B1)  at (0,-2.1)    {};
+\node[font=\fontsize{8}{9}\selectfont, text=black!60, right=2pt of B1] {\_:b1};
+\node[rdf iri]     (NPP) at (-2.6,-3.9) {ex:NobelPrizePhysics};
+\node[rdf literal] (YR)  at (1.5,-3.9)  {"1903"\textasciicircum\textasciicircum xsd:gYear};
+\path[rdf edge] (MC) to node[rdf pred] {rdf:type} (SCI);
+\path[rdf edge] (MC) to node[rdf pred] {foaf:name} (NM);
+\path[rdf edge] (MC) to node[rdf pred] {dbo:birthPlace} (WAR);
+\path[rdf edge] (WAR) to node[rdf pred] {dbo:country} (POL);
+\path[rdf edge] (MC) to node[rdf pred, above=1pt, fill=none] {dbo:spouse} (PC);
+\path[rdf edge] (PC) to node[rdf pred] {foaf:name} (PN);
+\path[rdf edge] (MC) to node[rdf pred] {dbo:award} (B1);
+\path[rdf edge] (B1) to node[rdf pred] {ex:prize} (NPP);
+\path[rdf edge] (B1) to node[rdf pred] {ex:year} (YR);
+\path[rdf edge] (B1) to node[rdf pred, pos=0.45] {ex:sharedWith} (PC);
+% key: one symbol per node kind, each placed on the centre line of its text
+\begin{scope}[shift={(-6.2,-5.2)}, font=\fontsize{8.5}{10}\selectfont]
+  \graphkey{-0.25,0.35}{2.9cm}{1.55cm}
+  \node[rdf iri, minimum width=16pt, minimum height=9pt, inner sep=0pt] at (0.3,0) {};
+  \node[anchor=west] at (0.75,0) {IRI};
+  \node[rdf literal, minimum width=16pt, minimum height=9pt, inner sep=0pt] at (0.3,-0.45) {};
+  \node[anchor=west] at (0.75,-0.45) {literal};
+  \node[rdf blank, minimum size=9pt] at (0.3,-0.9) {};
+  \node[anchor=west] at (0.75,-0.9) {blank node};
+\end{scope}
+\node[rdf prefixes, anchor=north west] at (-2.9,-4.85) {%
+  \textbf{ex:}\ \ \texttt{http://example.org/}\\
+  \textbf{dbo:}\ \texttt{http://dbpedia.org/ontology/}\\
+  \textbf{foaf:}\ \texttt{http://xmlns.com/foaf/0.1/}};
+\end{tikzpicture}
+\end{document}

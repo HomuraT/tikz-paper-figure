@@ -18,6 +18,8 @@ Contents: [When](#when-to-use-it) · [Workflow](#workflow-for-new-data) · [Exam
 - The user asks for the classic, Matplotlib or 经典 look, or sends a Matplotlib figure to match.
 - Otherwise use the house style (`plotfig.sty`, `cardfig.sty`): it follows Wilke and suits ML papers, whose
   Figure 1 is a card figure anyway.
+- RDF graphs and VOWL ontology schemas in this style are plain TikZ on `classicfig.sty`, with no axis; their
+  notations, styles and layout rules are in `references/ontology.md`.
 
 One style per paper. The two families differ in font (DejaVu Sans against Source Sans Pro), palette (tab10
 against the house hues), frame (four spines and a legend box against two spines and direct labels) and in who

@@ -6,7 +6,7 @@
 % Unlike plotfig's `paper` style it keeps the legend box and the four spines: that is what makes it read as
 % Matplotlib. It shares no colour names with plotfig, so do not load both in one figure.
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{classicfig}[2026/09/29 v0.2 pgfplots styles imitating Matplotlib defaults]
+\ProvidesPackage{classicfig}[2026/09/29 v0.2.1 pgfplots styles imitating Matplotlib defaults]
 \RequirePackage[T1]{fontenc}
 \RequirePackage{DejaVuSans}
 \renewcommand{\familydefault}{\sfdefault}
@@ -288,4 +288,58 @@
 % \panellabel{name}{a}: bold panel letter at the left edge of the named axis' outer box (tick labels and
 % y label included), its top level with the axis top; \panellabel[yshift=12pt]{name}{a} to clear a title
 \newcommand{\panellabel}[3][]{\node[panel label, #1] at (#2.north west -| #2.outer west) {#3};}
+
+% ---------------------------------------------------------------------------
+% Ontology and RDF diagrams (plain TikZ, no axis): two notations, each kept as its specification draws it.
+% See references/ontology.md for when to use which, the layout rules and the checklist.
+% ---------------------------------------------------------------------------
+% DejaVu Sans Mono for IRIs in a prefix box (Matplotlib's monospace default); no classic plot uses \ttfamily
+\RequirePackage{DejaVuSansMono}
+\usetikzlibrary{shapes.geometric}
+% RDF graphs in the W3C convention (RDF 1.1 XML Syntax, Fig. 1; RDF Primer): IRIs in ovals, literals in
+% rectangles, blank nodes as small empty circles, each predicate a labelled arrow from subject to object.
+% Colours from tab20's light/dark pairs; the node a figure is about gets `rdf focus`.
+\tikzset{
+  rdf iri/.style={ellipse, fill=C0L, draw=C0, line width=0.8pt, inner xsep=0pt, inner ysep=2.5pt,
+    font=\fontsize{8.5}{10}\selectfont},
+  rdf focus/.style={rdf iri, line width=1.2pt},
+  rdf literal/.style={rectangle, fill=C1L!55, draw=C1, line width=0.8pt, inner xsep=4pt, inner ysep=3.5pt,
+    font=\fontsize{8.5}{10}\selectfont},
+  rdf blank/.style={circle, fill=C7L, draw=C7, line width=0.8pt, minimum size=0.4cm, inner sep=0pt},
+  rdf edge/.style={draw=black, line width=0.8pt, -{Triangle[length=5.5pt, width=4pt]}},
+  % the predicate, on a white patch in the middle of its arrow; `above=1pt, fill=none` for a short horizontal one
+  rdf pred/.style={font=\fontsize{8}{9}\selectfont, fill=white, inner sep=1.2pt, midway},
+  % the prefixes used, in the wheat box of Matplotlib's "Placing text boxes" example
+  rdf prefixes/.style={fill=wheat, fill opacity=0.5, text opacity=1, rounded corners=3pt, inner sep=4pt,
+    font=\fontsize{7.5}{9.5}\selectfont, align=left},
+}
+% Ontology schemas (TBox) in VOWL 2 (purl.org/vowl/spec, as WebVOWL draws it; hex values from WebVOWL's
+% vowl.css): classes light-blue circles sized by their instance count, external classes dark blue with white
+% text, object properties light-blue labels on the edge, datatype properties green labels ending in a yellow
+% datatype rectangle, rdfs:subClassOf a dashed arrow labelled "Subclass of". The colours are VOWL's, not tab10.
+\definecolor{vowlclass}{HTML}{AACCFF}      % .class, .objectproperty: #acf
+\definecolor{vowlexternal}{HTML}{3366CC}   % .external: #36c
+\definecolor{vowldatatype}{HTML}{FFCC33}   % .literal, .node .datatype: #fc3
+\definecolor{vowldataprop}{HTML}{99CC66}   % .datatypeproperty: #9c6
+\tikzset{
+  vowl class/.style={circle, fill=vowlclass, draw=black, line width=1pt, minimum size=#1, inner sep=1pt,
+    align=center, font=\fontsize{9}{10.5}\selectfont}, vowl class/.default=1.5cm,
+  vowl external/.style={vowl class=#1, fill=vowlexternal, text=white}, vowl external/.default=1.6cm,
+  vowl datatype/.style={rectangle, fill=vowldatatype, draw=black, line width=1pt, minimum width=1.5cm,
+    minimum height=0.55cm, font=\fontsize{8.5}{10}\selectfont},
+  % a property label; `vowl objprop` and `vowl dataprop` put it in the middle of its edge, `vowl prop box`
+  % alone is the same box anywhere (a key)
+  vowl prop box/.style={rectangle, fill=vowlclass, inner xsep=4pt, inner ysep=2.5pt,
+    font=\fontsize{8}{9}\selectfont},
+  vowl objprop/.style={vowl prop box, midway},
+  vowl dataprop/.style={vowl prop box, fill=vowldataprop, midway},
+  vowl edge/.style={draw=black, line width=1pt, -{Triangle[length=6pt, width=5pt]}},
+  vowl subclass/.style={vowl edge, dash pattern=on 4pt off 2.5pt, -{Triangle[open, length=7pt, width=6pt, fill=white]}},
+  vowl subclass label/.style={font=\fontsize{8}{9}\selectfont, fill=white, inner sep=1.5pt, midway},
+}
+% A key for either notation: a light frame as the legend's, one symbol per row placed by hand on the centre
+% line of its text (an inline \tikz inside a node inherits the node's anchor and drifts off that line).
+%   \graphkey{x,y}{width}{height}  frame whose top-left corner is at (x,y)
+\tikzset{graph key/.style={draw=mplframe, line width=0.8pt, rounded corners=2pt, fill=white, anchor=north west}}
+\newcommand{\graphkey}[3]{\node[graph key, minimum width=#2, minimum height=#3] at (#1) {};}
 \endinput

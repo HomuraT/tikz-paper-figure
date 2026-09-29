@@ -1,0 +1,45 @@
+% vowl-schema: an ontology schema (TBox) in VOWL 2, as WebVOWL draws it: classes are light-blue circles,
+% sized by how many instances they have (Scientist largest), the external class foaf-style Person dark blue
+% with white text; object properties are light-blue labels on their edge, datatype properties green labels
+% ending in a yellow datatype rectangle; rdfs:subClassOf is a dashed arrow labelled "Subclass of" with a
+% white head; a property whose domain and range are one class is a loop (spouse). The colours are VOWL's own
+% (WebVOWL's vowl.css), not tab10. Key in the empty lower-left corner, each symbol on its text's centre line.
+% Build:  python <skill>/scripts/build_figure.py vowl-schema.tex
+\documentclass[10pt,tikz,border=4pt]{standalone}
+\usepackage{classicfig}
+\begin{document}
+\begin{tikzpicture}
+\node[vowl external]      (PER)  at (-4.6,1.6)  {Person\\[-1pt]{\fontsize{7}{8}\selectfont(external)}};
+\node[vowl class=2.0cm]   (SCI)  at (-1.2,0)    {Scientist};
+\node[vowl class]         (AWD)  at (2.6,1.6)   {Award};
+\node[vowl class=1.3cm]   (FLD)  at (5.8,1.6)   {Field};
+\node[vowl class=1.6cm]   (ELE)  at (2.6,-1.9)  {Chemical\\element};
+\node[vowl class]         (CTY)  at (-1.2,-3.6) {City};
+\node[vowl class]         (CTR)  at (5.8,-3.6)  {Country};
+\node[vowl datatype]      (DATE) at (-4.6,-1.5) {xsd:date};
+\node[vowl datatype]      (YEAR) at (2.6,3.9)   {xsd:gYear};
+\path[vowl subclass] (SCI) to node[vowl subclass label] {Subclass of} (PER);
+\path[vowl edge] (PER) edge[out=65, in=115, looseness=7] node[vowl objprop, pos=0.5] {spouse} (PER);
+\path[vowl edge] (SCI) to node[vowl objprop] {award} (AWD);
+\path[vowl edge] (AWD) to node[vowl objprop] {field} (FLD);
+\path[vowl edge] (SCI) to node[vowl objprop] {discovered} (ELE);
+\path[vowl edge] (SCI) to node[vowl objprop] {birth place} (CTY);
+\path[vowl edge] (CTY) to node[vowl objprop, pos=0.4] {country} (CTR);
+\path[vowl edge] (ELE) to node[vowl objprop] {named after} (CTR);
+\path[vowl edge] (PER) to node[vowl dataprop] {birth date} (DATE);
+\path[vowl edge] (AWD) to node[vowl dataprop] {year} (YEAR);
+% key
+\begin{scope}[shift={(-5.9,-2.55)}, font=\fontsize{8}{10}\selectfont]
+  \graphkey{-0.2,0.3}{3.3cm}{2.45cm}
+  \foreach \y/\t in {0/class, -0.38/external class, -0.76/object property, -1.14/datatype property,
+    -1.52/datatype, -1.9/subclass of}
+    \node[anchor=west] at (0.75,\y) {\t};
+  \node[vowl class=8pt, line width=0.8pt, inner sep=0pt] at (0.3,0) {};
+  \node[vowl external=8pt, line width=0.8pt, inner sep=0pt] at (0.3,-0.38) {};
+  \node[vowl prop box, minimum width=16pt, minimum height=7pt, inner sep=0pt] at (0.3,-0.76) {};
+  \node[vowl prop box, fill=vowldataprop, minimum width=16pt, minimum height=7pt, inner sep=0pt] at (0.3,-1.14) {};
+  \node[vowl datatype, minimum width=16pt, minimum height=7pt, line width=0.8pt, inner sep=0pt] at (0.3,-1.52) {};
+  \draw[vowl subclass, line width=0.8pt, -{Triangle[open, length=5pt, width=4.5pt, fill=white]}] (0.0,-1.9) -- (0.6,-1.9);
+\end{scope}
+\end{tikzpicture}
+\end{document}

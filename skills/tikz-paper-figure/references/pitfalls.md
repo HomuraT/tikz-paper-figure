@@ -142,6 +142,14 @@ Each of these cost at least one full rebuild cycle the first time.
 
 **Numbers in a figure do not match the Python check.** They were computed twice. Compute once in the data script, print or write them, and paste; pgfmath only draws the curves whose parameters it was given.
 
+## Ontology and RDF diagrams
+
+**Legend swatches sit half their height below the text.** An inline `\tikz` inside a node inherits that node's options, `anchor` among them: under `\cardlegend` (`anchor=north`) the swatch hangs from its top edge. `\legswatch` now sets `anchor=center`; any other inline symbol needs the same, or is drawn as its own node at the y of its text, as the keys of `rdf-triples` and `vowl-schema` are (`\graphkey`).
+
+**A key symbol lands somewhere else in the figure.** A label style meant for edges carries `midway` (`vowl objprop`, `rdf pred`), and on a node placed with `at` it still moves the node. For a key use the box without the position, `vowl prop box`.
+
+**A predicate label hides its arrowhead.** On a short arrow the white patch of `rdf pred` covers the head. Put the label beside the arrow instead: `node[rdf pred, above=1pt, fill=none]`.
+
 ## Compile errors
 
 **`Missing number, treated as zero ... \pgf@layerboxsaved@background`.** `\pgfsetlayers{background,shadow,main}` needs the `backgrounds` TikZ library. `cardfig.sty` loads it; a hand-written preamble must too.

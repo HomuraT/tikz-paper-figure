@@ -2,7 +2,7 @@
 
 ![Anime research studio: paper figures with TikZ and pgfplots, two styles, 54 examples and editable TeX](docs/images/repository-banner.png)
 
-Paper figures in TikZ and pgfplots, from schematic cards and data plots to multi-panel figures. Two styles, 54 compiled examples, and an agent workflow that takes your data through to a rendered figure.
+Paper figures in TikZ and pgfplots, from schematic cards and data plots to multi-panel figures. Two styles, 57 compiled examples, and an agent workflow that takes your data through to a rendered figure.
 
 [中文说明](README.zh-CN.md) · [Install](#install) · [Quick start](#quick-start) · [Full gallery](skills/tikz-paper-figure/references/gallery.md)
 
@@ -10,9 +10,9 @@ Paper figures in TikZ and pgfplots, from schematic cards and data plots to multi
 
 - `cardfig.sty`: cards with dark title bars, pills, footer bands and shadows, plus benchmark bar panels. `plotfig.sty`: a `paper` axis style for pgfplots with the same fonts and colours, direct labels, bars from zero, grey ticks, digits in the text font.
 - `classicfig.sty`: the classic style, Matplotlib's rcParams in pgfplots (DejaVu Sans, the four-sided frame, tab10, the rounded legend frame) plus one key or macro for each touch a careful Matplotlib user adds: light grid, white marker edges, halos, spans, text boxes, significance brackets, broken axes, a legend for a whole composite.
-- Three templates (`template.tex`, `template-bars.tex`, `template-plot.tex`) and 54 examples with their renders: 3 card figures, 1 bar-panel grid, 28 data plots and 4 composite figures in the house style; 13 plots and 5 composite figures (fit with residuals, scatter with marginals, inset zoom, broken axis, mosaic) in the classic style, with the numpy script that makes their data.
+- Three templates (`template.tex`, `template-bars.tex`, `template-plot.tex`) and 57 examples with their renders: 3 card figures, 1 bar-panel grid, 28 data plots and 4 composite figures in the house style; 13 plots and 5 composite figures (fit with residuals, scatter with marginals, inset zoom, broken axis, mosaic) in the classic style, with the numpy script that makes their data; 3 ontology and RDF diagrams in published notations (a W3C RDF graph, a VOWL schema, a TBox over its ABox) across both styles.
 - Scripts: `build_figure.py` compiles (pdflatex, or LuaLaTeX when the file asks for it), cleans, checks the width against the text width and renders a PNG; `bars_from_csv.py`, `flows_from_csv.py` and `treemap_from_csv.py` generate figures from data; `palette_check.py` measures colour distances under simulated colour-vision deficiency; `compare_sheet.py` stacks two versions of a figure; `gallery_sheet.py` tiles the examples; `check_env.py` lists what is installed.
-- References: a digest of Wilke's *Fundamentals of Data Visualization* with decision tables for choosing a chart, the catalogue of card elements, one recipe per chart, the classic style's workflow and craft (collected from Rougier's *Scientific Visualization: Python + Matplotlib* and the Matplotlib gallery), and the pitfalls with their fixes.
+- References: a digest of Wilke's *Fundamentals of Data Visualization* with decision tables for choosing a chart, the catalogue of card elements, one recipe per chart, the classic style's workflow and craft (collected from Rougier's *Scientific Visualization: Python + Matplotlib* and the Matplotlib gallery), the ontology notations with their layout rules, and the pitfalls with their fixes.
 - `SKILL.md`: the workflow an agent follows, from choosing the style and deciding the content to delivering the render.
 
 ## Install
@@ -80,26 +80,25 @@ Tested on Windows 11 with TeX Live 2025, Python 3.13 and Claude Code. `SKILL.md`
 
 Click a preview for the full image.
 
-[Browse all 54 examples and their sources →](skills/tikz-paper-figure/references/gallery.md) Each figure includes the question it answers, its source file and the relevant recipe.
+[Browse all 57 examples and their sources →](skills/tikz-paper-figure/references/gallery.md) Each figure includes the question it answers, its source file and the relevant recipe.
 
 | Style | Examples | Guide |
 | --- | --- | --- |
 | House | 36: cards, benchmark panels, data plots and composites | [Chart selection and recipes](skills/tikz-paper-figure/references/gallery.md) |
 | Classic | 18: lines and points, distributions, categories and fields, composites | [Classic style guide](skills/tikz-paper-figure/references/classic.md) |
+| Ontology | 3: a W3C RDF graph and a VOWL schema (classic), a TBox over its ABox (house) | [Ontology diagrams](skills/tikz-paper-figure/references/ontology.md) |
 
-<details>
-<summary>Show the house-style contact sheet · 36 figures</summary>
+**House style · 36 figures**
 
 ![36 house-style examples, grouped by template](skills/tikz-paper-figure/assets/examples/gallery.png)
 
-</details>
-
-<details>
-<summary>Show the classic-style contact sheet · 18 figures</summary>
+**Classic style · 18 figures**
 
 ![18 classic-style examples, grouped by chart family](skills/tikz-paper-figure/assets/examples/classic/gallery.png)
 
-</details>
+**Ontology and RDF diagrams · 3 figures**
+
+![3 ontology and RDF diagrams in the W3C RDF, VOWL and class-box notations](skills/tikz-paper-figure/assets/examples/ontology/gallery.png)
 
 Run `gallery_sheet.py` to regenerate the contact sheets after adding an example.
 

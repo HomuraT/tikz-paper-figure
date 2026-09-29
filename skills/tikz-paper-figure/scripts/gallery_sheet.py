@@ -1,11 +1,12 @@
 """Tile the example renders of the skill into contact sheets, one per style.
 
 Usage:
-    python gallery_sheet.py [--style all|house|classic] [--out sheet.png] [--cols N] [--cell-width 430]
+    python gallery_sheet.py [--style all|house|classic|ontology] [--out sheet.png] [--cols N] [--cell-width 430]
                             [--cell-height 300]
 
 House style (card figures, bar panels, plotfig data plots) goes to assets/examples/gallery.png, classic style
-(classicfig.sty) to assets/examples/classic/gallery.png; `--style all` (the default) writes both, and `--out`
+(classicfig.sty) to assets/examples/classic/gallery.png, the ontology and RDF diagrams (both styles) to
+assets/examples/ontology/gallery.png; `--style all` (the default) writes both, and `--out`
 applies when one style is chosen. The order and grouping match references/gallery.md. Each render is scaled
 to fit its cell (aspect kept) and labelled with its file stem. Run it after adding or re-rendering an example,
 so the sheets and the gallery page agree. Needs Pillow.
@@ -48,6 +49,10 @@ SHEETS: dict[str, Sheet] = {
         ("Categories and fields", ["bars", "heatmap", "radar", "contour", "surface3d"]),
         ("Composite figures", ["calibration", "joint", "xrd", "broken-axis", "subplots"]),
     ], cols=5),
+    "ontology": Sheet(EXAMPLES / "ontology" / "gallery.png", (EXAMPLES / "ontology",), [
+        ("Ontology and RDF diagrams: rdf-triples and vowl-schema (classicfig.sty), tbox-abox (cardfig.sty)",
+         ["rdf-triples", "vowl-schema", "tbox-abox"]),
+    ], cols=3),
 }
 FONT_CANDIDATES: list[str] = ["C:/Windows/Fonts/arialbd.ttf", "C:/Windows/Fonts/arial.ttf",
                               "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"]
@@ -104,7 +109,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--style", choices=["all", *SHEETS], default="all")
     parser.add_argument("--out", type=Path, help="output PNG (only with one --style)")
-    parser.add_argument("--cols", type=int, help="columns (default: 4 for house, 5 for classic)")
+    parser.add_argument("--cols", type=int, help="columns (default: 4 for house, 5 for classic, 3 for ontology)")
     parser.add_argument("--cell-width", type=int, default=430, help="image box width in px")
     parser.add_argument("--cell-height", type=int, default=300, help="image box height in px")
     args = parser.parse_args()
