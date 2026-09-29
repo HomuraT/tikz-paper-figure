@@ -1,0 +1,74 @@
+% surface3d: a response surface from a central composite design (yield against temperature and time), in the
+% classic (Matplotlib mplot3d) style: ax.plot_surface(cmap="viridis", edgecolor="k", linewidth=0.2), the filled
+% contours of the same surface projected on the floor (ax.contourf(..., zdir="z", offset=40)), the eleven design
+% runs as red points on stems, and the optimum marked with a star. The mplot3d look is rebuilt by hand: the three
+% back panes in its grey shades (0.95, 0.90 and 0.925 at alpha 0.5, over white), grid lines #b0b0b0 on the panes,
+% view elev=30, azim=-60 (pgfplots view={30}{30}), and black axis lines on the front edges only. The panes go on
+% the axis background layer, under the grid. Model and runs from data/make_data.py.
+\documentclass[10pt,tikz,border=4pt]{standalone}
+\usepackage{classicfig}
+\begin{document}
+\begin{tikzpicture}
+\begin{axis}[classic frame, classic legend, set layers, width=7.2cm, height=6.4cm, view={30}{30},
+  title={Response surface}, title style={font=\fontsize{12}{14}\selectfont},
+  xmin=45, xmax=95, ymin=1.5, ymax=8.5, zmin=40, zmax=95,
+  xtick={50,60,...,90}, ytick={2,4,6,8}, ztick={40,50,...,90},
+  xtick pos=left, ytick pos=left, ztick pos=left,   % ticks on the labelled edges only
+  % legend below the colour bar, in the free corner right of the time axis
+  legend style={at={(1.0,0.02)}, anchor=south west, xshift=0.35cm, font=\fontsize{9}{11}\selectfont},
+  xlabel={Temperature (\textdegree C)}, ylabel={Time (h)}, zlabel={Yield (\%)},
+  xlabel style={sloped like x axis}, ylabel style={sloped like y axis},
+  axis line style={draw=none}, grid=major, grid style={black!31, line width=0.6pt},
+  colormap name=viridis, point meta min=55, point meta max=90,
+  colorbar, classic colorbar={Yield (\%)}, colorbar style={height=3.1cm, at={(parent axis.east)}, anchor=west, yshift=0.75cm,
+    xshift=0.6cm, ytick={60,70,80,90}},
+  declare function={f(\T,\t) = 88 - 0.022*(\T-78)^2 - 0.9*(\t-5.2)^2 + 0.035*(\T-78)*(\t-5.2);},
+  domain=45:95, domain y=1.5:8.5]
+% (every plot that should not take a legend entry is `forget plot`: entries go to the plots in order)
+% the three back panes (floor z = 40, wall x = 45, wall t = 8.5), under the grid
+\addplot3[fill=black!3.75, draw=black!20, line width=0.4pt, on layer=axis background, forget plot] coordinates
+  {(45,1.5,40) (95,1.5,40) (95,8.5,40) (45,8.5,40) (45,1.5,40)};
+\addplot3[fill=black!2.5, draw=black!20, line width=0.4pt, on layer=axis background, forget plot] coordinates
+  {(45,1.5,40) (45,8.5,40) (45,8.5,95) (45,1.5,95) (45,1.5,40)};
+\addplot3[fill=black!5, draw=black!20, line width=0.4pt, on layer=axis background, forget plot] coordinates
+  {(45,8.5,40) (95,8.5,40) (95,8.5,95) (45,8.5,95) (45,8.5,40)};
+% filled contours projected on the floor
+\addplot3[contour filled={number=12}, opacity=0.85, samples=36, samples y=36, point meta={f(x,y)}, forget plot]
+  ({x}, {y}, {40});
+% stems of the design runs, drawn before the surface so it covers the parts behind it
+\addplot3[black!50, line width=0.6pt, dash pattern=on 1.5pt off 1.5pt, forget plot] coordinates {
+  (55.0,2.80,40) (55.0,2.80,72.6)
+
+  (85.0,2.80,40) (85.0,2.80,81.0)
+
+  (55.0,7.20,40) (55.0,7.20,72.5)
+
+  (85.0,7.20,40) (85.0,7.20,84.3)
+
+  (48.8,5.00,40) (48.8,5.00,68.1)
+
+  (91.2,5.00,40) (91.2,5.00,84.0)
+
+  (70.0,1.89,40) (70.0,1.89,77.2)
+
+  (70.0,8.11,40) (70.0,8.11,78.3)
+
+  (70.0,5.00,40) (70.0,5.00,86.8)};
+% the surface: flat faces, thin black edges, alpha 0.9
+\addplot3[surf, shader=faceted, faceted color=black, line width=0.2pt, opacity=0.9, z buffer=sort,
+  samples=26, samples y=26, forget plot] {f(x,y)};
+% design runs (centre point three times) and the optimum; the star is drawn twice, white and wide under black
+\addplot3[only marks, mark=*, mark size=2.6pt, mark options={fill=C3, draw=white, line width=0.6pt}] coordinates {
+  (55.0,2.80,72.6) (85.0,2.80,81.0) (55.0,7.20,72.5) (85.0,7.20,84.3) (48.8,5.00,68.1) (91.2,5.00,84.0)
+  (70.0,1.89,77.2) (70.0,8.11,78.3) (70.0,5.00,85.3) (70.0,5.00,86.8)};
+\addlegendentry{design run}
+\addplot3[only marks, mark=star, mark size=5pt, mark options={draw=white, line width=2.4pt}, forget plot] coordinates {(78,5.2,88)};
+\addplot3[only marks, mark=star, mark size=5pt, mark options={draw=black, line width=1pt}] coordinates {(78,5.2,88)};
+\addlegendentry{optimum}
+\node[mpl small, anchor=south, inner sep=1pt] at (axis cs:78,5.2,93.5) {\halo{\textbf{88 \%}}};
+% black axis lines on the front edges, as mplot3d draws them
+\draw[black, line width=0.8pt] (axis cs:45,1.5,40) -- (axis cs:95,1.5,40) -- (axis cs:95,8.5,40);
+\draw[black, line width=0.8pt] (axis cs:45,1.5,40) -- (axis cs:45,1.5,95);
+\end{axis}
+\end{tikzpicture}
+\end{document}

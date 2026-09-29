@@ -1,0 +1,53 @@
+% broken-axis: one value 13 times the others, in the classic (Matplotlib) style, as the gallery's "Broken axis"
+% example: two axes on one x range, the upper one for the outlier (2000-2750) and the lower one for the bulk
+% (0-220), each with its spine at the break hidden and the slanted cut marks at the corners (`mpl break upper`,
+% `mpl break lower`). A single y label spans both (fig.supylabel), the fold change is written in the empty
+% upper axes, and the categories carry a second level: the support on the tick labels, the kind of Pt below
+% them in bracketed groups. CO oxidation turnover frequencies, mean and sd of three runs.
+\documentclass[10pt,tikz,border=4pt]{standalone}
+\usepackage{classicfig}
+\pgfplotsset{
+  tof/.style={mpl bar=0.62, mpl bar edge, mpl yerr thin, /pgfplots/error bars/error bar style={black!80},
+    /pgfplots/error bars/error mark options={rotate=90, mark size=2.5pt, line width=1pt, black!80}, forget plot},
+}
+\tikzset{val/.style={font=\fontsize{9}{11}\selectfont, anchor=south, inner sep=1.5pt}}
+\begin{document}
+\begin{tikzpicture}
+% ---- the bulk
+\begin{axis}[classic, name=lo, mpl break lower, mpl ygrid light, height=3.3cm,
+  xmin=0.4, xmax=6.6, enlarge x limits=false, ymin=0, ymax=220, enlarge y limits=false,
+  xtick={1,...,6}, xticklabels={C, Al$_2$O$_3$, ZrO$_2$, TiO$_2$, CeO$_2$, CeO$_2$}, x tick style={draw=none},
+  ytick={0,50,...,200}]
+\addplot[C0, tof] coordinates {(1,42) +- (0,5) (2,65) +- (0,7) (3,88) +- (0,9) (4,118) +- (0,12) (5,176) +- (0,15)};
+\addplot[C3, tof] coordinates {(6,2350)};
+\node[val] at (axis cs:1,47) {42};
+\node[val] at (axis cs:2,72) {65};
+\node[val] at (axis cs:3,97) {88};
+\node[val] at (axis cs:4,130) {118};
+\node[val] at (axis cs:5,191) {176};
+% the second level of the categories, under the tick labels: a bracket per group, its name below it
+% (every point explicit: inside an axis, a relative ++(0,3pt) is read in axis units)
+\draw[black!60, line width=0.8pt] ([yshift=-20pt]axis cs:0.7,0) -- ([yshift=-23pt]axis cs:0.7,0)
+  -- ([yshift=-23pt]axis cs:5.3,0) -- ([yshift=-20pt]axis cs:5.3,0);
+\draw[black!60, line width=0.8pt] ([yshift=-20pt]axis cs:5.7,0) -- ([yshift=-23pt]axis cs:5.7,0)
+  -- ([yshift=-23pt]axis cs:6.3,0) -- ([yshift=-20pt]axis cs:6.3,0);
+\node[font=\fontsize{9}{11}\selectfont, text=black!75, anchor=north] at ([yshift=-24pt]axis cs:3,0) {Pt nanoparticles, 2.4 nm};
+\node[font=\fontsize{9}{11}\selectfont, text=black!75, anchor=north] at ([yshift=-24pt]axis cs:6,0) {Pt$_1$ atoms};
+\coordinate (lobottom) at (rel axis cs:0,0);
+\end{axis}
+% ---- the outlier, above a 0.3 cm gap
+\begin{axis}[classic, name=hi, mpl break upper, mpl ygrid light, at={(lo.north west)}, anchor=south west, yshift=0.3cm,
+  height=1.45cm, mpl title left, title={CO oxidation at 150 \textdegree C},
+  xmin=0.4, xmax=6.6, enlarge x limits=false, ymin=2000, ymax=2750, enlarge y limits=false, ytick={2000,2500}]
+\mpltitleright{$n$ = 3 runs}
+\addplot[C3, tof] coordinates {(6,2350) +- (0,180)};
+\node[val] at (axis cs:6,2530) {2350};
+\node[font=\fontsize{9}{11}\selectfont, anchor=east, align=right, fill=white, inner sep=2pt] at (axis cs:5.45,2340)
+  {13$\times$ the TOF of the best\\nanoparticles (Pt/CeO$_2$)};
+\coordinate (hitop) at (rel axis cs:0,1);
+\end{axis}
+% one y label for the pair (fig.supylabel), centred on both
+\node[font=\fontsize{10}{12}\selectfont, rotate=90, anchor=south]
+  at ($(hitop)!0.5!(lobottom) + (-31pt,0)$) {TOF (h$^{-1}$)};
+\end{tikzpicture}
+\end{document}

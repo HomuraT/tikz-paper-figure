@@ -1,0 +1,85 @@
+% subplots: a mosaic of three panels, in the classic (Matplotlib) style: plt.subplot_mosaic("AB;AC"), a tall
+% panel on the left and two stacked on the right, placed as named axes (at= / anchor=) rather than a regular
+% grid. Three Pt catalysts for CO oxidation, one colour each in every panel, one legend for the whole figure
+% on top (fig.legend(loc="outside upper center", ncols=3): `mpl figure legend`), bold panel letters on the
+% titles' baseline. (a) light-off curves, measured points and logistic fits, T50 marked on the curves and
+% listed in the empty corner; (b) Arrhenius plot in the kinetic regime on a log axis (semilogy: ticks as 10^k,
+% minor ticks at 2..9), Ea from the fits written along the lines; (c) time on stream at 150 C, with a
+% regeneration in O2 at 30 h. Data and fits from data/make_data.py.
+\documentclass[10pt,tikz,border=4pt]{standalone}
+\usepackage{classicfig}
+\pgfplotsset{
+  pts/.style={only marks, mpl o, mpl edge, mark size=2.4pt, forget plot},
+  fit/.style={line width=1.5pt, forget plot},
+  t50/.style={only marks, mark=*, mark size=3pt, mark options={fill=white, draw=#1, line width=1.2pt}, forget plot},
+  panel title/.style={mpl title left, title style={font=\fontsize{11}{13}\selectfont}},
+}
+\tikzset{ea/.style={font=\fontsize{8}{9.6}\selectfont, anchor=south, inner sep=1pt}}
+% the panel letter on the title's baseline, at the left edge of everything the axis draws
+\newcommand{\letter}[2]{\node[panel label, anchor=base west] at ([yshift=9pt]#1.north west -| #1.outer west) {#2};}
+\begin{document}
+\begin{tikzpicture}
+% ---- (a) light-off, the tall panel
+\begin{axis}[classic, name=a, width=5.6cm, height=6.8cm, panel title, title={Light-off}, mpl grid light,
+  mpl minor={4}{1}, xlabel={Temperature (\textdegree C)}, ylabel={CO conversion (\%)},
+  xmin=50, xmax=250, ymin=-4, ymax=104, enlargelimits=false, xtick={50,100,...,250}, ytick={0,20,...,100},
+  declare function={X(\T,\m,\w) = 100/(1 + exp(-(\T-\m)/\w));}, domain=50:250, samples=161]
+\axhline[black!45, line width=0.8pt, dash pattern=on 3pt off 2pt]{50}
+% the conditions in the other empty corner (a title note would run into the next panel's letter)
+\node[font=\fontsize{8}{9.6}\selectfont, text=black!60, anchor=south east, align=right, inner sep=1.5pt, fill=white]
+  at ([xshift=-5pt, yshift=12pt]rel axis cs:1,0) {1 \% CO in air\\GHSV 60\,000 h$^{-1}$};
+\addplot[C0, fit] {X(x,112,8)};
+\addplot[C1, fit] {X(x,141,9)};
+\addplot[C2, fit] {X(x,168,10)};
+\addplot[C0, pts] table[x=T, y=a] {data/lightoff.dat};
+\addplot[C1, pts] table[x=T, y=b] {data/lightoff.dat};
+\addplot[C2, pts] table[x=T, y=c] {data/lightoff.dat};
+\addplot[t50=C0] coordinates {(112,50)};
+\addplot[t50=C1] coordinates {(141,50)};
+\addplot[t50=C2] coordinates {(168,50)};
+% T50 in the corner no curve reaches (below 110 C, above 60 %), in the curves' colours
+\node[mpl box light, font=\fontsize{9}{11}\selectfont, anchor=north west]
+  at ([xshift=5pt, yshift=-5pt]rel axis cs:0,1)
+  {$T_{50}$ (\textdegree C)\\[1pt] \textcolor{C0!85!black}{112}\\ \textcolor{C1!85!black}{141}\\ \textcolor{C2!85!black}{168}};
+\end{axis}
+% ---- (b) Arrhenius, upper right
+\begin{axis}[classic, name=b, at={(a.north east)}, anchor=north west, xshift=1.95cm, width=4.1cm, height=2.4cm,
+  panel title, title={Arrhenius}, ymode=log, mpl log y,
+  xlabel={$1000/T$ (K$^{-1}$)}, ylabel={TOF (s$^{-1}$)},
+  xmin=2.44, xmax=2.79, ymin=5e-4, ymax=0.4, enlargelimits=false, xtick={2.5,2.6,2.7}, mpl minor={1}{0},
+  xticklabel style={/pgf/number format/fixed, /pgf/number format/fixed zerofill, /pgf/number format/precision=1},
+  domain=2.465:2.77, samples=2]
+\addplot[C0, fit] {exp(13.8830 - 6.2849*x)};
+\addplot[C1, fit] {exp(16.0228 - 7.7266*x)};
+\addplot[C2, fit] {exp(18.6310 - 9.3005*x)};
+\addplot[C0, pts, mark size=2pt] coordinates {(2.7537,0.03193) (2.6799,0.05270) (2.6099,0.08223) (2.5436,0.1210) (2.4805,0.1799)};
+\addplot[C1, pts, mark size=2pt] coordinates {(2.7537,0.005289) (2.6799,0.009213) (2.6099,0.01576) (2.5436,0.02586) (2.4805,0.04419)};
+\addplot[C2, pts, mark size=2pt] coordinates {(2.7537,0.0009386) (2.6799,0.001840) (2.6099,0.003521) (2.5436,0.006525) (2.4805,0.01192)};
+% Ea along each line; the angles are the lines' on screen (-10.9, -13.3, -15.9 deg at this aspect)
+\node[ea, text=C0!85!black, rotate=-10.9] at (axis cs:2.66,0.086) {\halo{52 kJ mol$^{-1}$}};
+\node[ea, text=C1!85!black, rotate=-13.3] at (axis cs:2.66,0.0162) {\halo{64 kJ mol$^{-1}$}};
+\node[ea, text=C2!85!black, rotate=-15.9] at (axis cs:2.66,0.0034) {\halo{77 kJ mol$^{-1}$}};
+\end{axis}
+% ---- (c) stability, lower right
+\begin{axis}[classic, name=c, at={(a.south east)}, anchor=south west, xshift=1.95cm, width=4.1cm, height=2.4cm,
+  panel title, title={Stability, 150 \textdegree C}, mpl minor={1}{1},
+  xlabel={Time on stream (h)}, ylabel={$X$ (\%)},
+  xmin=0, xmax=50, ymin=0, ymax=108, enlargelimits=false, xtick={0,10,...,50}, ytick={0,50,100}]
+\axvline[black!45, line width=0.8pt, dash pattern=on 3pt off 2pt]{30}
+\node[font=\fontsize{8}{9.6}\selectfont, text=black!65, anchor=east, inner sep=1.5pt] at (axis cs:29.5,84) {O$_2$ regeneration};
+\addplot[C0, line width=1.2pt, forget plot] table[x=t, y=a] {data/stability.dat};
+\addplot[C1, line width=1.2pt, forget plot] table[x=t, y=b] {data/stability.dat};
+\addplot[C2, line width=1.2pt, forget plot] table[x=t, y=c] {data/stability.dat};
+\end{axis}
+\letter{a}{a}
+\letter{b}{b}
+\letter{c}{c}
+% ---- one legend for the figure, centred over both columns
+\begin{axis}[mpl figure legend={($(a.outer north west)!0.5!(b.outer north east)$)}{south},
+  legend columns=3, legend style={yshift=4pt, /tikz/every even column/.append style={column sep=8pt}}]
+\addlegendimage{C0, mpl o, mpl edge, mark size=2.4pt, line width=1.5pt} \addlegendentry{Pt/CeO$_2$}
+\addlegendimage{C1, mpl o, mpl edge, mark size=2.4pt, line width=1.5pt} \addlegendentry{Pt/TiO$_2$}
+\addlegendimage{C2, mpl o, mpl edge, mark size=2.4pt, line width=1.5pt} \addlegendentry{Pt/Al$_2$O$_3$}
+\end{axis}
+\end{tikzpicture}
+\end{document}

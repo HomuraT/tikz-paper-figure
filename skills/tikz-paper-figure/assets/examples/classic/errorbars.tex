@@ -1,0 +1,64 @@
+% errorbars: measured rate constants of two catalysts against temperature, in the classic (Matplotlib) style,
+% polished. Points with their standard deviations (errorbar, markers with a white edge, capsize 2.5), a weighted
+% Arrhenius fit ln k = a + c1 (1/T - ubar) through each series with its 95 % confidence band
+% (fill_between, alpha 0.2), and the activation energy in the legend. Fit and covariance from
+% data/make_data.py; the band is written in centred form, var = var_a + (1/T - ubar)^2 var_c1, so TeX's
+% arithmetic never subtracts two large numbers. A secondary x axis on top reads the same temperatures in kelvin,
+% as ax.secondary_xaxis("top", functions=(C_to_K, K_to_C)) draws it: a second axis over the first, same width,
+% its range shifted by 273.15.
+\documentclass[10pt,tikz,border=4pt]{standalone}
+\usepackage{classicfig}
+\begin{document}
+\begin{tikzpicture}
+\begin{axis}[classic, name=main, mpl grid light, mpl minor={1}{1}, legend upper left,
+  xlabel={Temperature (\textdegree C)}, ylabel={Rate constant $k$ (mmol h$^{-1}$)},
+  xmin=22, xmax=88, enlarge x limits=false, ymin=0, ymax=11, enlarge y limits=false,
+  xtick={30,40,...,80}, ytick={0,2,...,10}, xtick pos=bottom,
+  domain=22:88, samples=100,
+  declare function={
+    u(\t) = 1/(\t+273.15);
+    lnA(\t) = 1.22411 - 3721.52*(u(\t)-0.0030677);  sA(\t) = sqrt(0.000961 + 28745*(u(\t)-0.0030677)^2);
+    lnB(\t) = 0.75685 - 3967.68*(u(\t)-0.0030291);  sB(\t) = sqrt(0.001078 + 27368.8*(u(\t)-0.0030291)^2);
+  }]
+% 95 % confidence bands of the fits
+\addplot[name path=Aup, draw=none, forget plot] {exp(lnA(x) + 1.96*sA(x))};
+\addplot[name path=Alo, draw=none, forget plot] {exp(lnA(x) - 1.96*sA(x))};
+\addplot[C0, mpl band] fill between[of=Aup and Alo];
+\addplot[name path=Bup, draw=none, forget plot] {exp(lnB(x) + 1.96*sB(x))};
+\addplot[name path=Blo, draw=none, forget plot] {exp(lnB(x) - 1.96*sB(x))};
+\addplot[C1, mpl band] fill between[of=Bup and Blo];
+% fits
+\addplot[C0, forget plot] {exp(lnA(x))};
+\addplot[C1, forget plot] {exp(lnB(x))};
+% measurements: error bars under the markers
+\addplot[C0, only marks, mark=none, mpl yerr thin, forget plot] coordinates
+  {(25,1.189) +- (0,0.085) (40,2.091) +- (0,0.151) (55,3.656) +- (0,0.224) (70,6.033) +- (0,0.371) (85,9.574) +- (0,0.861)};
+\addplot[C0, only marks, mpl o, mpl edge, forget plot] coordinates {(25,1.189) (40,2.091) (55,3.656) (70,6.033) (85,9.574)};
+\addplot[C1, only marks, mark=none, mpl yerr thin, forget plot] coordinates
+  {(25,0.605) +- (0,0.052) (40,1.083) +- (0,0.078) (55,1.932) +- (0,0.145) (70,3.512) +- (0,0.282) (85,5.427) +- (0,0.336)};
+\addplot[C1, only marks, mpl s, mpl edge, forget plot] coordinates {(25,0.605) (40,1.083) (55,1.932) (70,3.512) (85,5.427)};
+\addlegendimage{C0, line width=1.5pt, mpl o, mpl edge}
+\addlegendentry{Catalyst A}
+\addlegendimage{C1, line width=1.5pt, mpl s, mpl edge}
+\addlegendentry{Catalyst B}
+\addlegendimage{/pgfplots/legend image code/.code={\fill[black, fill opacity=0.2, draw=none, sharp corners] (0pt,-3.5pt) rectangle (20pt,3.5pt);}}
+\addlegendentry{95 \% CI of fit}
+% activation energies as labels running along their curves (Rougier's legend alternative), on the outer side
+% of each curve so no marker is covered: rotated to the local slope on the canvas (dk/dT times the ratio of the
+% axis units, 12.16/3.19 pt: 27.7 and 21 degrees)
+\node[font=\fontsize{9}{10}\selectfont, text=C0, rotate=27.7, anchor=south, inner sep=0pt, yshift=5pt]
+  at (axis cs:58,4.065) {\halo{$E_\mathrm{a}$ = 30.9 kJ mol$^{-1}$}};
+\node[font=\fontsize{9}{10}\selectfont, text=C1, rotate=21, anchor=north, inner sep=0pt, yshift=-5pt]
+  at (axis cs:66,2.93) {\halo{$E_\mathrm{a}$ = 33.0 kJ mol$^{-1}$}};
+\end{axis}
+% secondary x axis: kelvin on top (ax.secondary_xaxis). An axis without data ignores its limits, so it gets one
+% invisible point.
+\begin{axis}[classic frame, name=top, scale only axis, width=7.4cm, height=4.7cm,
+  xmin=295.15, xmax=361.15, ymin=0, ymax=1, enlargelimits=false, xtick={300,320,340,360},
+  axis y line=none, axis x line*=top, xtick pos=top, xticklabel pos=top, x axis line style={draw=none},
+  xlabel={Temperature (K)}, xlabel near ticks, xticklabel style={yshift=0.5pt}]
+\addplot[draw=none] coordinates {(300,0.5)};
+\end{axis}
+\node[font=\fontsize{12}{14}\selectfont, anchor=south] at ([yshift=4pt]top.outer north) {Rate against temperature};
+\end{tikzpicture}
+\end{document}

@@ -1,0 +1,73 @@
+% xrd: a powder pattern with a zoomed inset and a reference-stick panel, in the classic (Matplotlib) style.
+% Anatase TiO2 with a trace of rutile: the rutile (110) reflection at 27.45 deg is a bump on the tail of
+% anatase (101), invisible at full scale. The inset (ax.inset_axes) blows up 26.0-28.8 deg with the data as
+% points and the peak model with and without the rutile phase, the difference filled; the zoom rectangle and
+% its two connectors are ax.indicate_inset_zoom's, drawn behind the pattern at angles that clear the peak
+% labels. The anatase reflections are labelled in the anatase colour, rotated as XRD labels are. Below, the
+% reference patterns as a mirrored stick plot (anatase up, rutile down, ICDD 21-1272 and 21-1276), on the
+% shared 2theta axis. Pattern, sticks and model from data/make_data.py.
+\documentclass[10pt,tikz,border=4pt]{standalone}
+\usepackage{classicfig}
+\tikzset{hkl/.style={font=\fontsize{8}{9.6}\selectfont, text=C0!85!black, inner sep=1pt, rotate=90, anchor=west}}
+\begin{document}
+\begin{tikzpicture}
+% ---- the pattern
+\begin{axis}[classic, name=main, height=4.6cm, mpl minor={4}{3}, mpl title left, mpl align ylabel=30pt,
+  title={Anatase TiO$_2$}, ylabel={Intensity (counts)},
+  xmin=20, xmax=80, ymin=0, ymax=7000, enlargelimits=false,
+  xtick={20,30,...,80}, xticklabels={}, ytick={0,2000,...,6000}]
+\mpltitleright{Cu K$\alpha$, step 0.02\textdegree}
+% the zoom indicator, behind the pattern: the window, and connectors to the inset's two left corners, which
+% carry no tick labels (the inset has its y labels on the right)
+\draw[black!50, line width=0.6pt] (axis cs:26.0,840) -- (axis cs:39,6700)
+  (axis cs:28.8,840) -- (axis cs:39,3600);
+\draw[black!50, line width=0.8pt] (axis cs:26.0,400) rectangle (axis cs:28.8,840);
+\addplot[black, line width=0.6pt] table[x=tt, y=I] {data/xrd.dat};
+% the nine anatase reflections papers label, 80 counts above each maximum; the two close pairs fanned out
+% on leaders to one label width (2.6 deg) apart
+\node[hkl, rotate=-90, anchor=south] at (axis cs:25.28,5954) {(101)};
+\node[hkl] at (axis cs:37.80,1418) {(004)};
+\node[hkl] at (axis cs:48.05,2026) {(200)};
+\node[hkl] at (axis cs:62.69,954) {(204)};
+\node[hkl] at (axis cs:75.03,707) {(215)};
+\draw[C0!60, line width=0.5pt] (axis cs:53.89,1263) -- (axis cs:52.45,1500) (axis cs:55.06,1298) -- (axis cs:56.5,1500)
+  (axis cs:68.76,506) -- (axis cs:67.3,740) (axis cs:70.31,486) -- (axis cs:71.75,740);
+\node[hkl] at (axis cs:52.45,1500) {(105)};
+\node[hkl] at (axis cs:56.50,1500) {(211)};
+\node[hkl] at (axis cs:67.30,740) {(116)};
+\node[hkl] at (axis cs:71.75,740) {(220)};
+\coordinate (insw) at (axis cs:39,3600);
+\end{axis}
+% ---- the inset, on the empty upper right: 35 deg x 3100 counts of the main axes; y labels on the right
+% (axins.yaxis.tick_right()), clear of the connectors
+\begin{axis}[classic frame, name=inset, at={(insw)}, anchor=south west, scale only axis, width=4.32cm, height=2.04cm,
+  axis background/.style={fill=white}, clip mode=individual,
+  xmin=26.0, xmax=28.8, ymin=400, ymax=840, enlargelimits=false,
+  xtick={27,28}, ytick={500,700}, minor x tick num=4, minor y tick num=1, xtick pos=bottom,
+  ytick pos=right, yticklabel pos=right, tick label style={font=\fontsize{8}{10}\selectfont}]
+\addplot[name path=base, draw=none, forget plot] table[x=tt, y=base] {data/xrd-inset.dat};
+\addplot[name path=fit, draw=none, forget plot] table[x=tt, y=fit] {data/xrd-inset.dat};
+\addplot[C3, fill opacity=0.3, draw=none] fill between[of=fit and base];
+\addplot[only marks, mark=*, mark size=0.75pt, black!75, restrict x to domain=25.9:28.9] table[x=tt, y=I] {data/xrd.dat};
+\addplot[C3!85!black, line width=1.2pt] table[x=tt, y=fit] {data/xrd-inset.dat};
+\addplot[black!60, line width=0.9pt, dash pattern=on 3pt off 1.8pt] table[x=tt, y=base] {data/xrd-inset.dat};
+\node[font=\fontsize{8}{9.6}\selectfont, text=C3!85!black, anchor=south, inner sep=1pt] at (axis cs:27.45,742) {(110)};
+\node[font=\fontsize{8}{9.6}\selectfont, text=C3!85!black, anchor=south, align=center, inner sep=1pt] at (axis cs:28.3,585) {3.5 \%\\rutile};
+\node[font=\fontsize{8}{9.6}\selectfont, text=black!60, anchor=south west, inner sep=1pt] at (axis cs:26.04,404) {without rutile};
+\end{axis}
+% ---- reference patterns, sharing 2theta
+\begin{axis}[classic, name=ref, at={(main.south west)}, anchor=north west, yshift=-0.22cm, height=1.15cm,
+  mpl minor={4}{0}, xlabel={$2\theta$ (\textdegree)},
+  xmin=20, xmax=80, ymin=-125, ymax=125, enlargelimits=false, xtick={20,30,...,80}, ytick=\empty]
+\axhline[black!45, line width=0.6pt]{0}
+\addplot[C0, ycomb, line width=1.2pt] coordinates {(25.28,100) (36.95,10) (37.8,20) (38.58,10) (48.05,35) (53.89,20)
+  (55.06,20) (62.12,4) (62.69,14) (68.76,6) (70.31,6) (74.03,1) (75.03,10) (76.02,4)};
+\addplot[C3, ycomb, line width=1.2pt] coordinates {(27.45,-100) (36.09,-50) (39.19,-8) (41.23,-25) (44.05,-10)
+  (54.32,-60) (56.64,-20) (62.74,-10) (64.04,-10) (69.01,-20)};
+\node[font=\fontsize{8}{9.6}\selectfont, text=C0!85!black, anchor=north east, inner sep=1pt]
+  at ([xshift=-3pt, yshift=-2pt]rel axis cs:1,1) {anatase, ICDD 21-1272};
+\node[font=\fontsize{8}{9.6}\selectfont, text=C3!85!black, anchor=south east, inner sep=1pt]
+  at ([xshift=-3pt, yshift=2pt]rel axis cs:1,0) {rutile, ICDD 21-1276};
+\end{axis}
+\end{tikzpicture}
+\end{document}

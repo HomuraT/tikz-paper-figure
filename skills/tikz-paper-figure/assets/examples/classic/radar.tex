@@ -1,0 +1,40 @@
+% radar: three catalysts scored on six criteria (0-100), in the classic (Matplotlib) style: polar axes with
+% their default look (a black circular spine, grey grid on both the angles and the radii, radial labels along
+% one spoke) set up as a radar chart (theta offset pi/2, clockwise, one spoke per criterion), each catalyst a
+% filled polygon with its outline and markers, the reference drawn first, in grey and dashed, so the two
+% candidates read against it. The first spoke is at the top: criterion k sits at 90 - 60 k degrees, written
+% within 0..360 (angles outside the axis range are dropped). Legend in one row below the circle.
+\documentclass[10pt,tikz,border=4pt]{standalone}
+\usepackage{classicfig}
+\usepgfplotslibrary{polar}
+\begin{document}
+\begin{tikzpicture}
+\begin{polaraxis}[classic frame, classic legend, width=5.6cm, height=5.6cm, scale only axis,
+  title={Catalyst profiles}, title style={font=\fontsize{12}{14}\selectfont, yshift=16pt},
+  xmin=0, xmax=360, ymin=0, ymax=100,
+  xtick={90,30,330,270,210,150},
+  xticklabels={Activity, Selectivity, Stability, Recyclability, Cost, Safety},
+  xticklabel style={font=\fontsize{10}{12}\selectfont, inner sep=5pt},
+  ytick={20,40,...,100}, yticklabels={}, y axis line style={draw=none},
+  x axis line style={black, line width=0.8pt},
+  grid=major, grid style={black!31, line width=0.8pt}, major tick length=0pt,
+  % legend below the circle, one row (ncol=3), clear of the criterion labels
+  legend style={at={(0.5,-0.13)}, anchor=north, font=\fontsize{9}{11}\selectfont, legend columns=3,
+    /tikz/every even column/.append style={column sep=6pt}}, reverse legend,   % drawn last, listed first
+  every axis plot/.append style={line width=1.5pt}]
+\addplot[C7, fill=C7, fill opacity=0.10, mark=triangle*, mark size=2.6pt, dash pattern=on 4pt off 2pt,
+  mark options={fill opacity=1, draw=white, line width=0.5pt, solid}]
+  coordinates {(90,60) (30,65) (330,75) (270,55) (210,90) (150,70) (90,60)};
+\addlegendentry{Commercial}
+\addplot[C1, fill=C1, fill opacity=0.16, mark=square*, mark size=2pt, mark options={fill opacity=1, draw=white, line width=0.5pt}]
+  coordinates {(90,72) (30,90) (330,85) (270,65) (210,78) (150,80) (90,72)};
+\addlegendentry{Catalyst B}
+\addplot[C0, fill=C0, fill opacity=0.16, mark=*, mark size=2.2pt, mark options={fill opacity=1, draw=white, line width=0.5pt}]
+  coordinates {(90,88) (30,76) (330,70) (270,82) (210,60) (150,75) (90,88)};
+\addlegendentry{Catalyst A}
+% radial labels along the spoke between the first two criteria (rlabel_position); \pgfplotsinvokeforeach, not
+% \foreach, because it expands #1 before the axis stores the command
+\pgfplotsinvokeforeach{20,40,60,80}{\node[font=\fontsize{8}{9}\selectfont, text=black!60, inner sep=1pt] at (axis cs:60,#1) {\halo{#1}};}
+\end{polaraxis}
+\end{tikzpicture}
+\end{document}

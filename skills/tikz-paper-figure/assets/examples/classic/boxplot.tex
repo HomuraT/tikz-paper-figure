@@ -1,0 +1,48 @@
+% boxplot: replicate yields of four catalysts, in the classic (Matplotlib) style, polished. Box plots with
+% patch_artist=True (a tab20 light face, the tab10 hue for box, whiskers and caps, the median in a dark shade,
+% whis=1.5), every replicate on top as a jittered strip (alpha 0.6, white edge; so no separate fliers), the mean
+% as a white diamond. A dashed target line, and two Welch t-tests as significance brackets (*** p < 0.001). The
+% five numbers of each box are matplotlib.cbook.boxplot_stats on the raw data; data/make_data.py prints them.
+\documentclass[10pt,tikz,border=4pt]{standalone}
+\usepackage{classicfig}
+\pgfplotsset{
+  % one box: face, edge and median colour; the statistics follow as boxplot prepared={...}
+  box of/.style 2 args={mpl box, fill=#1, draw=#2, /pgfplots/boxplot/box extend=0.5, /pgfplots/boxplot/whisker extend=0.25,
+    /pgfplots/boxplot/every median/.style={#2!55!black, line width=2pt}},
+  strip of/.style={only marks, mark=*, mark size=1.9pt, #1, mark options={fill opacity=0.6, draw=white, line width=0.4pt}},
+}
+\begin{document}
+\begin{tikzpicture}
+\begin{axis}[classic, mpl ygrid light, mpl minor={0}{1}, mpl title left,
+  title={Replicate yields}, xlabel={Catalyst}, ylabel={Yield (\%)},
+  xmin=0.45, xmax=4.55, enlarge x limits=false, ymin=50, ymax=100, enlarge y limits=false,
+  xtick={1,2,3,4}, xticklabels={A,B,C,D}, ytick={50,60,...,100}]
+\mpltitleright{$n$ = 30 per catalyst}
+\node[mpl small, text=black!60, anchor=south west, align=left] at ([xshift=4pt, yshift=3pt]rel axis cs:0,0)
+  {*** $p$ < 0.001\\Welch's $t$-test};
+% target, behind the data
+\axhline[black!55, line width=0.8pt, dash pattern=on 4pt off 2.5pt]{80}
+\node[mpl small, text=black!60, anchor=south west] at (axis cs:0.5,80) {target 80 \%};
+% boxes
+\addplot[box of={C0L}{C0}, boxplot prepared={draw position=1, median=71.42, lower quartile=69.46, upper quartile=74.17, lower whisker=64.32, upper whisker=78.27}] coordinates {};
+\addplot[box of={C1L}{C1}, boxplot prepared={draw position=2, median=81.04, lower quartile=77.78, upper quartile=81.86, lower whisker=74.70, upper whisker=84.16}] coordinates {};
+\addplot[box of={C2L}{C2}, boxplot prepared={draw position=3, median=66.76, lower quartile=62.57, upper quartile=69.46, lower whisker=55.40, upper whisker=75.75}] coordinates {};
+\addplot[box of={C3L}{C3}, boxplot prepared={draw position=4, median=83.86, lower quartile=82.33, upper quartile=86.07, lower whisker=79.55, upper whisker=91.50}] coordinates {};
+% every replicate, jittered around its box
+\addplot[strip of=C0] coordinates {(0.908,72.14) (1.013,77.44) (1.033,76.90) (0.958,69.96) (1.034,70.81) (0.964,69.89) (0.911,74.28) (0.956,71.78) (0.975,74.99) (1.099,64.61) (0.908,78.27) (0.901,71.61) (1.015,74.72) (1.111,71.45) (1.098,70.48) (1.048,73.85) (0.896,75.30) (1.074,71.19) (1.044,71.39) (0.915,74.74) (0.992,68.52) (0.892,65.94) (1.072,73.58) (1.052,69.32) (1.073,64.32) (1.062,68.74) (0.944,70.13) (1.070,67.23) (0.940,66.03) (0.913,72.15)};
+\addplot[strip of=C1] coordinates {(1.974,82.69) (1.999,79.30) (1.949,77.77) (2.025,81.15) (2.025,82.15) (1.938,79.10) (2.029,81.63) (1.966,83.13) (2.056,79.38) (1.950,77.56) (2.072,81.04) (1.980,80.74) (2.013,83.30) (2.042,76.15) (2.004,78.02) (1.942,77.49) (2.115,74.80) (1.903,80.38) (1.958,81.58) (2.012,77.78) (1.887,84.16) (1.917,82.47) (2.072,81.88) (2.068,81.21) (2.033,82.87) (2.096,76.00) (2.061,81.84) (1.952,81.81) (2.035,74.70) (1.962,81.04) (2.060,68.50)};
+\addplot[strip of=C2] coordinates {(2.972,63.50) (2.917,69.69) (3.090,62.37) (3.046,64.89) (3.059,67.06) (3.014,59.74) (3.068,68.59) (2.987,64.37) (3.016,67.95) (2.895,61.87) (3.013,71.52) (3.076,68.63) (3.049,63.93) (3.073,68.79) (2.999,72.56) (3.092,75.75) (2.906,55.56) (3.090,70.30) (2.969,67.79) (2.902,64.44) (3.029,58.96) (2.989,72.54) (2.983,57.43) (3.084,68.40) (2.913,72.81) (3.028,55.40) (2.979,63.18) (3.007,57.14) (3.000,66.46) (2.912,74.09)};
+\addplot[strip of=C3] coordinates {(4.003,89.06) (4.087,79.55) (3.921,82.56) (3.883,85.76) (3.896,87.95) (3.990,85.05) (4.114,82.13) (3.891,84.74) (4.118,83.96) (4.009,83.49) (3.909,82.16) (3.980,84.97) (3.930,84.77) (4.051,83.77) (4.010,83.45) (3.949,80.79) (3.941,82.78) (4.088,87.02) (4.064,83.52) (3.985,80.40) (3.977,87.34) (4.057,85.33) (4.113,89.27) (3.899,84.16) (3.918,82.85) (3.967,80.38) (4.002,87.31) (3.897,90.42) (3.893,81.95) (3.933,82.38) (3.973,76.00) (4.057,91.50)};
+% medians again on top of the points, means as white diamonds (showmeans=True, meanprops white "D")
+\draw[C0!55!black, line width=2pt] (axis cs:0.75,71.42) -- (axis cs:1.25,71.42);
+\draw[C1!55!black, line width=2pt] (axis cs:1.75,81.04) -- (axis cs:2.25,81.04);
+\draw[C2!55!black, line width=2pt] (axis cs:2.75,66.76) -- (axis cs:3.25,66.76);
+\draw[C3!55!black, line width=2pt] (axis cs:3.75,83.86) -- (axis cs:4.25,83.86);
+\addplot[only marks, mark=diamond*, mark size=3.6pt, mark options={fill=white, draw=black, line width=0.8pt}] coordinates
+  {(1,71.39) (2,79.73) (3,65.86) (4,84.27)};
+% significance
+\sigbracket{1}{2}{87}{***}
+\sigbracket{2}{4}{94}{***}
+\end{axis}
+\end{tikzpicture}
+\end{document}

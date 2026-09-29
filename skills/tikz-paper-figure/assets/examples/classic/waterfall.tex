@@ -1,0 +1,67 @@
+% waterfall: in situ DRIFT spectra of a silica-supported catalyst heated in N2, offset by temperature, in the
+% classic (Matplotlib) style: the wavenumber axis runs from 4000 to 1000 cm^-1 (x dir=reverse, the IR
+% convention), traces coloured by temperature from plasma (0 to 0.82, so the hottest is still dark enough on
+% white) and labelled at their right ends instead of a legend, the bands that change marked at the top (a band
+% for the broad H-bonded OH and the carbonates, a dashed line for the sharp ones), and a scale bar in place of y
+% tick labels, since the offsets make absolute values meaningless. As the sample dries, adsorbed water
+% (delta(H2O), broad nu(OH)) and carbonates go, the isolated Si-OH band at 3740 cm^-1 grows. Band model in
+% declare function: Gaussian bands whose areas follow first-order decay or growth with temperature.
+\documentclass[10pt,tikz,border=4pt]{standalone}
+\usepackage{classicfig}
+\definecolor{T0}{HTML}{0C0786}
+\definecolor{T1}{HTML}{4F02A2}
+\definecolor{T2}{HTML}{8506A6}
+\definecolor{T3}{HTML}{B22C8E}
+\definecolor{T4}{HTML}{D5536D}
+\definecolor{T5}{HTML}{EF7D4F}
+\definecolor{T6}{HTML}{FCAD31}
+\begin{document}
+\begin{tikzpicture}
+\begin{axis}[classic, mpl minor={4}{0}, mpl title left, x dir=reverse,
+  width=7.4cm, height=6.2cm,
+  title={In situ DRIFTS}, xlabel={Wavenumber (cm$^{-1}$)}, ylabel={Absorbance (offset)},
+  xmin=1000, xmax=4000, enlarge x limits=false, ymin=-0.1, ymax=3.35, enlarge y limits=false,
+  xtick={1000,1500,...,4000}, ytick=\empty,
+  domain=1000:4000, samples=301,
+  declare function={
+    g(\x,\m,\s) = exp(max(-0.5*((\x-\m)/\s)^2, -60));   % the floor keeps pgfmath's exp in range
+    S(\x,\T) = 0.04 + 0.25*g(\x,1080,60)
+      + 0.55*exp(-(\T-25)/110)*g(\x,3400,230)
+      + (0.03 + 0.22*(1-exp(-(\T-25)/140)))*g(\x,3740,14)
+      + 0.32*exp(-(\T-25)/80)*g(\x,1630,28)
+      + 0.22*exp(-(\T-25)/260)*(g(\x,1550,35) + 0.8*g(\x,1385,40));
+  }]
+\mpltitleright{heating in N$_2$, 10 K min$^{-1}$}
+% the bands that change, behind the traces
+\axvspan[black, opacity=0.05]{3000}{3650}
+\axvspan[black, opacity=0.05]{1330}{1600}
+\axvline[black!45, line width=0.7pt, dash pattern=on 3pt off 2pt]{3740}
+\axvline[black!45, line width=0.7pt, dash pattern=on 3pt off 2pt]{1630}
+% labels on two rows: the sharp bands above their lines, the broad ones lower, centred on their spans
+\node[mpl small, anchor=south, text=black!70] at (axis cs:3325,2.93) {H-bonded OH};
+\node[mpl small, anchor=south, text=black!70] at (axis cs:1465,2.93) {CO$_3^{2-}$};
+\node[mpl small, anchor=south, text=black!70, fill=white, inner sep=1pt] at (axis cs:3740,3.14) {Si--OH};
+\node[mpl small, anchor=south, text=black!70, fill=white, inner sep=1pt] at (axis cs:1630,3.14) {$\delta$(H$_2$O)};
+% spectra, offset by 0.42 per step
+\addplot[T0] {S(x,25)};
+\addplot[T1] {0.42 + S(x,100)};
+\addplot[T2] {0.84 + S(x,150)};
+\addplot[T3] {1.26 + S(x,200)};
+\addplot[T4] {1.68 + S(x,250)};
+\addplot[T5] {2.10 + S(x,300)};
+\addplot[T6] {2.52 + S(x,350)};
+% direct labels at the right ends (clip_on=False), in the trace colours
+\node[mpl small, text=T0, anchor=west] at (axis cs:1000,0.14) {25 \textdegree C};
+\node[mpl small, text=T1, anchor=west] at (axis cs:1000,0.56) {100};
+\node[mpl small, text=T2, anchor=west] at (axis cs:1000,0.98) {150};
+\node[mpl small, text=T3, anchor=west] at (axis cs:1000,1.40) {200};
+\node[mpl small, text=T4, anchor=west] at (axis cs:1000,1.82) {250};
+\node[mpl small, text=T5, anchor=west] at (axis cs:1000,2.24) {300};
+\node[mpl small, text=T6, anchor=west] at (axis cs:1000,2.66) {350};
+% scale bar instead of y tick labels, in the empty band above the traces (away from the band labels, which
+% it would otherwise seem to belong to)
+\draw[black, line width=1pt] (axis cs:2250,2.97) -- (axis cs:2250,3.17);
+\node[mpl small, anchor=east] at (axis cs:2280,3.07) {0.2};
+\end{axis}
+\end{tikzpicture}
+\end{document}

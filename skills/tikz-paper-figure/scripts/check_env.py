@@ -40,6 +40,10 @@ ITEMS: list[Item] = [
     Item("fontawesome5.sty", "tex", "both style files (icons)", "TeX Live package fontawesome5"),
     Item("PIL", "python", "gallery_sheet.py (contact sheet)", "pip install pillow", required=False),
     Item("lualatex", "tool", "build_figure.py --lualatex (pgfplots contour plots only)", "TeX Live or MiKTeX", required=False),
+    Item("DejaVuSans.sty", "tex", "classicfig.sty (text font of the classic style)", "TeX Live package dejavu", required=False),
+    Item("mathastext.sty", "tex", "classicfig.sty (math and digits in DejaVu Sans)", "TeX Live package mathastext", required=False),
+    Item("contour.sty", "tex", "classicfig.sty (\\halo, white outlines behind labels)", "TeX Live package contour", required=False),
+    Item("numpy", "python", "assets/examples/classic/data/make_data.py (data of the classic examples)", "pip install numpy", required=False),
 ]
 
 

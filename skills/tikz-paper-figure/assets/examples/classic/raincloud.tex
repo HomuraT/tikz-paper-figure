@@ -1,0 +1,52 @@
+% raincloud: crystallite size by synthesis route, in the classic (Matplotlib) style: a half violin (Gaussian KDE,
+% Scott's bandwidth, every cloud scaled to the same height) above each category line, a slim box plot on the line
+% (whis=1.5) and the raw values as jittered rain below it. The microwave route is bimodal: its box looks like any
+% other, the cloud and the rain show two populations, which is the reason to draw the distribution at all.
+% KDEs, jitter and box numbers from data/make_data.py (data/raincloud-*.dat). The y axis is reversed so the first
+% route is on top; clouds therefore extend towards smaller y.
+\documentclass[10pt,tikz,border=4pt]{standalone}
+\usepackage{classicfig}
+\pgfplotsset{
+  hbox/.style 2 args={mpl box, fill=white, draw=black!85, line width=0.9pt, /pgfplots/boxplot/draw direction=x,
+    /pgfplots/boxplot/box extend=0.11, /pgfplots/boxplot/whisker extend=0,
+    /pgfplots/boxplot/every median/.style={#1!60!black, line width=2pt},
+    /pgfplots/boxplot/draw position=#2},
+  rain/.style={only marks, mark=*, mark size=1.6pt, #1, mark options={fill opacity=0.65, draw=white, line width=0.3pt}},
+}
+\begin{document}
+\begin{tikzpicture}
+\begin{axis}[classic, mpl xgrid light, mpl minor={1}{0}, y dir=reverse,
+  width=7.6cm, height=5.6cm,
+  title={Crystallite size by synthesis route}, xlabel={Crystallite size (nm)},
+  xmin=4, xmax=38, enlarge x limits=false, ymin=0.45, ymax=4.55, enlarge y limits=false,
+  xtick={5,10,...,35}, ytick={1,2,3,4}, yticklabels={Sol--gel, Hydrothermal, Co-precipitation, Microwave},
+  y tick style={draw=none}]
+\node[mpl small, text=black!60, anchor=north east] at ([xshift=-4pt, yshift=-4pt]rel axis cs:1,1) {$n$ = 60 per route};
+% clouds: fill between the category line and 1 - 0.42 kde
+\pgfplotsinvokeforeach{1,2,3,4}{\addplot[draw=none, name path=base#1, forget plot, domain=4:38, samples=2] {#1};}
+\addplot[C0, line width=1pt, name path=c1, forget plot] table[x=x, y expr={1-0.42*\thisrow{solgel}}] {data/raincloud-kde.dat};
+\addplot[C1, line width=1pt, name path=c2, forget plot] table[x=x, y expr={2-0.42*\thisrow{hydro}}] {data/raincloud-kde.dat};
+\addplot[C2, line width=1pt, name path=c3, forget plot] table[x=x, y expr={3-0.42*\thisrow{coprec}}] {data/raincloud-kde.dat};
+\addplot[C3, line width=1pt, name path=c4, forget plot] table[x=x, y expr={4-0.42*\thisrow{micro}}] {data/raincloud-kde.dat};
+\addplot[C0, fill opacity=0.45, draw=none, forget plot] fill between[of=c1 and base1];
+\addplot[C1, fill opacity=0.45, draw=none, forget plot] fill between[of=c2 and base2];
+\addplot[C2, fill opacity=0.45, draw=none, forget plot] fill between[of=c3 and base3];
+\addplot[C3, fill opacity=0.45, draw=none, forget plot] fill between[of=c4 and base4];
+% boxes on the category lines
+\addplot[hbox={C0}{1.09}, boxplot prepared={median=12.27, lower quartile=11.01, upper quartile=13.46, lower whisker=8.45, upper whisker=15.71}] coordinates {};
+\addplot[hbox={C1}{2.09}, boxplot prepared={median=17.51, lower quartile=16.66, upper quartile=18.99, lower whisker=14.20, upper whisker=21.52}] coordinates {};
+\addplot[hbox={C2}{3.09}, boxplot prepared={median=21.30, lower quartile=17.83, upper quartile=24.45, lower whisker=12.91, upper whisker=34.23}] coordinates {};
+\addplot[hbox={C3}{4.09}, boxplot prepared={median=12.51, lower quartile=10.27, upper quartile=18.93, lower whisker=7.63, upper whisker=24.03}] coordinates {};
+% rain: the raw values below each line (the file holds i - 0.24 + jitter; mirrored to i + 0.24 - jitter)
+\addplot[rain=C0] table[x=x, y expr={2*\thisrow{g}-\thisrow{y}}, restrict expr to domain={\thisrow{g}}{1:1}] {data/raincloud-points.dat};
+\addplot[rain=C1] table[x=x, y expr={2*\thisrow{g}-\thisrow{y}}, restrict expr to domain={\thisrow{g}}{2:2}] {data/raincloud-points.dat};
+\addplot[rain=C2] table[x=x, y expr={2*\thisrow{g}-\thisrow{y}}, restrict expr to domain={\thisrow{g}}{3:3}] {data/raincloud-points.dat};
+\addplot[rain=C3] table[x=x, y expr={2*\thisrow{g}-\thisrow{y}}, restrict expr to domain={\thisrow{g}}{4:4}] {data/raincloud-points.dat};
+% the point of the figure
+\node[mpl small, anchor=west, align=left] (bi) at (axis cs:25.4,3.62) {two populations;\\the box shows one};
+\draw[mpl arrow, line width=0.8pt] (bi.west) -- (axis cs:21.2,3.70);
+% the second arrow runs in the gap between the co-precipitation rain and the microwave cloud
+\draw[mpl arrow, line width=0.8pt] (bi.west) .. controls (axis cs:21,3.44) and (axis cs:14.5,3.42) .. (axis cs:11.4,3.57);
+\end{axis}
+\end{tikzpicture}
+\end{document}

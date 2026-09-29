@@ -1,24 +1,19 @@
 # tikz-paper-figure
 
-用 TikZ 和 pgfplots 画论文配图，全文一套样式：首页的卡片式先导图、结果榜单和中间所有数据图共用同一组字体、配色与尺寸。仓库里有两个样式包、三个模板、36 个已编译的范例、构建与检查脚本，以及一个 Claude Code skill，能从「把表 2 画成图」这样一句要求做到交付渲染图。
+![二次元学术工作台：用 TikZ 与 pgfplots 将想法绘成论文配图，两种风格、54 个范例、可编辑 TeX](docs/images/repository-banner.png)
 
-[English](README.md)
+用 TikZ 和 pgfplots 绘制论文配图。从卡片示意图、实验数据图到多面板组合图，提供两种风格、54 个已编译范例，以及从数据到渲染图的 agent 工作流。
 
-![三张卡片：一个基准任务的输入、输出与判定，一个贯穿始终的例子](skills/tikz-paper-figure/assets/examples/teaser-points.png)
-
-![六个基准面板，条形按成绩排序，我们的系统为蓝色](skills/tikz-paper-figure/assets/examples/bench-bars.png)
-
-![两块分数曲线面板，带置信带，系列名标在线尾](skills/tikz-paper-figure/assets/examples/plots/curves-bands.png)
-
-卡片画示意，面板画榜单，曲线画趋势。其余 33 个范例见下文[图库](#图库)。
+[English](README.md) · [安装](#安装) · [快速上手](#快速上手) · [完整图库](skills/tikz-paper-figure/references/gallery.md)
 
 ## 内容
 
 - 样式包。`cardfig.sty` 提供带深色标题栏、标签条、脚注带和阴影的卡片，以及基准条形面板；`plotfig.sty` 给 pgfplots 一个 `paper` 坐标轴样式，同一套字体与配色，系列名直接标在图上，柱从零起，灰色刻度，数字用正文字体。
-- 三个模板（`template.tex`、`template-bars.tex`、`template-plot.tex`）和 36 个带渲染图的范例：3 张卡片图、1 张条形面板、28 张数据图、4 张组合图。
-- 脚本。`build_figure.py` 编译、清理、对照正文宽度检查尺寸并输出 PNG；`bars_from_csv.py`、`flows_from_csv.py`、`treemap_from_csv.py` 从数据生成图；`palette_check.py` 在模拟色觉缺陷下测量配色距离；`compare_sheet.py` 把两版图叠成一张对照；`check_env.py` 列出本机装了什么。
-- 参考文档。Wilke《Fundamentals of Data Visualization》的要点笔记与选图决策表、卡片元素目录、每种图一份配方、常见问题与修法。
-- `SKILL.md`：agent 从确定内容到交付渲染图的工作流。
+- 经典风格 `classicfig.sty`：把 Matplotlib 的默认参数（rcParams）搬进 pgfplots（DejaVu Sans、四边框、tab10 配色、圆角图例框），并为认真的 Matplotlib 用户常加的每一处打磨配一个键或宏：浅色网格、白边标记点、文字白色描边、区间色带、文本框、显著性括号、断轴、整张组合图共用的图例。
+- 三个模板（`template.tex`、`template-bars.tex`、`template-plot.tex`）和 54 个带渲染图的范例：统一风格（卡片与数据图共用字体配色的那一套）3 张卡片图、1 张条形面板、28 张数据图、4 张组合图；经典风格 13 张单图和 5 张组合图（拟合加残差、散点加边际分布、局部放大插图、断轴、拼图），附生成数据的 numpy 脚本。
+- 脚本。`build_figure.py` 编译（默认 pdflatex，文件要求时用 LuaLaTeX）、清理、对照正文宽度检查尺寸并输出 PNG；`bars_from_csv.py`、`flows_from_csv.py`、`treemap_from_csv.py` 从数据生成图；`palette_check.py` 在模拟色觉缺陷下测量配色距离；`compare_sheet.py` 把两版图叠成一张对照；`gallery_sheet.py` 拼出范例总览；`check_env.py` 列出本机装了什么。
+- 参考文档。Wilke《Fundamentals of Data Visualization》的要点笔记与选图决策表、卡片元素目录、每种图一份配方、经典风格的工作流与画图技巧（整理自 Rougier《Scientific Visualization: Python + Matplotlib》和 Matplotlib 官方图库）、常见问题与修法。
+- `SKILL.md`：agent 从选风格、确定内容到交付渲染图的工作流。
 
 ## 安装
 
@@ -36,13 +31,13 @@ Copy-Item -Recurse tikz-paper-figure/skills/tikz-paper-figure "$env:USERPROFILE/
 
 目录布局也符合 `npx skills add HomuraT/tikz-paper-figure --skill tikz-paper-figure` 的要求，这条路径没有测过。
 
-**只要模板，不用 agent。** 把 `skills/tikz-paper-figure/assets/cardfig.sty` 或 `plotfig.sty` 复制到图源目录，按下面的快速上手走。`.sty` 进了项目，Overleaf 上也能编译。
+**只要模板，不用 agent。** 把 `skills/tikz-paper-figure/assets/cardfig.sty`、`plotfig.sty` 或 `classicfig.sty` 复制到图源目录，按下面的快速上手走。`.sty` 进了项目，Overleaf 上也能编译。
 
 ## 快速上手
 
 先跑一次 `python skills/tikz-paper-figure/scripts/check_env.py`，它会列出缺哪个 TeX 宏包或工具，以及缺了会坏什么。
 
-1. 把 `plotfig.sty`（数据图）或 `cardfig.sty`（卡片、条形面板）复制进论文的 `figures/`。
+1. 把 `plotfig.sty`（数据图）、`cardfig.sty`（卡片、条形面板）或 `classicfig.sty`（经典的 Matplotlib 风格）复制进论文的 `figures/`。一篇论文只用一种风格。
 2. 从 `skills/tikz-paper-figure/assets/examples/` 挑最接近的范例复制为 `figures/name.tex`，换成自己的数据。结果榜单改从 CSV 生成：
    ```bash
    python skills/tikz-paper-figure/scripts/bars_from_csv.py results.csv --ours Ours --cols 2 --out figures/results.tex
@@ -62,24 +57,51 @@ Copy-Item -Recurse tikz-paper-figure/skills/tikz-paper-figure "$env:USERPROFILE/
 - 「把表 2 画成结果图，我们的系统用蓝色。」
 - 「5.2 节的消融用什么图？画出来。」
 - 「把 `figures/curves.tex` 的图例挪到图上方，别的都不动。」
+- 「用经典风格画这组 XRD 数据，把金红石那个小峰放大。」
 
-skill 按段落要回答的问题选图，复制最近的范例，编译，读渲染图，汇报跑了哪些检查。修改已有图时，要求被拆成「改什么」和「保持什么」两张清单（数据、颜色、尺寸、没点名的元素位置），回复里给出 diff 和前后对照图。机器上没有 TeX 时，skill 会说明图没有编译，不会描述一张谁也没见过的渲染图。
+skill 按论文定风格，按段落要回答的问题选图，复制最近的范例，编译，读渲染图，汇报跑了哪些检查。经典风格下，它先用 Python 算好所有统计量，再把标签、图例和文本框放进数据留出的空白处。修改已有图时，要求被拆成「改什么」和「保持什么」两张清单（数据、颜色、尺寸、没点名的元素位置），回复里给出 diff 和前后对照图。机器上没有 TeX 时，skill 会说明图没有编译，不会描述一张谁也没见过的渲染图。
 
 ## 环境要求
 
 | | |
 |---|---|
-| TeX | TeX Live 2023 或更新（或 MiKTeX），含 `standalone`、`pgfplots` 1.18+、`tikzmark`、`fontawesome5`、`sourcesanspro`、`inconsolata`；`lualatex` 只有等高线图用到 |
+| TeX | TeX Live 2023 或更新（或 MiKTeX），含 `standalone`、`pgfplots` 1.18+、`tikzmark`、`fontawesome5`、`sourcesanspro`、`inconsolata`；经典风格另需 `dejavu`、`mathastext`、`contour`；`lualatex` 只有等高线图用到 |
 | PDF 工具 | poppler 的 `pdfinfo` 与 `pdftoppm`（Windows 版 TeX Live 自带） |
-| Python | 3.9 或更新；Pillow 只有 `gallery_sheet.py` 用到 |
+| Python | 3.9 或更新；Pillow 只有 `gallery_sheet.py` 用到，numpy 只有经典风格范例的数据脚本用到 |
 
 在 Windows 11、TeX Live 2025、Python 3.13 和 Claude Code 上测过。`SKILL.md` 遵循 [Agent Skills](https://agentskills.io/specification) 格式，读这种格式的其他 agent 应该也能加载，只试过 Claude Code。
 
 ## 图库
 
-全部范例在一页里：[`references/gallery.md`](skills/tikz-paper-figure/references/gallery.md) 给每张渲染图配上它回答的问题、源码路径和该读的配方。下面这张拼图是同一批 36 张图的总览，按模板分组；新增范例后用 `gallery_sheet.py` 重新生成。
+| 统一风格 · 示意与结果 | Classic 风格 · 科学绘图 |
+| :---: | :---: |
+| <a href="skills/tikz-paper-figure/assets/examples/plots/curves-bands.png"><img src="skills/tikz-paper-figure/assets/examples/plots/curves-bands.png" width="320" alt="统一风格：带置信区间的双面板曲线图"></a> | <a href="skills/tikz-paper-figure/assets/examples/classic/xrd.png"><img src="skills/tikz-paper-figure/assets/examples/classic/xrd.png" width="320" alt="Classic 风格：带局部放大与参考谱线的 XRD 图"></a> |
+| 卡片、榜单、曲线与消融分析 | 光谱、分布、拟合与组合图 |
 
-![36 个范例渲染图的拼图，按模板分组](skills/tikz-paper-figure/assets/examples/gallery.png)
+点击预览查看原图。
+
+[浏览全部 54 个范例与源码 →](skills/tikz-paper-figure/references/gallery.md) 每张图都附有适用问题、源码路径和对应配方。
+
+| 风格 | 范例 | 说明 |
+| --- | --- | --- |
+| 统一风格 | 36 张：卡片、条形面板、数据图与组合图 | [选图与配方](skills/tikz-paper-figure/references/gallery.md) |
+| Classic 风格 | 18 张：线与点、分布、类别与场、组合图 | [经典风格指南](skills/tikz-paper-figure/references/classic.md) |
+
+<details>
+<summary>展开统一风格总览 · 36 张图</summary>
+
+![36 个统一风格范例，按模板分组](skills/tikz-paper-figure/assets/examples/gallery.png)
+
+</details>
+
+<details>
+<summary>展开 Classic 风格总览 · 18 张图</summary>
+
+![18 个经典风格范例，按图型分组](skills/tikz-paper-figure/assets/examples/classic/gallery.png)
+
+</details>
+
+新增范例后，用 `gallery_sheet.py` 重新生成总览图。
 
 ## 范例与测试
 
@@ -89,7 +111,7 @@ skill 按段落要回答的问题选图，复制最近的范例，编译，读�
 
 ## 规则出处
 
-样式、配色和选图背后的道理写在博客文章里：[用 TikZ 统一论文配图：样式规范、模板与构建流程](https://blog.homura.work/posts/tech/latex/tikz-paper-figure/)。数据图的默认值来自 Claus O. Wilke 的《Fundamentals of Data Visualization》，[`references/principles.md`](skills/tikz-paper-figure/references/principles.md) 是转述的要点笔记，每条规则链接到原书章节，并写明本样式有意偏离原书的地方。卡片版式参考了 SWE-bench、Spider 2.0 和 BIRD 的 Figure 1。
+样式、配色和选图背后的道理写在博客文章里：[用 TikZ 统一论文配图：样式规范、模板与构建流程](https://blog.homura.work/posts/tech/latex/tikz-paper-figure/)。数据图的默认值来自 Claus O. Wilke 的《Fundamentals of Data Visualization》，[`references/principles.md`](skills/tikz-paper-figure/references/principles.md) 是转述的要点笔记，每条规则链接到原书章节，并写明本样式有意偏离原书的地方。卡片版式参考了 SWE-bench、Spider 2.0 和 BIRD 的 Figure 1。经典风格的尺寸与颜色取自 Matplotlib 的默认 rcParams，打磨手法来自 Nicolas P. Rougier 的《Scientific Visualization: Python + Matplotlib》（开放获取）、他的《Ten simple rules for better figures》以及 Matplotlib 官方图库的范例；[`references/classic.md`](skills/tikz-paper-figure/references/classic.md) 为每条技巧注明出处和示范它的范例。
 
 ## 相关项目
 
@@ -107,6 +129,6 @@ skill 按段落要回答的问题选图，复制最近的范例，编译，读�
 
 ## 许可证
 
-脚本、`SKILL.md` 和参考文档采用 [MIT 许可证](LICENSE)。`docs/sponsor/` 下的赞赏码不在两份许可证的范围内。`skills/tikz-paper-figure/assets/` 下的全部内容（两个样式包、模板、范例源码及其渲染图）以 [CC0 1.0](LICENSE-ASSETS) 放入公有领域，论文仓库复制它们不必附带任何声明。
+脚本、`SKILL.md` 和参考文档采用 [MIT 许可证](LICENSE)。`docs/sponsor/` 下的赞赏码不在两份许可证的范围内。`skills/tikz-paper-figure/assets/` 下的全部内容（三个样式包、模板、范例源码、数据及其渲染图）以 [CC0 1.0](LICENSE-ASSETS) 放入公有领域，论文仓库复制它们不必附带任何声明。
 
-未打包进仓库的部分：字体（Source Sans Pro、Inconsolata）和 Font Awesome 图标来自 TeX Live 宏包，各有自己的许可证。Wilke 的书是 CC BY-NC-ND 4.0，本仓库只转述其规则并链接到章节，不复制其文字或图片。
+未打包进仓库的部分：字体（Source Sans Pro、Inconsolata、DejaVu Sans）和 Font Awesome 图标来自 TeX Live 宏包，各有自己的许可证。Wilke 的书是 CC BY-NC-ND 4.0，本仓库只转述其规则并链接到章节，不复制其文字或图片。Rougier 的书与代码（BSD）以及 Matplotlib 官方图库同样只转述并附链接，不复制其文字、代码或图片。

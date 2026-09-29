@@ -1,0 +1,77 @@
+% joint: a scatter plot with marginal distributions (Matplotlib's scatter_hist, fig.add_gridspec with the
+% histograms on shared axes) and covariance ellipses (the confidence_ellipse example), in the classic style.
+% Two catalyst libraries screened for the semi-hydrogenation of an alkyne, selectivity against conversion.
+% Behind the data, dotted iso-yield curves Y = X S / 100; each meets the top spine at x = Y, so their labels
+% along the top edge read as a yield scale. Families are labelled in the empty corners of the top marginal,
+% the ellipse and mean glyphs in the empty corner cell of the grid. Points, ellipses (1 and 2 sd), histograms
+% and Gaussian KDEs (scaled to counts) from data/make_data.py.
+\documentclass[10pt,tikz,border=4pt]{standalone}
+\usepackage{classicfig}
+\pgfplotsset{
+  pts/.style={only marks, mark=*, mark size=1.7pt, mark options={fill=#1, fill opacity=0.7, draw=white, line width=0.3pt},
+    forget plot},
+  ell/.style={#1!75!black, line width=1.2pt, forget plot},
+  mean/.style={only marks, mark=*, mark size=3pt, mark options={fill=#1, draw=black, line width=0.9pt}, forget plot},
+  iso/.style={black!40, line width=0.8pt, dash pattern=on 0.8pt off 1.3pt, samples=60, forget plot},
+  marginal/.style={classic, tick label style={font=\fontsize{8}{10}\selectfont}},
+  kde/.style={#1, line width=1.2pt, forget plot},
+}
+\begin{document}
+\begin{tikzpicture}
+% ---- the joint distribution
+\begin{axis}[classic, name=main, width=6cm, height=5cm, mpl minor={1}{1},
+  xlabel={Conversion (\%)}, ylabel={Selectivity (\%)},
+  xmin=20, xmax=80, ymin=64, ymax=100, enlargelimits=false,
+  xtick={20,30,...,80}, ytick={70,80,90,100}]
+% iso-yield curves, and their labels where they meet the top spine (at x = Y)
+\pgfplotsinvokeforeach{30,40,50,60}{\addplot[iso, domain=#1:{min(80,100*#1/64)}] {100*#1/x};}
+\node[mpl small, text=black!55, anchor=north west] at (axis cs:30.6,99.6) {30};
+\node[mpl small, text=black!55, anchor=north west] at (axis cs:40.6,99.6) {40};
+\node[mpl small, text=black!55, anchor=north west] at (axis cs:50.6,99.6) {50};
+\node[mpl small, text=black!55, anchor=north west] at (axis cs:60.6,99.6) {60 \% yield};
+% 1-sd ellipses filled under the points, both outlined over them
+\addplot[C0, fill=C0, fill opacity=0.12, draw=none, forget plot] table[x=a1x, y=a1y] {data/joint-ellipses.dat};
+\addplot[C1, fill=C1, fill opacity=0.12, draw=none, forget plot] table[x=b1x, y=b1y] {data/joint-ellipses.dat};
+\addplot[pts=C0] table[x=x1, y=y1] {data/joint-points.dat};
+\addplot[pts=C1] table[x=x2, y=y2] {data/joint-points.dat};
+\addplot[ell=C0] table[x=a1x, y=a1y] {data/joint-ellipses.dat};
+\addplot[ell=C1] table[x=b1x, y=b1y] {data/joint-ellipses.dat};
+\addplot[ell=C0, line width=1pt, dash pattern=on 3.5pt off 2pt] table[x=a2x, y=a2y] {data/joint-ellipses.dat};
+\addplot[ell=C1, line width=1pt, dash pattern=on 3.5pt off 2pt] table[x=b2x, y=b2y] {data/joint-ellipses.dat};
+\addplot[mean=C0] coordinates {(42.90,88.96)};
+\addplot[mean=C1] coordinates {(62.93,77.47)};
+\end{axis}
+% ---- marginal of x, on top, sharing the x axis
+\begin{axis}[marginal, name=top, at={(main.north west)}, anchor=south west, yshift=0.22cm, width=6cm, height=1.7cm,
+  mpl title left, title={Catalyst screening},
+  xmin=20, xmax=80, ymin=0, ymax=37, enlargelimits=false, xtick={20,30,...,80}, xticklabels={},
+  ytick={0,20}, yticklabels={,20}]   % no 0 label: it would touch the 100 of the main axis
+\addplot[C0, mpl stepfill, forget plot] table[x=e, y=a] {data/joint-histx.dat};
+\addplot[C1, mpl stepfill, forget plot] table[x=e, y=b] {data/joint-histx.dat};
+\addplot[kde=C0] table[x=gx, y=kx] {data/joint-kde-a.dat};
+\addplot[kde=C1] table[x=gx, y=kx] {data/joint-kde-b.dat};
+% the families, in the empty corners
+\node[font=\fontsize{9}{11}\selectfont, text=C0!80!black, anchor=north west, align=left, inner sep=0pt]
+  at ([xshift=4pt, yshift=-4pt]rel axis cs:0,1) {Pd--Ag\\[-1pt]{\fontsize{8}{9.6}\selectfont $r = -0.64$}};
+\node[font=\fontsize{9}{11}\selectfont, text=C1!80!black, anchor=north east, align=right, inner sep=0pt]
+  at ([xshift=-4pt, yshift=-4pt]rel axis cs:1,1) {Pd--Cu\\[-1pt]{\fontsize{8}{9.6}\selectfont $r = -0.72$}};
+\end{axis}
+% ---- marginal of y, on the right, sharing the y axis; its legend fills the empty corner cell
+\begin{axis}[marginal, name=right, at={(main.south east)}, anchor=south west, xshift=0.22cm, width=1.6cm, height=5cm,
+  ymin=64, ymax=100, xmin=0, xmax=32, enlargelimits=false, ytick={70,80,90,100}, yticklabels={}, xtick={0,20}, xticklabels={,20},   % a 0 here reads as 800
+  legend style={at={(rel axis cs:0.5,1)}, anchor=center, yshift=1.02cm, font=\fontsize{8}{10}\selectfont,
+    inner xsep=2pt, nodes={inner xsep=2.5pt}},
+  legend image code/.code={\draw[mark repeat=2, mark phase=2, sharp corners, #1] plot coordinates {(0pt,0pt) (7pt,0pt) (14pt,0pt)};}]
+\addlegendimage{black, line width=1.2pt}                                    \addlegendentry{$1\sigma$}
+\addlegendimage{black, line width=1pt, dash pattern=on 3.5pt off 2pt}       \addlegendentry{$2\sigma$}
+\addlegendimage{only marks, mark=*, mark size=3pt, mark options={fill=white, draw=black, line width=0.9pt}} \addlegendentry{mean}
+\addplot[C0, fill=C0, fill opacity=0.35, draw=none, xbar interval, forget plot] table[x=a, y=e] {data/joint-histy.dat};
+\addplot[C1, fill=C1, fill opacity=0.35, draw=none, xbar interval, forget plot] table[x=b, y=e] {data/joint-histy.dat};
+\addplot[kde=C0] table[x=ky, y=gy] {data/joint-kde-a.dat};
+\addplot[kde=C1] table[x=ky, y=gy] {data/joint-kde-b.dat};
+\end{axis}
+% the loc="right" note of the title, flush with the right marginal (the whole grid) instead of the top axis
+\node[font=\fontsize{9}{11}\selectfont, text=black!60, anchor=base east, inner sep=0pt]
+  at ([yshift=9pt]top.north -| right.east) {$n$ = 120 each};
+\end{tikzpicture}
+\end{document}

@@ -1,0 +1,54 @@
+% !TEX program = lualatex
+% contour: the Mueller-Brown potential, the two-dimensional test surface of reaction-path methods, in the classic
+% (Matplotlib) style, polished: contourf with viridis in 15-unit bands (clipped at 60, as extend="max"), thin
+% contour lines at every band edge, the three minima A, B, C and the two saddle
+% points, and the minimum energy path from the string method (data/make_data.py) as a white line cased in dark
+% grey, so it reads on every colour. Filled bands are pgfplots' contour filled; the lines need contour lua,
+% hence LuaLaTeX (the magic comment above makes build_figure.py use it).
+\documentclass[10pt,tikz,border=4pt]{standalone}
+\usepackage{classicfig}
+\begin{document}
+\begin{tikzpicture}
+\begin{axis}[classic, mpl title left, view={0}{90}, width=6.2cm, height=5.5cm,
+  title={M\"uller--Brown potential},
+  xlabel={$x$}, ylabel={$y$},
+  xmin=-1.5, xmax=1.2, ymin=-0.4, ymax=2.0, enlargelimits=false, axis on top,
+  xtick={-1.5,-1,...,1}, ytick={0,0.5,...,2},
+  xticklabel style={/pgf/number format/fixed, /pgf/number format/precision=1},
+  colormap name=viridis, point meta min=-150, point meta max=60,
+  colorbar, classic colorbar={Potential energy}, colorbar style={ytick={-150,-120,...,60}},
+  domain=-1.5:1.2, domain y=-0.4:2.0,
+  declare function={
+    V(\x,\y) = -200*exp(-(\x-1)^2 - 10*\y^2)
+               -100*exp(-\x^2 - 10*(\y-0.5)^2)
+               -170*exp(-6.5*(\x+0.5)^2 + 11*(\x+0.5)*(\y-1.5) - 6.5*(\y-1.5)^2)
+               + 15*exp(0.7*(\x+1)^2 + 0.6*(\x+1)*(\y-1) + 0.7*(\y-1)^2);
+  }]
+% filled bands (contourf), clipped at 60
+\addplot3[contour filled={levels={-150,-135,-120,-105,-90,-75,-60,-45,-30,-15,0,15,30,45,60}},
+  samples=81, samples y=73] {min(V(x,y), 59.9)};
+% contour lines at the band edges (contour(..., colors="k", linewidths=0.5, alpha=0.4)); no inline labels:
+% the colour bar carries the values, and the stationary points are labelled with their energies instead
+\addplot3[contour lua={levels={-135,-120,-105,-90,-75,-60,-45,-30,-15,0,15,30,45}, labels=false, draw color=black},
+  black, opacity=0.4, line width=0.45pt, samples=81, samples y=73] {V(x,y)};
+% minimum energy path, a white line cased in dark grey
+\addplot[white, line width=1.6pt, preaction={draw=black!70, line width=2.8pt}, smooth, tension=0.4] coordinates {
+  (-0.558,1.442) (-0.622,1.377) (-0.687,1.313) (-0.751,1.248) (-0.814,1.183) (-0.876,1.116) (-0.933,1.045)
+  (-0.974,0.964) (-0.979,0.874) (-0.949,0.789) (-0.901,0.712) (-0.841,0.643) (-0.769,0.587) (-0.688,0.546)
+  (-0.601,0.519) (-0.512,0.503) (-0.421,0.494) (-0.330,0.489) (-0.239,0.483) (-0.148,0.476) (-0.057,0.468)
+  (0.032,0.452) (0.115,0.415) (0.177,0.348) (0.225,0.271) (0.271,0.193) (0.327,0.121) (0.400,0.067)
+  (0.487,0.042) (0.578,0.031) (0.623,0.028)};
+% stationary points: minima as circles, saddle points as diamonds
+\addplot[only marks, mark=*, mark size=3.4pt, mark options={fill=white, draw=black, line width=1pt}] coordinates
+  {(-0.558,1.442) (0.623,0.028) (-0.050,0.467)};
+\addplot[only marks, mark=diamond*, mark size=3.8pt, mark options={fill=white, draw=black, line width=1pt}] coordinates
+  {(-0.822,0.624) (0.212,0.293)};
+\node[mpl text, anchor=south west, align=left] at (axis cs:-0.50,1.49) {\halo{\textbf{A}} \halo{\textcolor{black!70}{$-$146.7}}};
+\node[mpl text, anchor=north] at (axis cs:0.60,-0.07) {\halo{\textbf{B}} \halo{\textcolor{black!70}{$-$108.2}}};
+\node[font=\fontsize{9}{11}\selectfont, text=white, anchor=south, inner sep=1pt, rotate=46] at (axis cs:-0.78,1.275) {MEP};
+\node[mpl text, anchor=south] at (axis cs:-0.05,0.53) {\halo{\textbf{C}} \halo{\textcolor{black!70}{$-$80.8}}};
+\node[mpl text, anchor=east] at (axis cs:-0.89,0.62) {\halo{TS1}};
+\node[mpl text, anchor=south west] at (axis cs:0.25,0.32) {\halo{TS2}};
+\end{axis}
+\end{tikzpicture}
+\end{document}

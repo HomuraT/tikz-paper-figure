@@ -8,8 +8,8 @@ reads the page size of the PDF, warns when the figure would overflow the text wi
 Read the PNG afterwards; the compile log alone does not show overlaps, hyphenation or misaligned elements.
 
 Requires latexmk, pdfinfo and pdftoppm (TeX Live + poppler) on PATH.
-The skill's assets directory is appended to TEXINPUTS so the bundled examples find cardfig.sty and plotfig.sty;
-a copy next to the figure always wins, and that copy is what a paper repository should contain.
+The skill's assets directory is appended to TEXINPUTS so the bundled examples find cardfig.sty, plotfig.sty and
+classicfig.sty; a copy next to the figure always wins, and that copy is what a paper repository should contain.
 """
 from __future__ import annotations
 
@@ -39,9 +39,19 @@ def texinputs_env() -> dict[str, str]:
     return env
 
 
+def wants_lualatex(tex: Path) -> bool:
+    """True when the file asks for LuaLaTeX with the magic comment `% !TEX program = lualatex` in its first lines
+    (the convention of TeXShop, TeXstudio and Overleaf), as figures using pgfplots' `contour lua` must."""
+    try:
+        head: list[str] = tex.read_text(encoding="utf-8", errors="replace").splitlines()[:5]
+    except OSError:
+        return False
+    return any(re.match(r"%\s*!\s*TEX\s+(?:TS-)?program\s*=\s*lualatex\b", line, flags=re.I) for line in head)
+
+
 def compile_figure(tex: Path, keep_aux: bool, lualatex: bool = False) -> bool:
     env: dict[str, str] = texinputs_env()
-    engine: str = "-lualatex" if lualatex else "-pdf"
+    engine: str = "-lualatex" if lualatex or wants_lualatex(tex) else "-pdf"
     result = run(["latexmk", engine, "-interaction=nonstopmode", "-halt-on-error", tex.name], cwd=tex.parent, env=env)
     log: Path = tex.with_suffix(".log")
     if result.returncode != 0:
@@ -62,6 +72,9 @@ def compile_figure(tex: Path, keep_aux: bool, lualatex: bool = False) -> bool:
                 print(f"[build] {tex.name}: {m.group(0).strip()}")
     if not keep_aux:
         run(["latexmk", "-c", tex.name], cwd=tex.parent, env=env)
+        # pgfplots' contour plots leave <name>_contourtmp<N>.{dat,lua,table,script}; latexmk does not know them
+        for tmp in tex.parent.glob(f"{tex.stem}_contourtmp*"):
+            tmp.unlink(missing_ok=True)
     return True
 
 
@@ -88,7 +101,8 @@ def main() -> int:
     parser.add_argument("--dpi", type=int, default=300)
     parser.add_argument("--png-dir", type=Path, default=Path(tempfile.gettempdir()) / "cardfig", help="where to put the PNG renders")
     parser.add_argument("--keep-aux", action="store_true", help="do not run latexmk -c afterwards")
-    parser.add_argument("--lualatex", action="store_true", help="compile with lualatex (needed for pgfplots contour lua)")
+    parser.add_argument("--lualatex", action="store_true",
+                        help="compile every file with lualatex (a file whose first lines hold `%% !TEX program = lualatex` gets it anyway)")
     args = parser.parse_args()
 
     ok: bool = True

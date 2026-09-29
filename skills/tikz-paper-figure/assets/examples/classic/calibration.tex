@@ -1,0 +1,69 @@
+% calibration: a calibration line with its residuals, in the classic (Matplotlib) style, as the two-row
+% composite of fig, (ax, res) = plt.subplots(2, 1, sharex=True, height_ratios=[3, 1]). Top: the 30 standards
+% (markers with a white edge), the least-squares line, its 95 % confidence band (fill_between, alpha 0.2) and the
+% 95 % prediction band (dashed), and the fit statistics in a text box (equation, R^2, residual s, LOD = 3.3 s/b).
+% Bottom: residuals as stems (ax.stem) on the shared x axis, the +-2s band in grey, and the one standard outside it
+% in red. Fit numbers from data/make_data.py (n = 30, t(0.975, 28) = 2.048, t s = 1.8628, xbar = 5, Sxx = 267.24).
+\documentclass[10pt,tikz,border=4pt]{standalone}
+\usepackage{classicfig}
+\begin{document}
+\begin{tikzpicture}
+\begin{axis}[classic, name=fit, mpl grid light, mpl minor={1}{1}, mpl align ylabel=25pt, legend upper left,
+  height=4.1cm, title={Calibration curve},
+  ylabel={Signal (a.u.)},
+  xmin=-0.5, xmax=10.5, enlarge x limits=false, ymin=-2, ymax=26, enlarge y limits=false,
+  xtick={0,2,...,10}, xticklabels={}, ytick={0,5,...,25},
+  legend style={font=\fontsize{9}{11}\selectfont},
+  domain=-0.5:10.5, samples=60,
+  declare function={yhat(\x) = 1.0309 + 2.1700*\x;  se(\x) = sqrt(1/30 + (\x-5)^2/267.2448);
+    sp(\x) = sqrt(1 + 1/30 + (\x-5)^2/267.2448);}]
+% the legend in reading order, not drawing order (ax.legend(handles=[...])): the handles first, then every
+% plot `forget plot`. Short labels keep the frame left of the standards at 4-6 mM.
+\addlegendimage{C0, only marks, mpl o, mpl edge, mark size=2.7pt}      \addlegendentry{standards}
+\addlegendimage{C3!80!black, line width=1.5pt}                         \addlegendentry{linear fit}
+\addlegendimage{C3, mpl patch, fill opacity=0.18}                      \addlegendentry{95 \% CI}
+\addlegendimage{C3!80!black, line width=0.9pt, dash pattern=on 3.5pt off 2pt} \addlegendentry{95 \% PI}
+% bands: the confidence band of the line (fill_between), the prediction band of a new standard (dashed)
+\addplot[name path=ciu, draw=none, forget plot] {yhat(x) + 1.8628*se(x)};
+\addplot[name path=cil, draw=none, forget plot] {yhat(x) - 1.8628*se(x)};
+\addplot[C3, fill opacity=0.18, draw=none, forget plot] fill between[of=ciu and cil];
+\addplot[C3!80!black, line width=0.9pt, dash pattern=on 3.5pt off 2pt, forget plot] {yhat(x) + 1.8628*sp(x)};
+\addplot[C3!80!black, line width=0.9pt, dash pattern=on 3.5pt off 2pt, forget plot] {yhat(x) - 1.8628*sp(x)};
+% the limit of detection on the concentration axis, below the standard that sits on it
+\draw[black!60, line width=0.8pt, dash pattern=on 1pt off 1.5pt] (axis cs:1.383,-2) -- (axis cs:1.383,2.2);
+\node[mpl small, text=black!70, anchor=south west] at (axis cs:1.5,-1.9) {LOD};
+% fit and data
+\addplot[C3!80!black, line width=1.5pt, forget plot] {yhat(x)};
+\addplot[C0, only marks, mpl o, mpl edge, mark size=2.7pt, forget plot] coordinates {
+  (0.000,1.12) (0.345,2.22) (0.690,2.36) (1.034,2.46) (1.379,3.71) (1.724,3.90) (2.069,5.83) (2.414,8.01)
+  (2.759,6.77) (3.103,7.40) (3.448,9.39) (3.793,10.02) (4.138,10.52) (4.483,10.15) (4.828,11.92) (5.172,13.49)
+  (5.517,12.02) (5.862,13.77) (6.207,12.95) (6.552,14.40) (6.897,14.56) (7.241,17.11) (7.586,16.74) (7.931,19.21)
+  (8.276,19.86) (8.621,20.25) (8.966,18.46) (9.310,21.41) (9.655,22.73) (10.000,23.68)};
+% fit statistics
+\node[mpl box light, font=\fontsize{9}{11}\selectfont, anchor=south east, align=left]
+  at ([xshift=-5pt, yshift=5pt]rel axis cs:1,0) {$y$ = 2.170$x$ + 1.031\\$R^2$ = 0.982, \ $s$ = 0.91\\LOD = 1.38 mM};
+\end{axis}
+\begin{axis}[classic, name=res, at={(fit.south west)}, anchor=north west, yshift=-0.22cm, height=1.55cm,
+  mpl minor={1}{0}, mpl align ylabel=25pt, xlabel={Concentration (mM)}, ylabel={Residual},
+  xmin=-0.5, xmax=10.5, enlarge x limits=false, ymin=-3, ymax=3, enlarge y limits=false,
+  xtick={0,2,...,10}, ytick={-2,0,2}]
+\axhspan[black, opacity=0.07]{-1.8188}{1.8188}
+\axhline[black!55, line width=0.8pt]{0}
+\addplot[C0, ycomb, line width=0.9pt, forget plot] coordinates {
+  (0.000,0.089) (0.345,0.440) (0.690,-0.168) (1.034,-0.815) (1.379,-0.313) (1.724,-0.872) (2.069,0.309) (2.414,1.741)
+  (2.759,-0.248) (3.103,-0.364) (3.448,0.877) (3.793,0.758) (4.138,0.510) (4.483,-0.609) (4.828,0.413) (5.172,1.236)
+  (5.517,-0.983) (5.862,0.019) (6.207,-1.550) (6.552,-0.848) (6.897,-1.437) (7.241,0.366) (7.586,-0.752) (7.931,0.969)
+  (8.276,0.871) (8.621,0.512) (9.310,0.177) (9.655,0.748) (10.000,0.950)};
+\addplot[C0, only marks, mark=*, mark size=1.8pt, mpl edge=0.5pt] coordinates {
+  (0.000,0.089) (0.345,0.440) (0.690,-0.168) (1.034,-0.815) (1.379,-0.313) (1.724,-0.872) (2.069,0.309) (2.414,1.741)
+  (2.759,-0.248) (3.103,-0.364) (3.448,0.877) (3.793,0.758) (4.138,0.510) (4.483,-0.609) (4.828,0.413) (5.172,1.236)
+  (5.517,-0.983) (5.862,0.019) (6.207,-1.550) (6.552,-0.848) (6.897,-1.437) (7.241,0.366) (7.586,-0.752) (7.931,0.969)
+  (8.276,0.871) (8.621,0.512) (9.310,0.177) (9.655,0.748) (10.000,0.950)};
+% the standard outside +-2s
+\addplot[C3, ycomb, line width=0.9pt] coordinates {(8.966,-2.027)};
+\addplot[C3, only marks, mark=*, mark size=2.2pt, mpl edge=0.5pt] coordinates {(8.966,-2.027)};
+\node[mpl small, text=C3!85!black, anchor=east] at (axis cs:8.75,-2.1) {$-2.2\,s$};
+\node[mpl small, text=black!55, anchor=north east] at ([xshift=-3pt, yshift=-1pt]rel axis cs:1,1) {$\pm 2s$};
+\end{axis}
+\end{tikzpicture}
+\end{document}

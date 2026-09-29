@@ -102,6 +102,46 @@ Each of these cost at least one full rebuild cycle the first time.
 
 **`/tmp/...` paths in a Python heredoc on Windows.** Git Bash translates `/tmp/x` to the Windows temp directory only in command arguments; inside a Python script the string stays `/tmp/x` and the file is not found. Use the path the build script printed (`C:\Users\...\Temp\...`).
 
+## Classic style (classicfig.sty)
+
+**A legend handle is opaque although its plot is translucent, or translucent although it is not.** pgfplots draws each legend image inside the legend node, which carries the frame's fill opacity (0.8), applies the plot's options as a scope around the image code and passes that code an empty `#1`. `classicfig.sty` resets the fill opacity before every image, so the handle takes its plot's opacity and nothing else. A hand-written `legend image code` must therefore not set `fill opacity=1` (it overrides the plot's), and needs `sharp corners`, because the frame's `rounded corners` reach it too.
+
+**A composite is cropped, or its panel letters and legend land in the wrong place, after `set layers`.** A layered axis placed with `at=` or `xshift` registers its bounding box and its `outer` anchors without the offset. `mpl spines on top` is for a single axis at the origin (or axes overlaid there, as twin axes are); in a composite redraw a covered spine with `\axhline[black, line width=0.8pt]{<ymin>}` as the axis' last command.
+
+**A legend placed at another axis' anchor lands far away.** Coordinates in `legend style={at=...}` are read in the current axis' shifted frame. A legend for a whole composite is `mpl figure legend={(point)}{anchor}`, an empty axis drawn after the panels and placed on the picture (`subplots.tex`).
+
+**`++(0,3pt)` inside an axis draws a slanted line.** Inside an axis, a coordinate without a system is an axis coordinate, so a relative step mixes units. Give every point with its shift: `([yshift=-20pt]axis cs:0.7,0) -- ([yshift=-23pt]axis cs:0.7,0)` (`broken-axis.tex` brackets).
+
+**A `yshift` on a y label or a rotated node moves it sideways.** Shifts given after `rotate=90` act in the rotated frame, so `yshift` moves the label to the left, towards or away from the spine. `mpl align ylabel` uses exactly that.
+
+**Markers do not appear.** `no marks` overrides a later `mark=`; the tab10 cycle list uses `mark=none`, and markers come from `mpl o`, `mpl s`, `mpl D`, `mpl ^`. A plain `\addplot[...]` does not take the cycle's colour: give the colour, or write `\addplot+`. `forget plot` does not advance the cycle.
+
+**A value printed in a cell is not bold, or the value is gone.** Digits in math mode ignore `\bfseries`; print numbers in text mode with `assume math mode=true`. `\color{...}` overwrites `\pgfmathresult`: save the value first, `\let\cellvalue\pgfmathresult` (`heatmap.tex`).
+
+**`Dimension too large` in a Gaussian or an exponential tail.** pgfmath's `exp` fails for large negative arguments. Floor them: `exp(max(-0.5*((\x-\m)/\s)^2, -60))` (`waterfall.tex`).
+
+**Points of a polar axis vanish.** `polaraxis` drops angles outside `xmin..xmax`; write every angle within 0 to 360 (`radar.tex`).
+
+**An axis that only carries ticks shows 0 to 1.** An empty axis ignores its limits. A secondary scale (kelvin over Celsius) needs one invisible plot: `\addplot[draw=none, forget plot] coordinates {(300,1)};` (`errorbars.tex`).
+
+**In a 3D axis the legend entries attach to the panes.** Entries go to plots in drawing order; every plot that is not a legend entry gets `forget plot`, the panes included (`surface3d.tex`).
+
+**A fill coloured along x fails with `surf` in a 2D axis.** Write it as a 3D plot seen from above: `\addplot3[surf, shader=interp, domain y=0:1, samples y=2, point meta=x] ({x},{y*f(x)},0);` with `view={0}{90}` on the axis (`spectrum.tex`).
+
+**Contour lines fail under pdflatex, or take minutes.** `contour lua` needs LuaLaTeX: start the file with `% !TEX program = lualatex` and `build_figure.py` switches by itself. Filled contours (`contour filled`) work in pdflatex. 81 × 73 samples build in about 45s; doubling them costs minutes, and labelled contour lines cost most.
+
+**Error-bar caps turn white.** `mpl edge` whitens every mark, caps included. Draw the error bars as one plot (`only marks` with `mark=none` and the error bar keys) and the markers as another (`kinetics.tex`).
+
+**Error bars stay at the category while the bars move sideways.** A per-plot `ybar` does not carry `bar shift` over to its error bars; write each series' offset into the x coordinates of bars and error bars alike (`bars.tex`).
+
+**A prepared box plot draws nothing.** `boxplot prepared` needs `/pgfplots/boxplot/draw direction=y` (part of `mpl box`) and a `draw position` for each box (`boxplot.tex`, `raincloud.tex`).
+
+**Log tick labels read 10^2.3 for a tick at 200.** `\tick` is the exponent in the axis' log basis, natural by default; `mpl log x` and `mpl log y` set basis 10.
+
+**Two zero labels where panels meet read as one number.** A main axis ending at 80 beside a marginal starting at 0 prints "80 0", read as 800. Drop the marginal's zero: `xtick={0,20}, xticklabels={,20}` (`joint.tex`).
+
+**Numbers in a figure do not match the Python check.** They were computed twice. Compute once in the data script, print or write them, and paste; pgfmath only draws the curves whose parameters it was given.
+
 ## Compile errors
 
 **`Missing number, treated as zero ... \pgf@layerboxsaved@background`.** `\pgfsetlayers{background,shadow,main}` needs the `backgrounds` TikZ library. `cardfig.sty` loads it; a hand-written preamble must too.

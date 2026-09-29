@@ -1,0 +1,291 @@
+% classicfig.sty -- the "classic" style: pgfplots made to look like Matplotlib's default output (v2 and later),
+% for papers whose other figures come out of Python, or for readers who expect that look. The values are
+% Matplotlib's rcParams defaults, converted from points: DejaVu Sans at 10pt (title 12pt), a full black frame at
+% 0.8pt, ticks outward on the bottom and left only (3.5pt long, labels 3.5pt beyond), lines 1.5pt, the tab10
+% colour cycle, a legend in a rounded frame of light grey on 80% white, and 5% margins around the data.
+% Unlike plotfig's `paper` style it keeps the legend box and the four spines: that is what makes it read as
+% Matplotlib. It shares no colour names with plotfig, so do not load both in one figure.
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{classicfig}[2026/09/29 v0.2 pgfplots styles imitating Matplotlib defaults]
+\RequirePackage[T1]{fontenc}
+\RequirePackage{DejaVuSans}
+\renewcommand{\familydefault}{\sfdefault}
+% math in the text font, italic letters and upright digits, as Matplotlib's mathtext (fontset dejavusans) sets
+% $y = 2.17x$ or $10^{-2}$; without it every $...$ falls back to Computer Modern
+\RequirePackage[italic]{mathastext}
+\RequirePackage{textcomp}
+% text halo, as path_effects=[Stroke(linewidth=2, foreground="white")]: a 1pt white outline that keeps a label
+% legible where it crosses data. `outline` draws a real stroke (pdfTeX and LuaTeX), not shifted copies.
+\RequirePackage[outline]{contour}
+\contourlength{1pt}
+\RequirePackage{xcolor}
+\RequirePackage{tikz}
+\RequirePackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepgfplotslibrary{groupplots,fillbetween,statistics}
+\usetikzlibrary{arrows.meta,calc,positioning,patterns.meta,decorations.pathreplacing}
+
+% ---------------------------------------------------------------------------
+% tab10, Matplotlib's default property cycle. C0..C9 are the names Matplotlib itself accepts ('C0' is the
+% first colour of the cycle), so a Python script and a figure file can refer to the same colour the same way.
+% ---------------------------------------------------------------------------
+\definecolor{C0}{HTML}{1F77B4}   % tab:blue
+\definecolor{C1}{HTML}{FF7F0E}   % tab:orange
+\definecolor{C2}{HTML}{2CA02C}   % tab:green
+\definecolor{C3}{HTML}{D62728}   % tab:red
+\definecolor{C4}{HTML}{9467BD}   % tab:purple
+\definecolor{C5}{HTML}{8C564B}   % tab:brown
+\definecolor{C6}{HTML}{E377C2}   % tab:pink
+\definecolor{C7}{HTML}{7F7F7F}   % tab:gray
+\definecolor{C8}{HTML}{BCBD22}   % tab:olive
+\definecolor{C9}{HTML}{17BECF}   % tab:cyan
+\definecolor{mplframe}{HTML}{CCCCCC}   % legend.edgecolor 0.8
+% tab20's light companions: the paired lighter shade of each tab10 hue, for fills behind a line of the dark
+% one (box bodies, bands, a control group next to its treatment), so the pair reads as one series
+\definecolor{C0L}{HTML}{AEC7E8}
+\definecolor{C1L}{HTML}{FFBB78}
+\definecolor{C2L}{HTML}{98DF8A}
+\definecolor{C3L}{HTML}{FF9896}
+\definecolor{C4L}{HTML}{C5B0D5}
+\definecolor{C5L}{HTML}{C49C94}
+\definecolor{C6L}{HTML}{F7B6D2}
+\definecolor{C7L}{HTML}{C7C7C7}
+\definecolor{C8L}{HTML}{DBDB8D}
+\definecolor{C9L}{HTML}{9EDAE5}
+\definecolor{wheat}{HTML}{F5DEB3}      % the text-box colour of Matplotlib's "Placing text boxes" example
+
+% no marks and solid lines by default, as in plt.plot; a series that needs dashes asks for `mpl dashed`.
+% `mark=none`, not `no marks`: pgfplots' `no marks` overrides any mark set later, so `mpl o` could not add one.
+\pgfplotscreateplotcyclelist{tab10}{
+  {C0, mark=none}, {C1, mark=none}, {C2, mark=none}, {C3, mark=none}, {C4, mark=none},
+  {C5, mark=none}, {C6, mark=none}, {C7, mark=none}, {C8, mark=none}, {C9, mark=none},
+}
+
+\pgfplotsset{
+  % the frame, ticks and type shared by the main axes, twin axes and colour bars
+  classic frame/.style={
+    axis line style={black, line width=0.8pt},
+    tick align=outside, major tick length=3.5pt, minor tick length=2pt,
+    tick style={black, line width=0.8pt}, minor tick style={black, line width=0.6pt},
+    tick label style={font=\fontsize{10}{12}\selectfont, text=black},
+    label style={font=\fontsize{10}{12}\selectfont, text=black},
+    % numbers in math mode, which mathastext sets in DejaVu Sans: negative ticks get a true minus (-1 reads
+    % as −1), as Matplotlib's axes.unicode_minus does
+    /pgf/number format/1000 sep={},
+  },
+  classic/.style={
+    classic frame,
+    scale only axis, width=7.4cm, height=4.7cm,
+    xtick pos=bottom, ytick pos=left, minor tick num=0,
+    xticklabel style={yshift=-0.5pt}, yticklabel style={xshift=-0.5pt},
+    xlabel style={yshift=-1pt}, ylabel style={yshift=1pt},
+    title style={font=\fontsize{12}{14}\selectfont, text=black, yshift=2pt},
+    every axis plot/.append style={line width=1.5pt},
+    cycle list name=tab10,
+    % clip the plots to the axes but not the annotations, as Matplotlib's text has clip_on=False
+    clip mode=individual,
+    % axes.xmargin / axes.ymargin = 0.05; a limit set by hand turns it off with `enlarge x limits=false`
+    enlargelimits=0.05,
+    classic legend,
+    legend lower right,
+  },
+  % legend: rounded frame, 0.8 grey edge, face white at framealpha 0.8, handles 2em long. Part of `classic`;
+  % on its own for axes built from `classic frame` (3D axes, secondary axes). The face's alpha is kept out of
+  % the handles (see the patch after this block): a handle takes the fill opacity of its own plot or none
+  classic legend/.style={
+    legend style={
+      font=\fontsize{10}{12}\selectfont, draw=mplframe, line width=0.8pt, rounded corners=2pt,
+      fill=white, fill opacity=0.8, draw opacity=1, text opacity=1,
+      inner xsep=3pt, inner ysep=2.5pt, row sep=1pt,
+      /tikz/every even column/.append style={column sep=0pt},
+      nodes={inner xsep=4pt, inner ysep=1.5pt},
+    },
+    legend cell align=left,
+    legend image code/.code={\draw[mark repeat=2, mark phase=2, sharp corners, ##1] plot coordinates {(0pt,0pt) (10pt,0pt) (20pt,0pt)};},
+  },
+  % legend locations, 0.5em (borderaxespad) inside the frame, named as Matplotlib's `loc`
+  legend upper right/.style={/pgfplots/legend style={at={(rel axis cs:1,1)}, anchor=north east, xshift=-5pt, yshift=-5pt}},
+  legend upper left/.style={/pgfplots/legend style={at={(rel axis cs:0,1)}, anchor=north west, xshift=5pt, yshift=-5pt}},
+  legend lower left/.style={/pgfplots/legend style={at={(rel axis cs:0,0)}, anchor=south west, xshift=5pt, yshift=5pt}},
+  legend lower right/.style={/pgfplots/legend style={at={(rel axis cs:1,0)}, anchor=south east, xshift=-5pt, yshift=5pt}},
+  % plt.grid(True): grid.color #b0b0b0, 0.8pt, behind the data
+  mpl grid/.style={/pgfplots/xmajorgrids, /pgfplots/ymajorgrids, /pgfplots/grid style={color=black!31, line width=0.8pt}},
+  % a limit the data sits on (bars, histograms, fill_between down to 0): no margin on that side, 5% on the
+  % other, as Matplotlib's sticky edges do. Usage: `ymin=0, sticky ymin`.
+  sticky ymin/.style={/pgfplots/enlarge y limits={upper, value=0.05}},
+  % log axes: ticks as 10^k in mathtext, minor ticks at 2..9 (Matplotlib draws them on log axes only).
+  % The mode itself goes in the axis options (`ymode=log, mpl log y`); pgfplots reads it before any style.
+  % log basis 10 makes \tick the decimal exponent (pgfplots' default is the natural log)
+  mpl log x/.style={/pgfplots/log basis x=10, /pgfplots/xticklabel={$10^{\pgfmathprintnumber{\tick}}$}},
+  mpl log y/.style={/pgfplots/log basis y=10, /pgfplots/yticklabel={$10^{\pgfmathprintnumber{\tick}}$}},
+  % ax.twinx(): the second axes of a pair. Give it the same width, height and x range as the first; it draws
+  % only its right spine, ticks and labels. Colour ticks and label with the series: `twin color=C3`.
+  twin right/.style={classic, axis x line=none, axis y line*=right, ytick pos=right, yticklabel pos=right,
+    ylabel near ticks},
+  twin color/.style={/pgfplots/yticklabel style={text=#1}, /pgfplots/ylabel style={text=#1}},
+  % fig.colorbar(im, ax=ax): as tall as the axes, 1/20 as wide (aspect 20), 0.05 of the axes width away,
+  % ticks on the right, label reading upwards. Usage: `colorbar, classic colorbar={Yield (\%)}`.
+  classic colorbar/.style={/pgfplots/colorbar style={classic frame, width=0.235cm,
+    at={(parent axis.north east)}, anchor=north west, xshift=0.35cm,
+    ytick pos=right, yticklabel pos=right, ylabel={#1}, ylabel near ticks}},
+  % imshow: cells centred on integer coordinates, first row at the top, no margins
+  mpl imshow/.style={/pgfplots/y dir=reverse, /pgfplots/enlargelimits=false, /pgfplots/axis on top},
+  % plot-level styles
+  mpl dashed/.style={dash pattern=on 5.55pt off 2.4pt},   % lines.dashed_pattern 3.7, 1.6 times the 1.5pt width
+  mpl dotted/.style={dash pattern=on 1.5pt off 2.475pt},  % lines.dotted_pattern 1, 1.65
+  % plt.scatter: filled circles without an edge; s = 20 (the default is 36) is 4.5pt across
+  mpl scatter/.style={only marks, mark=*, mark size=2.25pt, mark options={draw opacity=0, fill opacity=0.8}},
+  % plt.plot(..., "o") / "s" and errorbar markers: markersize 6
+  mpl o/.style={mark=*, mark size=3pt, mark options={solid}},
+  mpl s/.style={mark=square*, mark size=2.6pt, mark options={solid}},
+  % plt.bar / plt.hist: filled, no edge; the legend handle is a 2em x 0.7em patch, at the plot's alpha
+  mpl patch/.style={fill, draw=none, line width=0pt,
+    /pgfplots/legend image code/.code={\fill[##1, draw=none, sharp corners] (0pt,-3.5pt) rectangle (20pt,3.5pt);}},
+  mpl bar/.style={ybar, bar width=#1, mpl patch},  mpl bar/.default=0.8,
+  mpl hist/.style={ybar interval, mpl patch},
+  % yerr with capsize=3: the cap is 6pt long, error lines as thick as the plot's lines. Bars take black ones.
+  % (full key paths: a `.cd` inside a style leaks into the options that follow it in the same list)
+  mpl yerr/.style={/pgfplots/error bars/y dir=both, /pgfplots/error bars/y explicit,
+    /pgfplots/error bars/error mark=-,
+    /pgfplots/error bars/error mark options={rotate=90, mark size=3pt, line width=1.5pt, solid},
+    /pgfplots/error bars/error bar style={line width=1.5pt, solid}},
+  mpl yerr black/.style={mpl yerr, /pgfplots/error bars/error bar style={black, line width=1.5pt},
+    /pgfplots/error bars/error mark options={rotate=90, mark size=3pt, line width=1.5pt, black}},
+  % plt.boxplot: black box and whiskers at 1pt, median in C1, caps half the box width, fliers as open circles.
+  % The box is 0.45 wide for positions 1..n (0.15 times their range, clipped to 0.5). Take the statistics from
+  % matplotlib.cbook.boxplot_stats, so the figure and a Python check agree: `boxplot prepared={...}`.
+  mpl box/.style={black, line width=1pt, solid, fill=none, mark=none, /pgfplots/boxplot/draw direction=y,
+    /pgfplots/boxplot/box extend=0.45, /pgfplots/boxplot/whisker extend=0.225,
+    /pgfplots/boxplot/every median/.style={C1, line width=1pt}},
+  mpl fliers/.style={only marks, mark=o, mark size=3pt, black, line width=1pt},
+}
+% `mpl spines on top`: Matplotlib's drawing order, the grid under the data (ax.set_axisbelow(True), as the
+% polished examples have it), the spines and ticks over the data (zorder 2.5, above patches and lines), then
+% tick labels, axis labels and the legend. pgfplots draws the spines first, so the white edge of a bar or the
+% fill of a histogram standing on an axis covers the spine under it; give such an axis this key.
+% Only for a figure of one axis (or axes overlaid at the origin, as twin axes are): a layered axis placed
+% with at= / xshift registers its bounding box and its outer anchors without the offset, which crops a
+% composite and misplaces what is pinned to its outer anchors. In a composite, redraw the spine instead:
+% \axhline[black, line width=0.8pt]{<ymin>} as the axis' last command.
+\pgfplotsset{
+  /pgfplots/layers/mpl/.define layer set={axis background, axis grid, pre main, main, axis ticks, axis lines,
+    axis tick labels, axis descriptions, axis foreground}{/pgfplots/layers/standard},
+  mpl spines on top/.style={/pgfplots/set layers=mpl},
+}
+% Each legend image is drawn inside the legend node and inherits its fill opacity (the 0.8 of the face), then
+% gets its plot's options. pgfplots resets the fill colour at that point and nothing else; reset the fill
+% opacity too, so an opaque bar has an opaque handle and a band at alpha 0.2 keeps its 0.2.
+\g@addto@macro\pgfplots@restore@state@before@legend@style{\pgfsetfillopacity{1}}
+
+% ---------------------------------------------------------------------------
+% Polish: what a careful Matplotlib user adds on top of the defaults (the showcase and ornament examples of the
+% Matplotlib gallery and of Rougier's "Scientific Visualization: Python + Matplotlib"). Nothing here changes the
+% classic frame, fonts or colours; each key is one call a Python script would make.
+% ---------------------------------------------------------------------------
+\pgfplotsset{
+  % ax.grid(ls="--", lw=0.5, color="k", alpha=0.3), the grid of the "Stock prices" showcase: dashes scale
+  % with the line width (3.7, 1.6 x 0.5pt), drawn behind every plot. `mpl ygrid light` for y only (bars).
+  mpl grid light/.style={/pgfplots/xmajorgrids, /pgfplots/ymajorgrids,
+    /pgfplots/major grid style={black, opacity=0.3, line width=0.5pt, dash pattern=on 1.85pt off 0.8pt}},
+  mpl ygrid light/.style={/pgfplots/ymajorgrids,
+    /pgfplots/major grid style={black, opacity=0.3, line width=0.5pt, dash pattern=on 1.85pt off 0.8pt}},
+  mpl xgrid light/.style={/pgfplots/xmajorgrids,
+    /pgfplots/major grid style={black, opacity=0.3, line width=0.5pt, dash pattern=on 1.85pt off 0.8pt}},
+  % ax.minorticks_on(): AutoMinorLocator puts 4 minor ticks in a major step of 1, 2.5 or 5 (times 10^k) and
+  % 3 otherwise; give the number per axis, `mpl minor={x}{y}`
+  mpl minor/.style 2 args={/pgfplots/minor x tick num=#1, /pgfplots/minor y tick num=#2},
+  % markers with a white edge (markeredgecolor="white"), so overlapping points and a point on a line stay
+  % apart; after the marker style: `\addplot+[mpl o, mpl edge]`
+  mpl edge/.style={/tikz/every mark/.append style={draw=white, line width=#1}}, mpl edge/.default=0.8pt,
+  mpl D/.style={mark=diamond*, mark size=3.4pt, mark options={solid}},
+  mpl ^/.style={mark=triangle*, mark size=3.4pt, mark options={solid}},
+  % thin error bars for data on top of a model line: elinewidth=1, capsize=2.5
+  mpl yerr thin/.style={/pgfplots/error bars/y dir=both, /pgfplots/error bars/y explicit,
+    /pgfplots/error bars/error mark=-,
+    /pgfplots/error bars/error mark options={rotate=90, mark size=2.5pt, line width=1pt, solid},
+    /pgfplots/error bars/error bar style={line width=1pt, solid}},
+  % histtype="stepfilled" at alpha 0.35 plus the histtype="step" outline in the full colour: give the bars
+  % to `mpl stepfill` (ybar interval) and the outline coordinates to `mpl step`
+  mpl stepfill/.style={ybar interval, fill, draw=none, fill opacity=0.35, line width=0pt,
+    /pgfplots/legend image code/.code={\fill[##1, draw=none, sharp corners] (0pt,-3.5pt) rectangle (20pt,3.5pt);
+      \draw[##1, fill=none, fill opacity=0, draw opacity=1, line width=1.5pt, sharp corners] (0pt,-3.5pt) rectangle (20pt,3.5pt);}},
+  mpl step/.style={sharp plot, mark=none, line width=1.5pt, forget plot},
+  % bars with a white edge (edgecolor="white", linewidth=1): neighbours part without a gap
+  mpl bar edge/.style={draw=white, line width=1pt},
+  % hatch="///" in the edge colour, over the face: \addplot+[mpl bar=0.35, mpl hatch=C1]
+  mpl hatch/.style={postaction={pattern={Lines[angle=45, distance=4.2pt, line width=0.7pt]}, pattern color=#1}},
+  % a band for fill_between(x, lo, hi, alpha=0.2), without a legend entry of its own
+  mpl band/.style={draw=none, fill opacity=0.2, forget plot},
+  % ax.set_title(..., loc="left"): the title flush with the left spine; \mpltitleright{note} adds the
+  % loc="right" companion, a small grey note (the model, the sample, n) on the same baseline
+  mpl title left/.style={/pgfplots/title style={at={(rel axis cs:0,1)}, anchor=base west, yshift=1pt}},
+  % fig.align_ylabels(): the y label of every panel in a column at one distance from its spine, however wide
+  % its tick labels ("25" against "-2"); give each axis of the column the same `mpl align ylabel=26pt`.
+  % (The label is rotated, so its yshift moves it left.)
+  mpl align ylabel/.style={/pgfplots/every axis y label/.append style={at={(axis description cs:0,0.5)},
+    anchor=south, yshift=#1}},
+  % a broken y axis, the "Broken axis" example: two axes on one x range, the upper one (the outliers) above
+  % the lower one (the bulk) with a small gap. Each hides its spine at the break (the frame is redrawn on the
+  % other three sides) and draws the slanted cut marks at the two corners there: marker [(-1,-.5), (1,.5)],
+  % markersize 12, mew 1, clip_on=False. The upper axis takes no x ticks.
+  mpl break upper/.style={/pgfplots/axis line style={draw=none}, /pgfplots/xtick=\empty,
+    /pgfplots/after end axis/.append code={\draw[black, line width=0.8pt]
+      (rel axis cs:0,0) -- (rel axis cs:0,1) -- (rel axis cs:1,1) -- (rel axis cs:1,0);
+      \mplbreakmark{rel axis cs:0,0}\mplbreakmark{rel axis cs:1,0}}},
+  mpl break lower/.style={/pgfplots/axis line style={draw=none},
+    /pgfplots/after end axis/.append code={\draw[black, line width=0.8pt]
+      (rel axis cs:0,1) -- (rel axis cs:0,0) -- (rel axis cs:1,0) -- (rel axis cs:1,1);
+      \mplbreakmark{rel axis cs:0,1}\mplbreakmark{rel axis cs:1,1}}},
+}
+\newcommand{\mplbreakmark}[1]{\draw[black, line width=1pt] ([xshift=-6pt, yshift=-3pt]#1) -- ([xshift=6pt, yshift=3pt]#1);}
+% fig.legend(...): one legend for a whole composite. A legend inside an axis reads outside coordinates in that
+% axis' own shifted frame, so it cannot be pinned to other axes' anchors; this empty axis is placed on the
+% picture instead, its legend's anchor #2 at the point #1:
+%   \begin{axis}[mpl figure legend={($(a.outer north west)!0.5!(b.outer north east)$)}{south}, legend columns=3]
+%   \addlegendimage{C0, mpl o} \addlegendentry{A} ... \end{axis}
+\pgfplotsset{
+  mpl figure legend/.style 2 args={classic legend, hide axis, scale only axis, width=1pt, height=1pt,
+    xmin=0, xmax=1, ymin=0, ymax=1, at={#1}, anchor=center, legend style={at={(0.5,0.5)}, anchor=#2}},
+}
+\newcommand{\mpltitleright}[1]{\node[font=\fontsize{9}{11}\selectfont, text=black!60, anchor=base east, inner sep=0pt]
+  at ([yshift=9pt]rel axis cs:1,1) {#1};}
+\tikzset{
+  % ax.annotate(text, xy, xytext, arrowprops=dict(arrowstyle="->")): 10pt text, a 1pt black arrow with an open
+  % head, shrunk 2pt at both ends. Draw it from the text node: \draw[mpl arrow] (label) -- (axis cs:x,y);
+  mpl text/.style={font=\fontsize{10}{12}\selectfont, text=black, inner sep=1pt},
+  mpl small/.style={font=\fontsize{8}{9.6}\selectfont, text=black, inner sep=1pt},   % fontsize="small"
+  mpl arrow/.style={-{Straight Barb[length=4pt, width=5pt]}, black, line width=1pt, shorten <=2pt, shorten >=2pt},
+  % arrowstyle="-|>": a filled head; connectionstyle="arc3,rad=0.2" is `to[bend left=22]` in TikZ
+  mpl arrow filled/.style={-{Triangle[length=4.5pt, width=4.5pt]}, black, line width=1pt, shorten <=2pt, shorten >=2pt},
+  % arrowstyle="<->", for a difference between two points (a gap, a fold change)
+  mpl arrow both/.style={{Straight Barb[length=4pt, width=5pt]}-{Straight Barb[length=4pt, width=5pt]}, black, line width=1pt},
+  % bbox=dict(boxstyle="round", ...): pad 0.3em, corner radius equal to the pad, 1pt edge. `mpl box` is
+  % white with a black edge; `mpl box wheat` is the gallery's statistics box (facecolor="wheat", alpha=0.5);
+  % `mpl box light` sits on data without shouting (white at 90%, light grey edge)
+  mpl box/.style={rounded corners=3pt, draw=black, line width=1pt, fill=white, inner sep=3pt, align=left,
+    font=\fontsize{10}{12}\selectfont},
+  mpl box wheat/.style={mpl box, fill=wheat, fill opacity=0.5, draw opacity=0.5, text opacity=1},
+  mpl box light/.style={mpl box, draw=mplframe, line width=0.8pt, fill opacity=0.9, text opacity=1},
+  % a white gap under a line where it crosses another, as plotting it twice (white, wider, below)
+  mpl gap/.style={preaction={draw=white, line width=#1, solid, opacity=1, draw opacity=1}}, mpl gap/.default=3.5pt,
+  % ax.text(-0.1, 1.0, "a", fontweight="bold", fontsize=12, transform=ax.transAxes): panel letters for
+  % composite figures, placed with \panellabel{<axis name>}{a} after the axis
+  panel label/.style={font=\fontsize{12}{14}\selectfont\bfseries, text=black, inner sep=0pt, anchor=north west},
+}
+% ax.axhline / axvline / axhspan / axvspan: lines and bands across the whole axes at a data value, for use
+% inside an axis environment. \axhline[dashed, C7]{0.5}; \axvspan[C1, opacity=0.15]{20}{35}. Draw spans first
+% so the data lies on top. (The unused coordinate is 1, which is valid on linear and log axes alike.)
+\newcommand{\axhline}[2][]{\draw[#1] ({rel axis cs:0,0}|-{axis cs:1,#2}) -- ({rel axis cs:1,0}|-{axis cs:1,#2});}
+\newcommand{\axvline}[2][]{\draw[#1] ({axis cs:#2,1}|-{rel axis cs:0,0}) -- ({axis cs:#2,1}|-{rel axis cs:0,1});}
+\newcommand{\axhspan}[3][]{\fill[#1] ({rel axis cs:0,0}|-{axis cs:1,#2}) rectangle ({rel axis cs:1,0}|-{axis cs:1,#3});}
+\newcommand{\axvspan}[3][]{\fill[#1] ({axis cs:#2,1}|-{rel axis cs:0,0}) rectangle ({axis cs:#3,1}|-{rel axis cs:0,1});}
+% \sigbracket{x1}{x2}{y}{label}: a significance bracket over two groups, legs 4pt, label centred above.
+\newcommand{\sigbracket}[5][]{%
+  \draw[black, line width=0.8pt, #1] (axis cs:#2,#4) -- ++(0pt,4pt) -| (axis cs:#3,#4);%
+  \node[mpl text, anchor=south, inner sep=1.5pt] at ($(axis cs:#2,#4)!0.5!(axis cs:#3,#4) + (0pt,4pt)$) {#5};}
+% \halo{text}: white outline behind text (see the contour package above); \halo[C0L]{...} for another colour
+\newcommand{\halo}[2][white]{\contour{#1}{#2}}
+% \panellabel{name}{a}: bold panel letter at the left edge of the named axis' outer box (tick labels and
+% y label included), its top level with the axis top; \panellabel[yshift=12pt]{name}{a} to clear a title
+\newcommand{\panellabel}[3][]{\node[panel label, #1] at (#2.north west -| #2.outer west) {#3};}
+\endinput

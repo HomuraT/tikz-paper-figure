@@ -1,0 +1,48 @@
+% bars: grouped bars with error bars, in the classic (Matplotlib) style, polished. Catalyst A in C0 with white
+% edges, the blank as a hatched outline in C1 (hatch="///"), so the pair also parts in greyscale. Values are
+% printed where they are read: inside the tall bars below the error bar (white), above the error bar of the
+% short ones. A bridge over each pair carries the fold change, its legs down to each bar, as
+% ax.plot([x1, x1, x2, x2], [y1, h, h, y2]) draws it. The y range runs to 126 so the legend (one row,
+% ncol=2) sits in its own band above the data; horizontal light grid, no x ticks (categories need none).
+% The x positions carry the -/+ w/2 offsets, as in the Python code, so the error bars stay on their bars.
+\documentclass[10pt,tikz,border=4pt]{standalone}
+\usepackage{classicfig}
+\begin{document}
+\begin{tikzpicture}
+\begin{axis}[classic, mpl spines on top, mpl ygrid light, mpl minor={0}{1},
+  title={Yield by solvent}, ylabel={Yield (\%)},
+  xtick={0,1,2,3}, xticklabels={Water, Ethanol, DMF, Toluene}, x tick style={draw=none},
+  xmin=-0.535, xmax=3.535, enlarge x limits=false,
+  ymin=0, ymax=126, enlarge y limits=false, ytick={0,20,...,100},
+  legend upper left, legend columns=2, legend style={/tikz/every even column/.append style={column sep=6pt}}]
+\addplot[C0, mpl bar=0.35, mpl bar edge, mpl yerr thin, /pgfplots/error bars/error bar style={black!80},
+  /pgfplots/error bars/error mark options={rotate=90, mark size=2.5pt, line width=1pt, black!80}] coordinates
+  {(-0.175,62) +- (0,4) (0.825,78) +- (0,3) (1.825,85) +- (0,5) (2.825,41) +- (0,6)};
+\addlegendentry{Catalyst A}
+\addplot[C1, fill=white, mpl bar=0.35, draw=C1, line width=1pt, mpl hatch=C1, mpl yerr thin,
+  /pgfplots/error bars/error bar style={black!80},
+  /pgfplots/error bars/error mark options={rotate=90, mark size=2.5pt, line width=1pt, black!80},
+  /pgfplots/legend image code/.code={\draw[fill=white, draw=C1, line width=1pt, postaction={pattern={Lines[angle=45, distance=4.2pt, line width=0.7pt]}, pattern color=C1}] (0pt,-3.5pt) rectangle (20pt,3.5pt);}]
+  coordinates {(0.175,12) +- (0,2) (1.175,18) +- (0,3) (2.175,25) +- (0,3) (3.175,9) +- (0,2)};
+\addlegendentry{Blank}
+% values: inside the top of the tall bars, above the error bars of the short ones
+\node[mpl small, font=\fontsize{9}{10}\selectfont\bfseries, text=white, anchor=north, yshift=-2pt] at (axis cs:-0.175,58) {62};
+\node[mpl small, font=\fontsize{9}{10}\selectfont\bfseries, text=white, anchor=north, yshift=-2pt] at (axis cs:0.825,75) {78};
+\node[mpl small, font=\fontsize{9}{10}\selectfont\bfseries, text=white, anchor=north, yshift=-2pt] at (axis cs:1.825,80) {85};
+\node[mpl small, font=\fontsize{9}{10}\selectfont\bfseries, text=white, anchor=north, yshift=-2pt] at (axis cs:2.825,35) {41};
+\node[mpl small, font=\fontsize{9}{10}\selectfont, text=C1!75!black, anchor=south, yshift=1.5pt] at (axis cs:0.175,14) {12};
+\node[mpl small, font=\fontsize{9}{10}\selectfont, text=C1!75!black, anchor=south, yshift=1.5pt] at (axis cs:1.175,21) {18};
+\node[mpl small, font=\fontsize{9}{10}\selectfont, text=C1!75!black, anchor=south, yshift=1.5pt] at (axis cs:2.175,28) {25};
+\node[mpl small, font=\fontsize{9}{10}\selectfont, text=C1!75!black, anchor=south, yshift=1.5pt] at (axis cs:3.175,11) {9};
+% fold change of A over the blank: a bridge over each pair
+\draw[black!55, line width=0.7pt] (axis cs:-0.175,69) |- (axis cs:0.175,75) -- (axis cs:0.175,26);
+\draw[black!55, line width=0.7pt] (axis cs:0.825,84) |- (axis cs:1.175,90) -- (axis cs:1.175,33);
+\draw[black!55, line width=0.7pt] (axis cs:1.825,92.5) |- (axis cs:2.175,96.5) -- (axis cs:2.175,40);
+\draw[black!55, line width=0.7pt] (axis cs:2.825,50) |- (axis cs:3.175,56) -- (axis cs:3.175,23);
+\node[mpl small, font=\fontsize{9}{10}\selectfont, anchor=south] at (axis cs:0,75) {$\times$5.2};
+\node[mpl small, font=\fontsize{9}{10}\selectfont, anchor=south] at (axis cs:1,90) {$\times$4.3};
+\node[mpl small, font=\fontsize{9}{10}\selectfont, anchor=south] at (axis cs:2,96.5) {$\times$3.4};
+\node[mpl small, font=\fontsize{9}{10}\selectfont, anchor=south] at (axis cs:3,56) {$\times$4.6};
+\end{axis}
+\end{tikzpicture}
+\end{document}

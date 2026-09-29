@@ -1,13 +1,17 @@
 # Gallery: every example in this skill
 
-All thirty-six renders on one page, with the question each answers and where its source and recipe live.
-Paths are relative to the skill root. Open the render closest to the figure at hand before drawing; it is the
-target. `assets/examples/gallery.png` tiles the same renders into one image; regenerate it with
+All fifty-four renders on one page, with the question each answers and where its source and recipe live, in
+two styles: the house style (card figures, bar panels, `plotfig.sty` data plots) and the classic style
+(`classicfig.sty`, Matplotlib's look). Paths are relative to the skill root. Open the render closest to the
+figure at hand before drawing; it is the target. `assets/examples/gallery.png` tiles the house-style renders
+into one image and `assets/examples/classic/gallery.png` the classic ones; regenerate both with
 `python scripts/gallery_sheet.py` after adding or re-rendering an example.
 
 Contents: [Card figures](#card-figures-cardfigsty) (3) · [Bar panels](#benchmark-bar-panels-cardfigsty) (1) ·
 [Data plots](#data-plots-plotfigsty) (28): amounts, gains and paired data, trends, classifier quality,
-distributions, composition, matrices · [Composite figures](#composite-figures) (4).
+distributions, composition, matrices · [Composite figures](#composite-figures) (4) ·
+[Classic style](#classic-style-classicfigsty) (18): lines and points, distributions, categories and fields,
+composite figures.
 
 ## Card figures (cardfig.sty)
 
@@ -334,6 +338,159 @@ Grouped bars, a learning curve and a transfer matrix side by side, all 3.2cm hig
 line, (a)/(b)/(c) letters in the titles, ours in blue in every panel. Three separate `axis` environments placed
 by anchor; the width is the text-width maximum, so a fourth panel means a second row.
 
+## Classic style (classicfig.sty)
+
+Matplotlib's default look (DejaVu Sans, the four-sided frame, tab10, the rounded legend frame), finished by
+hand: a light grid, markers with white edges, direct labels with halos, key numbers drawn where they live,
+text boxes in empty corners. When to use this style, the workflow for new data, every key and the craft
+behind each figure are in `references/classic.md`; its pitfalls are in `references/pitfalls.md`. Sources are
+`assets/examples/classic/<name>.tex`, data and the numpy script that makes them in
+`assets/examples/classic/data/`.
+
+### Lines and points
+
+#### kinetics: conversion against time, with fitted models
+
+![kinetics](../assets/examples/classic/kinetics.png)
+
+A catalyst and a blank as markers with error bars over first-order fits, the half-lives marked as open circles on a
+dotted half-conversion line and labelled in the series colour with halos and arrows, the fitted model in the
+grey title note, a light dashed grid and minor ticks.
+
+#### spectrum: an absorption spectrum with weak bands
+
+![spectrum](../assets/examples/classic/spectrum.png)
+
+A porphyrin UV-vis spectrum as a sum of Gaussians in `declare function`, the area under it coloured by
+wavelength, the weak Q bands redrawn ten times higher with a brace over them, the Soret band labelled with an
+arrow, the sample conditions in a light box.
+
+#### errorbars: rates with uncertainty and a derived axis
+
+![errorbars](../assets/examples/classic/errorbars.png)
+
+Rate constants against temperature with error bars, Arrhenius fits with 95 % confidence bands (`fill between`),
+the activation energies written along the curves, a kelvin axis on top from an empty overlaid axis, a short
+legend with a patch for the band.
+
+#### twin-axes: two quantities on one time axis
+
+![twin-axes](../assets/examples/classic/twin-axes.png)
+
+Temperature and pressure of a reactor run on two y axes, each coloured like its series (`twin right`,
+`twin color`), the heating, hold and cooling phases as labelled spans, a dashed set-point line and no legend.
+
+#### waterfall: spectra along an ordered variable
+
+![waterfall](../assets/examples/classic/waterfall.png)
+
+In situ IR spectra offset by temperature on a reversed wavenumber axis, coloured along plasma, labelled at
+their right ends instead of a legend, the changing bands marked by spans and dashed lines above the traces, a
+scale bar in place of y tick labels.
+
+### Distributions
+
+#### histogram: one variable in two groups
+
+![histogram](../assets/examples/classic/histogram.png)
+
+Particle sizes of two batches as stepfilled histograms with outlines, normal fits scaled to counts, and a
+wheat text box that is table (mean, standard deviation) and legend at once; spines redrawn over the bars.
+
+#### boxplot: replicates per group, with a test
+
+![boxplot](../assets/examples/classic/boxplot.png)
+
+Four catalysts as light boxes over their jittered replicates, medians redrawn on top, means as white
+diamonds, a target line, Welch's t-test as brackets with stars, n and the test named in notes.
+
+#### raincloud: distributions whose shape matters
+
+![raincloud](../assets/examples/classic/raincloud.png)
+
+Crystallite size per synthesis route as a half violin (KDE), a slim box and the raw values; a curved arrow
+points out the bimodal route whose box looks like any other.
+
+### Categories and fields
+
+#### bars: a few groups on a few conditions
+
+![bars](../assets/examples/classic/bars.png)
+
+Yield by solvent for a catalyst and a hatched blank, white bar edges, values inside the tall bars and above
+the short ones, fold-change bridges between each pair, a one-row legend in the free upper band.
+
+#### heatmap: a value on a grid of two factors
+
+![heatmap](../assets/examples/classic/heatmap.png)
+
+Yield over temperature and catalyst loading as annotated viridis cells, the text colour and weight chosen per
+value, a white grid between cells, the best cell outlined, a colour bar with its label, no spines or ticks.
+
+#### radar: profiles over several criteria
+
+![radar](../assets/examples/classic/radar.png)
+
+Two catalysts and a commercial reference over six criteria on a polar axis, the reference dashed in grey and
+drawn first, filled polygons at low opacity, radial labels with halos along one spoke, legend below.
+
+#### contour: a potential energy surface
+
+![contour](../assets/examples/classic/contour.png)
+
+The Müller–Brown potential as filled contours with contour lines (LuaLaTeX), the minimum energy path cased
+white over dark, minima as circles and saddles as diamonds, energies in halo labels, a colour bar.
+
+#### surface3d: a response surface
+
+![surface3d](../assets/examples/classic/surface3d.png)
+
+Yield over temperature and time from a central composite design, in the mplot3d look rebuilt by hand (grey
+panes, grid, view), the contours projected on the floor, the runs as red points on stems, the optimum starred.
+
+### Composite figures
+
+#### calibration: a calibration line and its residuals
+
+![calibration](../assets/examples/classic/calibration.png)
+
+Two panels at 3 : 1 on one x axis: the standards over the least-squares line with its confidence band
+(filled) and prediction band (dashed), the statistics and the LOD in a box and on the axis; below, the
+residuals as stems with the ±2s band and the one standard outside it in red. Y labels aligned, legend entries
+in reading order.
+
+#### joint: two variables and both marginals
+
+![joint](../assets/examples/classic/joint.png)
+
+Conversion against selectivity for two catalyst libraries, with 1σ and 2σ covariance ellipses and the means,
+iso-yield curves whose ends turn the top spine into a yield scale, marginal histograms with KDE, the library
+names and correlation coefficients in the marginals' empty corners, the ellipse legend in the corner cell.
+
+#### xrd: a pattern with one small feature
+
+![xrd](../assets/examples/classic/xrd.png)
+
+An anatase diffractogram with its reflections labelled (rotated, close pairs fanned out with leaders), an inset
+magnifying the rutile (110) peak with the phase filled between the model with and without it, a zoom box and
+two connectors that miss every label, and the reference patterns mirrored in a panel below.
+
+#### broken-axis: one value far above the rest
+
+![broken-axis](../assets/examples/classic/broken-axis.png)
+
+Turnover frequencies of five nanoparticle catalysts and one single-atom catalyst on a broken y axis
+(`mpl break upper`, `mpl break lower`), the tall bar crossing the break, values on every bar, the supports on
+the tick labels and the catalyst type on brackets below, one y label for both panels.
+
+#### subplots: several views of one study
+
+![subplots](../assets/examples/classic/subplots.png)
+
+A mosaic of a tall light-off panel and two short ones (a semilog Arrhenius plot, a stability run with a
+regeneration event), one legend for the figure (`mpl figure legend`), the three catalysts in the same colours
+in every panel, panel letters on the title baselines, the T₅₀ values in a key in an empty corner.
+
 ## Regenerating a render
 
 ```
@@ -341,5 +498,14 @@ python scripts/build_figure.py assets/examples/plots/<name>.tex --png-dir assets
 python scripts/gallery_sheet.py
 ```
 
-The first command rebuilds one example and writes its PNG next to the source; the second retiles the contact sheet.
-Generated examples are rebuilt from their CSV first (`flows_from_csv.py`, `treemap_from_csv.py`, `bars_from_csv.py`).
+The first command rebuilds one example and writes its PNG next to the source; the second retiles both contact
+sheets (`--style house` or `--style classic` for one). Generated examples are rebuilt from their CSV first
+(`flows_from_csv.py`, `treemap_from_csv.py`, `bars_from_csv.py`). Classic examples build the same way
+(`--png-dir assets/examples/classic`; the build runs in the figure's directory, so `data/*.dat` resolves).
+Their data come from `data/make_data.py` (numpy only, fixed seeds; it writes the `.dat` files beside itself and
+prints every statistic the figures quote); rerun it before rebuilding when a number changes:
+
+```
+python assets/examples/classic/data/make_data.py
+python scripts/build_figure.py assets/examples/classic/<name>.tex --png-dir assets/examples/classic
+```

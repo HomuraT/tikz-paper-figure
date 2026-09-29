@@ -1,0 +1,53 @@
+% kinetics: conversion of a first-order reaction with and without catalyst A, in the classic (Matplotlib)
+% style, polished. Measured points (mean +- s.d. of three runs, markers with a white edge over their error
+% bars) on top of their least-squares fits X(t) = 1 - exp(-k t) (k = 0.1185 and 0.0395 per minute, from
+% data/make_data.py). The one message is the rate: a dotted line at half conversion, the two crossings marked
+% with open circles and labelled with t1/2 in the series colour. Title on the left, the model as a grey note on
+% the right (ax.set_title(..., loc="left") and loc="right"); light dashed grid and minor ticks.
+\documentclass[10pt,tikz,border=4pt]{standalone}
+\usepackage{classicfig}
+\begin{document}
+\begin{tikzpicture}
+\begin{axis}[classic, mpl grid light, mpl minor={1}{1}, mpl title left,
+  title={Reaction kinetics},
+  xlabel={Reaction time (min)}, ylabel={Conversion},
+  xtick={0,10,...,60}, ytick={0,0.25,...,1},
+  yticklabel style={/pgf/number format/fixed, /pgf/number format/fixed zerofill, /pgf/number format/precision=2},
+  domain=0:63, samples=200]
+\mpltitleright{fits: $X = 1 - e^{-kt}$}
+% half conversion, behind everything else
+\axhline[black!55, line width=0.8pt, dash pattern=on 0.8pt off 1.4pt]{0.5}
+\node[mpl small, text=black!60, anchor=south east] at (axis cs:61,0.5) {half conversion};
+% fits
+\addplot[C0, forget plot] {1-exp(-0.1185*x)};
+\addplot[C1, forget plot] {1-exp(-0.0395*x)};
+% measured points: error bars first, markers with a white edge on top
+\addplot[C0, only marks, mark=none, mpl yerr thin, forget plot] coordinates {
+  (0,0.000) +- (0,0.000) (2,0.241) +- (0,0.021) (4,0.349) +- (0,0.027) (6,0.544) +- (0,0.024) (8,0.616) +- (0,0.021)
+  (10,0.684) +- (0,0.016) (15,0.820) +- (0,0.028) (20,0.890) +- (0,0.016) (30,0.969) +- (0,0.026) (40,0.994) +- (0,0.022)
+  (50,0.995) +- (0,0.023) (60,0.997) +- (0,0.020)};
+\addplot[C0, only marks, mpl o, mpl edge, forget plot] coordinates {
+  (0,0.000) (2,0.241) (4,0.349) (6,0.544) (8,0.616) (10,0.684) (15,0.820) (20,0.890) (30,0.969) (40,0.994)
+  (50,0.995) (60,0.997)};
+\addplot[C1, only marks, mark=none, mpl yerr thin, forget plot] coordinates {
+  (0,0.000) +- (0,0.000) (2,0.065) +- (0,0.030) (4,0.152) +- (0,0.023) (6,0.202) +- (0,0.025) (8,0.277) +- (0,0.013)
+  (10,0.347) +- (0,0.015) (15,0.445) +- (0,0.020) (20,0.566) +- (0,0.025) (30,0.680) +- (0,0.027) (40,0.793) +- (0,0.023)
+  (50,0.840) +- (0,0.018) (60,0.907) +- (0,0.016)};
+\addplot[C1, only marks, mpl s, mpl edge, forget plot] coordinates {
+  (0,0.000) (2,0.065) (4,0.152) (6,0.202) (8,0.277) (10,0.347) (15,0.445) (20,0.566) (30,0.680) (40,0.793)
+  (50,0.840) (60,0.907)};
+% legend entries: fit line with the marker of its data, as an errorbar container shows
+\addlegendimage{C0, line width=1.5pt, mpl o, mpl edge}
+\addlegendentry{Catalyst A}
+\addlegendimage{C1, line width=1.5pt, mpl s, mpl edge}
+\addlegendentry{Blank}
+% the two half-lives, t1/2 = ln 2 / k
+\addplot[only marks, mark=*, mark size=3.2pt, mark options={fill=white, draw=C0, line width=1.3pt}, forget plot] coordinates {(5.85,0.5)};
+\addplot[only marks, mark=*, mark size=3.2pt, mark options={fill=white, draw=C1, line width=1.3pt}, forget plot] coordinates {(17.53,0.5)};
+\node[mpl text, text=C0, anchor=west] (ta) at (axis cs:21,0.83) {\halo{$t_{1/2}$ = 5.9 min}};
+\draw[mpl arrow, C0] (ta.west) -- (axis cs:6.7,0.515);
+\node[mpl text, text=C1, anchor=west] (tb) at (axis cs:24,0.405) {\halo{$t_{1/2}$ = 17.5 min}};
+\draw[mpl arrow, C1] (tb.west) to[bend left=25] (axis cs:18.2,0.47);
+\end{axis}
+\end{tikzpicture}
+\end{document}

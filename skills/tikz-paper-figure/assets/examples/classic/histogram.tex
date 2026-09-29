@@ -1,0 +1,49 @@
+% histogram: particle sizes of two batches (n = 500 each, 0.25 nm bins), in the classic (Matplotlib) style,
+% polished. Each batch is histtype="stepfilled" at alpha 0.35 plus the histtype="step" outline in its full
+% colour (the outline is the same coordinates drawn as a const plot), a normal fit scaled to counts
+% (n * bin width * pdf) in a darker shade. The fitted mean and standard deviation sit in the wheat
+% text box of Matplotlib's "Placing text boxes" example, as a small table whose colour patches double as the
+% legend; the upper limit leaves a band above the data for it. Numbers from data/make_data.py.
+\documentclass[10pt,tikz,border=4pt]{standalone}
+\usepackage{classicfig}
+\newcommand{\patch}[1]{{\setlength{\fboxsep}{0pt}\setlength{\fboxrule}{0.8pt}\fcolorbox{#1}{#1!35!white}{\rule{0pt}{5pt}\rule{9pt}{0pt}}}}
+\begin{document}
+\begin{tikzpicture}
+\begin{axis}[classic, mpl spines on top, mpl ygrid light, mpl minor={1}{1},
+  title={Particle size distribution},
+  xlabel={Particle diameter (nm)}, ylabel={Count},
+  xmin=1.6, xmax=10.4, enlarge x limits=false, ymin=0, ymax=110, enlarge y limits=false,
+  xtick={2,4,...,10}, ytick={0,20,...,100}]
+% the two fills first, then the two outlines, so neither outline runs under the other batch's fill
+\addplot[C0, mpl stepfill, forget plot] coordinates {
+  (2,0) (2.25,0) (2.5,2) (2.75,2) (3,4) (3.25,9) (3.5,13) (3.75,13) (4,34) (4.25,45) (4.5,52) (4.75,69) (5,60)
+  (5.25,47) (5.5,61) (5.75,34) (6,26) (6.25,14) (6.5,7) (6.75,4) (7,2) (7.25,1) (7.5,1) (7.75,0) (8,0) (8.25,0)
+  (8.5,0) (8.75,0) (9,0) (9.25,0) (9.5,0) (9.75,0) (10,0)};
+\addplot[C1, mpl stepfill, forget plot] coordinates {
+  (2,0) (2.25,0) (2.5,0) (2.75,0) (3,1) (3.25,3) (3.5,1) (3.75,0) (4,5) (4.25,3) (4.5,11) (4.75,17) (5,17)
+  (5.25,29) (5.5,40) (5.75,43) (6,39) (6.25,57) (6.5,54) (6.75,41) (7,35) (7.25,33) (7.5,20) (7.75,17) (8,22)
+  (8.25,4) (8.5,3) (8.75,3) (9,1) (9.25,0) (9.5,1) (9.75,0) (10,0)};
+\addplot[C0, const plot, line width=1.2pt, forget plot] coordinates {
+  (2,0) (2.25,0) (2.5,2) (2.75,2) (3,4) (3.25,9) (3.5,13) (3.75,13) (4,34) (4.25,45) (4.5,52) (4.75,69) (5,60)
+  (5.25,47) (5.5,61) (5.75,34) (6,26) (6.25,14) (6.5,7) (6.75,4) (7,2) (7.25,1) (7.5,1) (7.75,0) (8,0) (8.25,0)
+  (8.5,0) (8.75,0) (9,0) (9.25,0) (9.5,0) (9.75,0) (10,0)};
+\addplot[C1, const plot, line width=1.2pt, forget plot] coordinates {
+  (2,0) (2.25,0) (2.5,0) (2.75,0) (3,1) (3.25,3) (3.5,1) (3.75,0) (4,5) (4.25,3) (4.5,11) (4.75,17) (5,17)
+  (5.25,29) (5.5,40) (5.75,43) (6,39) (6.25,57) (6.5,54) (6.75,41) (7,35) (7.25,33) (7.5,20) (7.75,17) (8,22)
+  (8.25,4) (8.5,3) (8.75,3) (9,1) (9.25,0) (9.5,1) (9.75,0) (10,0)};
+% normal fits, scaled to counts: 500 * 0.25 * pdf
+\addplot[C0!65!black, line width=1.3pt, domain=1.6:10.4, samples=160, forget plot] {125/(0.801*sqrt(2*pi))*exp(-0.5*((x-5.044)/0.801)^2)};
+\addplot[C1!65!black, line width=1.3pt, domain=1.6:10.4, samples=160, forget plot] {125/(1.013*sqrt(2*pi))*exp(-0.5*((x-6.422)/1.013)^2)};
+% statistics box (bbox=dict(boxstyle="round", facecolor="wheat", alpha=0.5)), upper right where only the thin
+% tail of batch 2 runs; it is the legend as well: colour patches for the batches, a line for the fits
+\node[mpl box wheat, font=\fontsize{9}{11}\selectfont, anchor=north east, inner sep=3.5pt]
+  at ([xshift=-5pt, yshift=-5pt]rel axis cs:1,1) {%
+  \begin{tabular}{@{}l@{\hspace{4pt}}l@{\hspace{7pt}}r@{\hspace{7pt}}r@{}}
+    & & $\mu$ & $\sigma$\\[1pt]
+    \patch{C0} & Batch 1 & 5.04 & 0.80\\
+    \patch{C1} & Batch 2 & 6.42 & 1.01\\[2pt]
+    \textcolor{black!65}{\rule[2.5pt]{11pt}{1.3pt}} & \multicolumn{3}{@{}l}{normal fit \textcolor{black!60}{(nm)}}\\
+  \end{tabular}};
+\end{axis}
+\end{tikzpicture}
+\end{document}

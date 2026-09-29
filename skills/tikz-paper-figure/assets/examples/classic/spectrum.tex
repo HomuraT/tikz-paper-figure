@@ -1,0 +1,56 @@
+% spectrum: UV-vis absorption of free-base tetraphenylporphyrin (TPP), in the classic (Matplotlib) style,
+% polished. The Soret band (419 nm) is 25 to 100 times stronger than the four Q bands, so the Q region is drawn a
+% second time, magnified x10, as spectroscopy papers do, with the bands numbered I to IV from the red end.
+% Under both traces the area is filled with the colour of each wavelength (a visible-spectrum colour map,
+% Bruton's wavelength-to-RGB, at alpha 0.45): the fill is a two-row surf whose colour follows x. Band model: six
+% Gaussians on a weak scattering background, normalised to the Soret maximum. Compiles with pdflatex.
+\documentclass[10pt,tikz,border=4pt]{standalone}
+\usepackage{classicfig}
+\begin{document}
+\begin{tikzpicture}
+\begin{axis}[classic, mpl grid light, mpl minor={4}{1}, mpl title left,
+  title={Absorption spectrum},
+  xlabel={Wavelength (nm)}, ylabel={Absorbance (normalised)},
+  xmin=360, xmax=720, enlarge x limits=false, ymin=0, ymax=1.08, enlarge y limits=false,
+  xtick={400,450,...,700}, ytick={0,0.25,...,1},
+  yticklabel style={/pgf/number format/fixed, /pgf/number format/fixed zerofill, /pgf/number format/precision=2},
+  view={0}{90},   % the colour fills are surf plots; seen from above they are flat areas
+  colormap={visible}{rgb255(350pt)=(97,0,97); rgb255(380pt)=(97,0,97); rgb255(390pt)=(121,0,141);
+    rgb255(400pt)=(131,0,181); rgb255(410pt)=(126,0,219); rgb255(420pt)=(106,0,255); rgb255(430pt)=(61,0,255);
+    rgb255(440pt)=(0,0,255); rgb255(450pt)=(0,70,255); rgb255(460pt)=(0,123,255); rgb255(470pt)=(0,169,255);
+    rgb255(480pt)=(0,213,255); rgb255(490pt)=(0,255,255); rgb255(500pt)=(0,255,146); rgb255(510pt)=(0,255,0);
+    rgb255(520pt)=(54,255,0); rgb255(530pt)=(94,255,0); rgb255(540pt)=(129,255,0); rgb255(550pt)=(163,255,0);
+    rgb255(560pt)=(195,255,0); rgb255(570pt)=(225,255,0); rgb255(580pt)=(255,255,0); rgb255(590pt)=(255,223,0);
+    rgb255(600pt)=(255,190,0); rgb255(610pt)=(255,155,0); rgb255(620pt)=(255,119,0); rgb255(630pt)=(255,79,0);
+    rgb255(640pt)=(255,33,0); rgb255(650pt)=(255,0,0); rgb255(700pt)=(255,0,0); rgb255(710pt)=(226,0,0);
+    rgb255(720pt)=(196,0,0); rgb255(730pt)=(165,0,0)},
+  point meta min=350, point meta max=730,
+  declare function={
+    g(\x,\m,\s) = exp(-0.5*((\x-\m)/\s)^2);
+    A(\x) = (0.012*exp(-(\x-360)/80) + g(\x,419,6.5) + 0.11*g(\x,401,9)
+             + 0.043*g(\x,515,10) + 0.019*g(\x,549,9) + 0.013*g(\x,590,9) + 0.009*g(\x,646,11)) / 1.016;
+  }]
+\node[mpl box light, font=\fontsize{9}{11}\selectfont, anchor=north east] at ([xshift=-5pt,yshift=-5pt]rel axis cs:1,1)
+  {TPP in CH$_2$Cl$_2$, 298 K};
+% wavelength-coloured areas under the x1 and the x10 trace
+\addplot3[surf, shader=interp, opacity=0.45, domain=360:720, samples=361, domain y=0:1, samples y=2, point meta=x]
+  ({x}, {y*A(x)}, 0);
+\addplot3[surf, shader=interp, opacity=0.45, domain=465:720, samples=256, domain y=0:1, samples y=2, point meta=x]
+  ({x}, {10*y*A(x)}, 0);
+% the traces
+\addplot[black!85, line width=1.3pt, domain=360:720, samples=721] {A(x)};
+\addplot[black!85, line width=1.1pt, domain=465:720, samples=256] {10*A(x)};
+% Soret band
+\node[mpl text, anchor=north west, align=left] (b) at (axis cs:447,0.93) {Soret (B)\\[-1pt]\textcolor{black!60}{419 nm}};
+\draw[mpl arrow] (b.west) to[bend right=15] (axis cs:424.5,0.93);
+% Q bands, numbered from the red end, on the x10 trace
+% (one node each: a \foreach inside an axis runs after its variables are gone)
+\node[mpl small, anchor=south, text=black!80] at (axis cs:515,0.455) {\halo{IV}};
+\node[mpl small, anchor=south, text=black!80] at (axis cs:549,0.225) {\halo{III}};
+\node[mpl small, anchor=south, text=black!80] at (axis cs:590,0.165) {\halo{II}};
+\node[mpl small, anchor=south, text=black!80] at (axis cs:646,0.125) {\halo{I}};
+\draw[decorate, decoration={brace, amplitude=5pt}, black!70, line width=0.8pt] (axis cs:500,0.545) -- (axis cs:668,0.545);
+\node[mpl text, anchor=south] at (axis cs:584,0.575) {Q bands \textcolor{black!60}{($\times$10)}};
+\end{axis}
+\end{tikzpicture}
+\end{document}
