@@ -1,8 +1,10 @@
 # tikz-paper-figure
 
-![Anime research studio: paper figures with TikZ and pgfplots, two styles, 54 examples and editable TeX](docs/images/repository-banner.png)
+![Anime research studio: paper figures with TikZ and pgfplots, two styles, 63 examples and editable TeX](docs/images/repository-banner-v0.2.2.png)
 
-Paper figures in TikZ and pgfplots, from schematic cards and data plots to multi-panel figures. Two styles, 57 compiled examples, and an agent workflow that takes your data through to a rendered figure.
+Paper figures in TikZ and pgfplots, from schematic cards and data plots to multi-panel figures. Two styles, 63 compiled examples, and an agent workflow that takes your data through to a rendered figure.
+
+[Release 0.2.2 · 2026-09-30](CHANGELOG.md#022-2026-09-30)
 
 [中文说明](README.zh-CN.md) · [Install](#install) · [Quick start](#quick-start) · [Full gallery](skills/tikz-paper-figure/references/gallery.md)
 
@@ -10,7 +12,7 @@ Paper figures in TikZ and pgfplots, from schematic cards and data plots to multi
 
 - `cardfig.sty`: cards with dark title bars, pills, footer bands and shadows, plus benchmark bar panels. `plotfig.sty`: a `paper` axis style for pgfplots with the same fonts and colours, direct labels, bars from zero, grey ticks, digits in the text font.
 - `classicfig.sty`: the classic style, Matplotlib's rcParams in pgfplots (DejaVu Sans, the four-sided frame, tab10, the rounded legend frame) plus one key or macro for each touch a careful Matplotlib user adds: light grid, white marker edges, halos, spans, text boxes, significance brackets, broken axes, a legend for a whole composite.
-- Three templates (`template.tex`, `template-bars.tex`, `template-plot.tex`) and 57 examples with their renders: 3 card figures, 1 bar-panel grid, 28 data plots and 4 composite figures in the house style; 13 plots and 5 composite figures (fit with residuals, scatter with marginals, inset zoom, broken axis, mosaic) in the classic style, with the numpy script that makes their data; 3 ontology and RDF diagrams in published notations (a W3C RDF graph, a VOWL schema, a TBox over its ABox) across both styles.
+- Three templates (`template.tex`, `template-bars.tex`, `template-plot.tex`) and 63 examples with their renders: 3 card figures, 1 bar-panel grid, 28 data plots and 4 composite figures in the house style; 13 plots and 5 composite figures (fit with residuals, scatter with marginals, inset zoom, broken axis, mosaic) in the classic style, with the numpy script that makes their data; 9 ontology and RDF diagrams: three notation examples (W3C RDF, VOWL, TBox/ABox) and six soft-style graphs, including 26–28-node examples. `softontology.sty` provides the shared node, value, edge and region treatment.
 - Scripts: `build_figure.py` compiles (pdflatex, or LuaLaTeX when the file asks for it), cleans, checks the width against the text width and renders a PNG; `bars_from_csv.py`, `flows_from_csv.py` and `treemap_from_csv.py` generate figures from data; `palette_check.py` measures colour distances under simulated colour-vision deficiency; `compare_sheet.py` stacks two versions of a figure; `gallery_sheet.py` tiles the examples; `check_env.py` lists what is installed.
 - References: a digest of Wilke's *Fundamentals of Data Visualization* with decision tables for choosing a chart, the catalogue of card elements, one recipe per chart, the classic style's workflow and craft (collected from Rougier's *Scientific Visualization: Python + Matplotlib* and the Matplotlib gallery), the ontology notations with their layout rules, and the pitfalls with their fixes.
 - `SKILL.md`: the workflow an agent follows, from choosing the style and deciding the content to delivering the render.
@@ -31,13 +33,13 @@ Copy-Item -Recurse tikz-paper-figure/skills/tikz-paper-figure "$env:USERPROFILE/
 
 The layout also matches what `npx skills add HomuraT/tikz-paper-figure --skill tikz-paper-figure` expects. That path has not been tested.
 
-**Templates only, no agent.** Copy `skills/tikz-paper-figure/assets/cardfig.sty`, `plotfig.sty` or `classicfig.sty` next to your figure sources and follow the quick start. The figures compile on Overleaf once the `.sty` is in the project.
+**Templates only, no agent.** Copy `skills/tikz-paper-figure/assets/cardfig.sty`, `plotfig.sty`, `classicfig.sty` or `softontology.sty` next to your figure sources and follow the quick start. The figures compile on Overleaf once the `.sty` is in the project.
 
 ## Quick start
 
 Run `python skills/tikz-paper-figure/scripts/check_env.py` once. It names any missing TeX package or tool and what breaks without it.
 
-1. Copy `plotfig.sty` (data plots), `cardfig.sty` (cards, bar panels) or `classicfig.sty` (the classic, Matplotlib-like style) into your `figures/` directory. One paper uses one style.
+1. Copy `plotfig.sty` (data plots), `cardfig.sty` (cards, bar panels), `classicfig.sty` (the classic, Matplotlib-like style) or `softontology.sty` (soft ontology and mapping diagrams) into your `figures/` directory. Keep the paper's fonts and visual conventions consistent; `softontology.sty` leaves font selection to the document.
 2. Copy the example nearest to your chart from `skills/tikz-paper-figure/assets/examples/` to `figures/name.tex` and replace the data. Results grids come from a CSV instead:
    ```bash
    python skills/tikz-paper-figure/scripts/bars_from_csv.py results.csv --ours Ours --cols 2 --out figures/results.tex
@@ -46,7 +48,7 @@ Run `python skills/tikz-paper-figure/scripts/check_env.py` once. It names any mi
    ```bash
    python skills/tikz-paper-figure/scripts/build_figure.py figures/name.tex --png-dir figures
    ```
-   The script prints the page size and a width verdict against a 5.5 in text width (`--max-width` for other layouts).
+   The script prints the page size and a width verdict against a 5.5 in text width (`--max-width` for other layouts). The `ontology/soft-*` examples are about 17 cm wide: use `--max-width 500` to rebuild them at natural size. For a new paper, set its actual width budget and re-layout if needed.
 4. In the paper, `\graphicspath{{figures/}}` and `\includegraphics{name.pdf}` with no width option. The figure is designed at its final size; scaling it changes the font sizes.
 
 ## Working with the agent
@@ -58,6 +60,7 @@ With the skill installed, requests like these trigger it:
 - "Which chart fits the ablation in Section 5.2? Draw it."
 - "Move the legend of `figures/curves.tex` above the plot. Change nothing else."
 - "Plot this XRD pattern in the Matplotlib style and zoom in on the small rutile peak."
+- "Draw this ontology as a soft-colour graph; use consistent outlines and shadows for the white values too."
 
 The skill picks the style from the paper, the chart from the question the paragraph asks, copies the nearest example, builds it, reads the render and reports which checks ran. For the classic style it computes every statistic in Python first and places labels, legends and text boxes in the space the data leave free. A revision request is treated as one change plus a list of things that must stay (data, colours, sizes, the position of everything not named); the reply shows the diff and a before/after sheet. When the machine has no TeX, the skill says the figure was not compiled rather than describing a render.
 
@@ -65,7 +68,7 @@ The skill picks the style from the paper, the chart from the question the paragr
 
 | | |
 |---|---|
-| TeX | TeX Live 2023 or later (or MiKTeX) with `standalone`, `pgfplots` 1.18+, `tikzmark`, `fontawesome5`, `sourcesanspro`, `inconsolata`; for the classic style also `dejavu`, `mathastext`, `contour`; `lualatex` only for contour plots |
+| TeX | TeX Live 2023 or later (or MiKTeX) with `standalone`, `pgfplots` 1.18+, `tikzmark`, `fontawesome5`, `sourcesanspro`, `inconsolata`; for the classic style also `dejavu`, `mathastext`, `contour`; the soft ontology examples use `dejavu`; `lualatex` only for contour plots |
 | PDF tools | poppler `pdfinfo` and `pdftoppm` (TeX Live on Windows ships them) |
 | Python | 3.9 or later; Pillow only for `gallery_sheet.py`, numpy only for the data script of the classic examples |
 
@@ -80,13 +83,13 @@ Tested on Windows 11 with TeX Live 2025, Python 3.13 and Claude Code. `SKILL.md`
 
 Click a preview for the full image.
 
-[Browse all 57 examples and their sources →](skills/tikz-paper-figure/references/gallery.md) Each figure includes the question it answers, its source file and the relevant recipe.
+[Browse all 63 examples and their sources →](skills/tikz-paper-figure/references/gallery.md) Each figure includes the question it answers, its source file and the relevant recipe.
 
 | Style | Examples | Guide |
 | --- | --- | --- |
 | House | 36: cards, benchmark panels, data plots and composites | [Chart selection and recipes](skills/tikz-paper-figure/references/gallery.md) |
 | Classic | 18: lines and points, distributions, categories and fields, composites | [Classic style guide](skills/tikz-paper-figure/references/classic.md) |
-| Ontology | 3: a W3C RDF graph and a VOWL schema (classic), a TBox over its ABox (house) | [Ontology diagrams](skills/tikz-paper-figure/references/ontology.md) |
+| Ontology | 9: three notation examples and six soft-style graphs, including dense variants | [Ontology diagrams](skills/tikz-paper-figure/references/ontology.md) |
 
 **House style · 36 figures**
 
@@ -96,9 +99,9 @@ Click a preview for the full image.
 
 ![18 classic-style examples, grouped by chart family](skills/tikz-paper-figure/assets/examples/classic/gallery.png)
 
-**Ontology and RDF diagrams · 3 figures**
+**Ontology and RDF diagrams · 9 figures**
 
-![3 ontology and RDF diagrams in the W3C RDF, VOWL and class-box notations](skills/tikz-paper-figure/assets/examples/ontology/gallery.png)
+![9 ontology and RDF diagrams: notation examples and soft-style graphs](skills/tikz-paper-figure/assets/examples/ontology/gallery.png)
 
 Run `gallery_sheet.py` to regenerate the contact sheets after adding an example.
 

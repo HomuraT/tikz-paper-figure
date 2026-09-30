@@ -1,8 +1,10 @@
 # tikz-paper-figure
 
-![二次元学术工作台：用 TikZ 与 pgfplots 将想法绘成论文配图，两种风格、54 个范例、可编辑 TeX](docs/images/repository-banner.png)
+![二次元学术工作台：用 TikZ 与 pgfplots 将想法绘成论文配图，两种风格、63 个范例、可编辑 TeX](docs/images/repository-banner-v0.2.2.png)
 
-用 TikZ 和 pgfplots 绘制论文配图。从卡片示意图、实验数据图到多面板组合图，提供两种风格、57 个已编译范例，以及从数据到渲染图的 agent 工作流。
+用 TikZ 和 pgfplots 绘制论文配图。从卡片示意图、实验数据图到多面板组合图，提供两种风格、63 个已编译范例，以及从数据到渲染图的 agent 工作流。
+
+[版本 0.2.2 · 2026-09-30](CHANGELOG.md#022-2026-09-30)
 
 [English](README.md) · [安装](#安装) · [快速上手](#快速上手) · [完整图库](skills/tikz-paper-figure/references/gallery.md)
 
@@ -10,7 +12,7 @@
 
 - 样式包。`cardfig.sty` 提供带深色标题栏、标签条、脚注带和阴影的卡片，以及基准条形面板；`plotfig.sty` 给 pgfplots 一个 `paper` 坐标轴样式，同一套字体与配色，系列名直接标在图上，柱从零起，灰色刻度，数字用正文字体。
 - 经典风格 `classicfig.sty`：把 Matplotlib 的默认参数（rcParams）搬进 pgfplots（DejaVu Sans、四边框、tab10 配色、圆角图例框），并为认真的 Matplotlib 用户常加的每一处打磨配一个键或宏：浅色网格、白边标记点、文字白色描边、区间色带、文本框、显著性括号、断轴、整张组合图共用的图例。
-- 三个模板（`template.tex`、`template-bars.tex`、`template-plot.tex`）和 57 个带渲染图的范例：统一风格（卡片与数据图共用字体配色的那一套）3 张卡片图、1 张条形面板、28 张数据图、4 张组合图；经典风格 13 张单图和 5 张组合图（拟合加残差、散点加边际分布、局部放大插图、断轴、拼图），附生成数据的 numpy 脚本；另有 3 张按公开记法绘制的本体与 RDF 图（W3C RDF 图、VOWL 本体结构图、TBox 与 ABox 对照图），分属两种风格。
+- 三个模板（`template.tex`、`template-bars.tex`、`template-plot.tex`）和 63 个带渲染图的范例：统一风格（卡片与数据图共用字体配色的那一套）3 张卡片图、1 张条形面板、28 张数据图、4 张组合图；经典风格 13 张单图和 5 张组合图（拟合加残差、散点加边际分布、局部放大插图、断轴、拼图），附生成数据的 numpy 脚本；另有 9 张本体与 RDF 图：3 张记法示例（W3C RDF、VOWL、TBox/ABox）和 6 张柔和配色关系图，含 26–28 个节点的密集示例；`softontology.sty` 统一节点、白底属性值、连线和分区样式。
 - 脚本。`build_figure.py` 编译（默认 pdflatex，文件要求时用 LuaLaTeX）、清理、对照正文宽度检查尺寸并输出 PNG；`bars_from_csv.py`、`flows_from_csv.py`、`treemap_from_csv.py` 从数据生成图；`palette_check.py` 在模拟色觉缺陷下测量配色距离；`compare_sheet.py` 把两版图叠成一张对照；`gallery_sheet.py` 拼出范例总览；`check_env.py` 列出本机装了什么。
 - 参考文档。Wilke《Fundamentals of Data Visualization》的要点笔记与选图决策表、卡片元素目录、每种图一份配方、经典风格的工作流与画图技巧（整理自 Rougier《Scientific Visualization: Python + Matplotlib》和 Matplotlib 官方图库）、本体图的记法与布局规则、常见问题与修法。
 - `SKILL.md`：agent 从选风格、确定内容到交付渲染图的工作流。
@@ -31,13 +33,13 @@ Copy-Item -Recurse tikz-paper-figure/skills/tikz-paper-figure "$env:USERPROFILE/
 
 目录布局也符合 `npx skills add HomuraT/tikz-paper-figure --skill tikz-paper-figure` 的要求，这条路径没有测过。
 
-**只要模板，不用 agent。** 把 `skills/tikz-paper-figure/assets/cardfig.sty`、`plotfig.sty` 或 `classicfig.sty` 复制到图源目录，按下面的快速上手走。`.sty` 进了项目，Overleaf 上也能编译。
+**只要模板，不用 agent。** 把 `skills/tikz-paper-figure/assets/cardfig.sty`、`plotfig.sty`、`classicfig.sty` 或 `softontology.sty` 复制到图源目录，按下面的快速上手走。`.sty` 进了项目，Overleaf 上也能编译。
 
 ## 快速上手
 
 先跑一次 `python skills/tikz-paper-figure/scripts/check_env.py`，它会列出缺哪个 TeX 宏包或工具，以及缺了会坏什么。
 
-1. 把 `plotfig.sty`（数据图）、`cardfig.sty`（卡片、条形面板）或 `classicfig.sty`（经典的 Matplotlib 风格）复制进论文的 `figures/`。一篇论文只用一种风格。
+1. 把 `plotfig.sty`（数据图）、`cardfig.sty`（卡片、条形面板）、`classicfig.sty`（经典的 Matplotlib 风格）或 `softontology.sty`（柔和配色的本体与映射关系图）复制进论文的 `figures/`。保持论文的字体和视觉约定一致；`softontology.sty` 本身不指定字体。
 2. 从 `skills/tikz-paper-figure/assets/examples/` 挑最接近的范例复制为 `figures/name.tex`，换成自己的数据。结果榜单改从 CSV 生成：
    ```bash
    python skills/tikz-paper-figure/scripts/bars_from_csv.py results.csv --ours Ours --cols 2 --out figures/results.tex
@@ -46,7 +48,7 @@ Copy-Item -Recurse tikz-paper-figure/skills/tikz-paper-figure "$env:USERPROFILE/
    ```bash
    python skills/tikz-paper-figure/scripts/build_figure.py figures/name.tex --png-dir figures
    ```
-   脚本会打印页面尺寸，并按 5.5 英寸正文宽给出是否超宽的判定（别的版式用 `--max-width`）。
+   脚本会打印页面尺寸，并按 5.5 英寸正文宽给出是否超宽的判定（别的版式用 `--max-width`）。`ontology/soft-*` 范例宽约 17 cm，按原尺寸重建时使用 `--max-width 500`；新论文按实际版心设置宽度，必要时重新布局。
 4. 论文里写 `\graphicspath{{figures/}}` 和不带宽度的 `\includegraphics{name.pdf}`。图按最终尺寸设计，缩放会改变字号。
 
 ## 配合 agent 使用
@@ -58,6 +60,7 @@ Copy-Item -Recurse tikz-paper-figure/skills/tikz-paper-figure "$env:USERPROFILE/
 - 「5.2 节的消融用什么图？画出来。」
 - 「把 `figures/curves.tex` 的图例挪到图上方，别的都不动。」
 - 「用经典风格画这组 XRD 数据，把金红石那个小峰放大。」
+- 「把这个本体画成柔和配色的关系图，白底属性值也统一黑边和轻阴影。」
 
 skill 按论文定风格，按段落要回答的问题选图，复制最近的范例，编译，读渲染图，汇报跑了哪些检查。经典风格下，它先用 Python 算好所有统计量，再把标签、图例和文本框放进数据留出的空白处。修改已有图时，要求被拆成「改什么」和「保持什么」两张清单（数据、颜色、尺寸、没点名的元素位置），回复里给出 diff 和前后对照图。机器上没有 TeX 时，skill 会说明图没有编译，不会描述一张谁也没见过的渲染图。
 
@@ -65,7 +68,7 @@ skill 按论文定风格，按段落要回答的问题选图，复制最近的�
 
 | | |
 |---|---|
-| TeX | TeX Live 2023 或更新（或 MiKTeX），含 `standalone`、`pgfplots` 1.18+、`tikzmark`、`fontawesome5`、`sourcesanspro`、`inconsolata`；经典风格另需 `dejavu`、`mathastext`、`contour`；`lualatex` 只有等高线图用到 |
+| TeX | TeX Live 2023 或更新（或 MiKTeX），含 `standalone`、`pgfplots` 1.18+、`tikzmark`、`fontawesome5`、`sourcesanspro`、`inconsolata`；经典风格另需 `dejavu`、`mathastext`、`contour`；柔和配色本体范例使用 `dejavu`；`lualatex` 只有等高线图用到 |
 | PDF 工具 | poppler 的 `pdfinfo` 与 `pdftoppm`（Windows 版 TeX Live 自带） |
 | Python | 3.9 或更新；Pillow 只有 `gallery_sheet.py` 用到，numpy 只有经典风格范例的数据脚本用到 |
 
@@ -80,13 +83,13 @@ skill 按论文定风格，按段落要回答的问题选图，复制最近的�
 
 点击预览查看原图。
 
-[浏览全部 57 个范例与源码 →](skills/tikz-paper-figure/references/gallery.md) 每张图都附有适用问题、源码路径和对应配方。
+[浏览全部 63 个范例与源码 →](skills/tikz-paper-figure/references/gallery.md) 每张图都附有适用问题、源码路径和对应配方。
 
 | 风格 | 范例 | 说明 |
 | --- | --- | --- |
 | 统一风格 | 36 张：卡片、条形面板、数据图与组合图 | [选图与配方](skills/tikz-paper-figure/references/gallery.md) |
 | Classic 风格 | 18 张：线与点、分布、类别与场、组合图 | [经典风格指南](skills/tikz-paper-figure/references/classic.md) |
-| 本体图 | 3 张：W3C RDF 图与 VOWL 本体结构图（经典风格）、TBox 与 ABox 对照图（统一风格） | [本体图指南](skills/tikz-paper-figure/references/ontology.md) |
+| 本体图 | 9 张：3 张记法示例、6 张柔和配色关系图（含密集版） | [本体图指南](skills/tikz-paper-figure/references/ontology.md) |
 
 **统一风格总览 · 36 张图**
 
@@ -96,9 +99,9 @@ skill 按论文定风格，按段落要回答的问题选图，复制最近的�
 
 ![18 个经典风格范例，按图型分组](skills/tikz-paper-figure/assets/examples/classic/gallery.png)
 
-**本体与 RDF 图总览 · 3 张图**
+**本体与 RDF 图总览 · 9 张图**
 
-![3 个本体与 RDF 图范例：W3C RDF、VOWL 与类框记法](skills/tikz-paper-figure/assets/examples/ontology/gallery.png)
+![9 个本体与 RDF 图范例：记法示例与柔和配色关系图](skills/tikz-paper-figure/assets/examples/ontology/gallery.png)
 
 新增范例后，用 `gallery_sheet.py` 重新生成总览图。
 

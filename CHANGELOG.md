@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.2.2 (2026-09-30)
+
+Soft ontology diagrams with a reusable visual style.
+
+- Add `softontology.sty`: font-neutral, namespaced TikZ styles for class boxes, instance capsules, white values and text excerpts, references, attributes, type links, regions and legends. White value boxes share the nodes' black outlines, small corners, monospace type and subtle hard shadows.
+- Add six compiled examples with editable TeX, PDF and PNG: `soft-schema`, `soft-lineage`, `soft-graph-text`, `soft-dense-schema` (28 nodes), `soft-dense-lineage` (26 nodes), and `soft-dense-catalogue` (27 nodes). The repository now contains 63 examples, including nine ontology/RDF diagrams.
+- Expand the ontology guide and skill workflow to separate notation, appearance and layout. Colours and grouping remain content-dependent; no fixed domain, topology, lane structure or panel arrangement is required. Retain the original RDF, VOWL and TBox/ABox examples.
+- Update the ontology contact sheet, English/Chinese READMEs, gallery, example index, banner count (63 examples) and full-width build instructions. Correct the skill description's YAML format and include the new ontology use cases.
+- Ignore the local `draft/` review copies; the six approved examples are shipped under the skill's assets.
+- Validation: all six new examples compile at their intended width, packaged renders match the approved drafts pixel-for-pixel, and local documentation links resolve.
+
 ## 0.2.1 (2026-09-29)
 
 Ontology and RDF diagrams.

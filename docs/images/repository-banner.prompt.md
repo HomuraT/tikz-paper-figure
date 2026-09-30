@@ -1,12 +1,22 @@
 # Repository banner
 
-Generated with the built-in image generation tool. Used in both README files.
+Generated and edited with the built-in image generation tool. The current `repository-banner-v0.2.2.png` is used in both READMEs; `repository-banner.png` is the historical source.
 
-## Character replacement edit
+## Release 0.2.2 count update (2026-09-30)
+
+Input: `repository-banner.png`. Output: `repository-banner-v0.2.2.png`.
+
+Final prompt:
+
+> Use case: text-localization. Asset: existing GitHub repository banner. Make a surgical text-only update to the supplied image: change the small badge text '54 examples' to exactly '63 examples'. Match its existing navy serif font, size, baseline and spacing. Preserve the original wide aspect ratio and complete composition, every other word, the character's identity and face, pose, charts, cat, lighting, colours and all illustration details as closely as possible. Do not redesign, crop, add or remove anything else. The ONLY requested visible change is 54 -> 63.
+
+The prompts below record the historical image generation and character edit; their old example counts are retained as provenance.
+
+## Historical character replacement edit
 
 Edit the provided repository banner. Change ONLY the anime character on the right into Homura Akemi (晓美焰) from Puella Magi Madoka Magica: recognizable long straight black hair, purple eyes, black headband, her iconic modest white and grey outfit with purple ribbon and dark trim. Calm, reserved, focused expression. Keep the same seated drawing-tablet pose, one hand holding the stylus and the other supporting her cheek. Match the existing elegant anime linework and warm sunlight. Preserve the entire banner composition, wide aspect ratio, title "tikz-paper-figure", subtitle "Paper figures with TikZ & pgfplots", the "Two styles", "54 examples", "Editable TeX" text, all charts, paper panels, furniture, plants, sleeping cat, scenery, and all other lettering exactly as closely as possible. No added symbols, weapons, effects, or new text. This is a localized character replacement, with all non-character content unchanged.
 
-## Prompt
+## Historical original prompt
 
 Use case: stylized-concept
 Asset type: GitHub repository README introduction banner.
