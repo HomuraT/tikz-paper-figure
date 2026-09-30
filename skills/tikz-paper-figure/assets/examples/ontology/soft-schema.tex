@@ -1,0 +1,48 @@
+% Soft ontology style example. Fictional content; layouts and colour meanings are illustrative.
+% Copy softontology.sty alongside the source when using this outside the skill.
+% Build at natural width (~17 cm): build_figure.py <file>.tex --max-width 500 --png-dir .
+\documentclass[10pt,tikz,border=5pt]{standalone}
+\usepackage[T1]{fontenc}
+\usepackage{DejaVuSans}
+\usepackage{DejaVuSansMono}
+\renewcommand{\familydefault}{\sfdefault}
+\usepackage{softontology}
+\begin{document}
+\begin{tikzpicture}
+
+\node[sog title] at (0,1) {01\quad Classes and instances};
+\node[sog subtitle] at (0,.55) {Shape marks the role; colour groups related objects.};
+\fill[sog region] (0,-.05) rectangle (16.5,-1.9);
+\fill[sog region] (0,-2.15) rectangle (16.5,-5.25);
+\node[sog heading] at (.25,-.35) {SCHEMA};
+\node[sog heading] at (.25,-2.48) {EXAMPLE};
+\node[sog kind=sogblue,minimum width=2cm] (a) at (2.4,-1.12) {Researcher};
+\node[sog kind=sogorange,minimum width=2cm] (b) at (8.2,-1.12) {Paper};
+\node[sog kind=soggreen,minimum width=2cm] (c) at (14,-1.12) {Topic};
+\draw[sog ref] (a) -- node[sog lab,above] {writes} (b);
+\draw[sog ref] (b) -- node[sog lab,above] {hasTopic} (c);
+\node[sog entity=sogblue,minimum width=2cm] (x) at (2.4,-3.25) {:alice};
+\node[sog entity=sogorange,minimum width=2cm] (y) at (8.2,-3.25) {:paper17};
+\node[sog entity=soggreen,minimum width=2cm] (z) at (14,-3.25) {:graphs};
+\draw[sog ref] (x) -- node[sog lab,above] {writes} (y);
+\draw[sog ref] (y) -- node[sog lab,above] {hasTopic} (z);
+\foreach \i/\j in {x/a,y/b,z/c}{\draw[sog type] (\i) -- node[sog lab,right,pos=.5] {rdf:type} (\j);}
+\node[sog value] (vx) at (2.4,-4.65) {"Alice Chen"};
+\node[sog value] (vy) at (8.2,-4.65) {"Graph Retrieval"};
+\node[sog value] (vz) at (14,-4.65) {"Knowledge graphs"};
+\draw[sog attr] (x) -- node[sog lab,right] {name} (vx);
+\draw[sog attr] (y) -- node[sog lab,right] {title} (vy);
+\draw[sog attr] (z) -- node[sog lab,right] {label} (vz);
+\node[sog kind=sogblue,sog swatch] (k1) at (.65,-6) {};
+\node[sog keytext] (t1) at (1,-6) {class};
+\node[sog entity=sogorange,sog swatch] (k2) at (3.2,-6) {};
+\node[sog keytext] at (3.55,-6) {instance};
+\node[sog value,sog swatch,rounded corners=2pt] (k3) at (6,-6) {};
+\node[sog keytext] at (6.35,-6) {value};
+\draw[sog ref] (8,-6) -- (8.7,-6); \node[sog keytext] at (8.85,-6) {relation};
+\draw[sog attr] (10.95,-6) -- (11.65,-6); \node[sog keytext] at (11.8,-6) {attribute};
+\draw[sog type] (14,-6) -- (14.7,-6); \node[sog keytext] (end) at (14.85,-6) {type};
+\begin{scope}[on background layer]\node[sog key,fit=(k1)(end)] {};\end{scope}
+
+\end{tikzpicture}
+\end{document}

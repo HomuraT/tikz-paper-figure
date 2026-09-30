@@ -1,0 +1,50 @@
+% Soft ontology style example. Fictional content; layouts and colour meanings are illustrative.
+% Copy softontology.sty alongside the source when using this outside the skill.
+% Build at natural width (~17 cm): build_figure.py <file>.tex --max-width 500 --png-dir .
+\documentclass[10pt,tikz,border=5pt]{standalone}
+\usepackage[T1]{fontenc}
+\usepackage{DejaVuSans}
+\usepackage{DejaVuSansMono}
+\renewcommand{\familydefault}{\sfdefault}
+\usepackage{softontology}
+\begin{document}
+\begin{tikzpicture}
+
+\node[sog title] at (0,1) {02\quad Data lineage};
+\node[sog subtitle] at (0,.55) {The same visual vocabulary in a branching dependency graph.};
+\fill[sog region] (0,-.05) rectangle (4.15,-5.25);
+\fill[sog region] (4.4,-.05) rectangle (16.5,-5.25);
+\node[sog heading] at (.25,-.4) {SOURCE RECORDS};
+\node[sog heading] at (4.7,-.4) {PROCESSING AND OUTPUT};
+\node[sog entity=sogblue,minimum width=2.8cm] (s1) at (2.05,-1.4) {:authors};
+\node[sog entity=sogblue,minimum width=2.8cm] (s2) at (2.05,-3.95) {:publications};
+\node[sog value] (v1) at (2.05,-2.3) {"authors.csv"};
+\node[sog value] (v2) at (2.05,-4.85) {"papers.csv"};
+\draw[sog attr] (s1) -- node[sog lab,right] {file} (v1);
+\draw[sog attr] (s2) -- node[sog lab,right] {file} (v2);
+\node[sog entity=sogorange] (p1) at (6.25,-1.4) {:normalize};
+\node[sog entity=sogorange] (p2) at (6.25,-3.95) {:deduplicate};
+\node[sog entity=sogorange] (join) at (10.4,-2.7) {:linkRecords};
+\node[sog entity=soggreen] (out) at (14.6,-2.7) {:catalog};
+\draw[sog ref] (s1) -- node[sog lab,above] {inputTo} (p1);
+\draw[sog ref] (s2) -- node[sog lab,above] {inputTo} (p2);
+\draw[sog ref] (p1.east) -- node[sog lab,above] {feeds} (8.5,-1.4) |- ([yshift=4pt]join.west);
+\draw[sog ref] (p2.east) -- node[sog lab,below] {feeds} (8.5,-3.95) |- ([yshift=-4pt]join.west);
+\draw[sog ref] (join) -- node[sog lab,above] {produces} (out);
+\node[sog value] (id) at (10.4,-4.5) {"author\_id"};
+\draw[sog attr] (join) -- node[sog lab,right] {joinKey} (id);
+\node[sog value] (fmt) at (14.6,-1.1) {"RDF"};
+\draw[sog attr] (out) -- node[sog lab,right] {format} (fmt);
+\node[sog note,anchor=north] at (14.6,-3.35) {One catalogue,\\two source collections};
+\node[sog entity=sogblue,sog swatch] (k1) at (1.1,-6) {};
+\node[sog keytext] at (1.5,-6) {source};
+\node[sog entity=sogorange,sog swatch] at (4.1,-6) {};
+\node[sog keytext] at (4.5,-6) {operation};
+\node[sog entity=soggreen,sog swatch] at (7.6,-6) {};
+\node[sog keytext] at (8,-6) {output};
+\draw[sog ref] (10.55,-6) -- (11.25,-6); \node[sog keytext] at (11.4,-6) {reference};
+\draw[sog attr] (13.95,-6) -- (14.65,-6); \node[sog keytext] (end) at (14.8,-6) {field};
+\begin{scope}[on background layer]\node[sog key,fit=(k1)(end)] {};\end{scope}
+
+\end{tikzpicture}
+\end{document}

@@ -6,7 +6,7 @@ Usage:
 
 House style (card figures, bar panels, plotfig data plots) goes to assets/examples/gallery.png, classic style
 (classicfig.sty) to assets/examples/classic/gallery.png, the ontology and RDF diagrams (both styles) to
-assets/examples/ontology/gallery.png; `--style all` (the default) writes both, and `--out`
+assets/examples/ontology/gallery.png; `--style all` (the default) writes all three, and `--out`
 applies when one style is chosen. The order and grouping match references/gallery.md. Each render is scaled
 to fit its cell (aspect kept) and labelled with its file stem. Run it after adding or re-rendering an example,
 so the sheets and the gallery page agree. Needs Pillow.
@@ -52,6 +52,10 @@ SHEETS: dict[str, Sheet] = {
     "ontology": Sheet(EXAMPLES / "ontology" / "gallery.png", (EXAMPLES / "ontology",), [
         ("Ontology and RDF diagrams: rdf-triples and vowl-schema (classicfig.sty), tbox-abox (cardfig.sty)",
          ["rdf-triples", "vowl-schema", "tbox-abox"]),
+        ("Soft ontology style: small examples (softontology.sty)",
+         ["soft-schema", "soft-lineage", "soft-graph-text"]),
+        ("Soft ontology style: dense examples, 26-28 nodes",
+         ["soft-dense-schema", "soft-dense-lineage", "soft-dense-catalogue"]),
     ], cols=3),
 }
 FONT_CANDIDATES: list[str] = ["C:/Windows/Fonts/arialbd.ttf", "C:/Windows/Fonts/arial.ttf",

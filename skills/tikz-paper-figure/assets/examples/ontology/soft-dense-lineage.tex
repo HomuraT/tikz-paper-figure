@@ -1,0 +1,79 @@
+% Soft ontology style example. Fictional content; layouts and colour meanings are illustrative.
+% Copy softontology.sty alongside the source when using this outside the skill.
+% Build at natural width (~17 cm): build_figure.py <file>.tex --max-width 500 --png-dir .
+\documentclass[10pt,tikz,border=5pt]{standalone}
+\usepackage[T1]{fontenc}
+\usepackage{DejaVuSans}
+\usepackage{DejaVuSansMono}
+\renewcommand{\familydefault}{\sfdefault}
+\usepackage{softontology}
+\begin{document}
+\begin{tikzpicture}
+\node[sog title] (title) at (0,1) {05\quad Multiple sources, shared outputs};
+\node[sog subtitle] (sub) at (0,0.52) {26 nodes: four branches converge into two reusable collections.};
+\fill[sog region] (0,0.05) rectangle (4.45,-10.5);
+\fill[sog region] (4.7,0.05) rectangle (16.9,-10.5);
+\node[sog heading] (h1) at (0.25,-0.28) {SOURCES};
+\node[sog heading] (h2) at (4.95,-0.28) {TRANSFORMATIONS AND OUTPUTS};
+\node[sog entity=sogblue] (s0) at (2.2,-1.15) {:authors};
+\node[sog value] (f0) at (1.35,-2.2199999999999998) {"authors.csv"};
+\node[sog value] (z0) at (3.55,-2.2199999999999998) {1,240};
+\draw[sog attr] ([xshift=-7pt]s0.south) -- ++(0,-.38) -| node[sog lab,pos=.75,left] {file} (f0.north);
+\draw[sog attr] ([xshift=7pt]s0.south) -- ++(0,-.38) -| node[sog lab,pos=.75,right] {rows} (z0.north);
+\node[sog entity=sogorange] (p0) at (6.55,-1.15) {:normalize};
+\node[sog value] (r0) at (6.55,-2.2199999999999998) {"trim names"};
+\draw[sog ref] (s0) -- node[sog lab,above] {inputTo} (p0);
+\draw[sog attr] (p0) -- node[sog lab,right] {rule} (r0);
+\node[sog entity=sogblue] (s1) at (2.2,-3.6) {:profiles};
+\node[sog value] (f1) at (1.35,-4.67) {"profiles.csv"};
+\node[sog value] (z1) at (3.55,-4.67) {3,860};
+\draw[sog attr] ([xshift=-7pt]s1.south) -- ++(0,-.38) -| node[sog lab,pos=.75,left] {file} (f1.north);
+\draw[sog attr] ([xshift=7pt]s1.south) -- ++(0,-.38) -| node[sog lab,pos=.75,right] {rows} (z1.north);
+\node[sog entity=sogorange] (p1) at (6.55,-3.6) {:resolve};
+\node[sog value] (r1) at (6.55,-4.67) {"match ORCID"};
+\draw[sog ref] (s1) -- node[sog lab,above] {inputTo} (p1);
+\draw[sog attr] (p1) -- node[sog lab,right] {rule} (r1);
+\node[sog entity=sogblue] (s2) at (2.2,-6.050000000000001) {:papers};
+\node[sog value] (f2) at (1.35,-7.120000000000001) {"papers.csv"};
+\node[sog value] (z2) at (3.55,-7.120000000000001) {8,420};
+\draw[sog attr] ([xshift=-7pt]s2.south) -- ++(0,-.38) -| node[sog lab,pos=.75,left] {file} (f2.north);
+\draw[sog attr] ([xshift=7pt]s2.south) -- ++(0,-.38) -| node[sog lab,pos=.75,right] {rows} (z2.north);
+\node[sog entity=sogorange] (p2) at (6.55,-6.050000000000001) {:deduplicate};
+\node[sog value] (r2) at (6.55,-7.120000000000001) {"match DOI"};
+\draw[sog ref] (s2) -- node[sog lab,above] {inputTo} (p2);
+\draw[sog attr] (p2) -- node[sog lab,right] {rule} (r2);
+\node[sog entity=sogblue] (s3) at (2.2,-8.5) {:citations};
+\node[sog value] (f3) at (1.35,-9.57) {"cites.csv"};
+\node[sog value] (z3) at (3.55,-9.57) {24,600};
+\draw[sog attr] ([xshift=-7pt]s3.south) -- ++(0,-.38) -| node[sog lab,pos=.75,left] {file} (f3.north);
+\draw[sog attr] ([xshift=7pt]s3.south) -- ++(0,-.38) -| node[sog lab,pos=.75,right] {rows} (z3.north);
+\node[sog entity=sogorange] (p3) at (6.55,-8.5) {:validate};
+\node[sog value] (r3) at (6.55,-9.57) {"check targets"};
+\draw[sog ref] (s3) -- node[sog lab,above] {inputTo} (p3);
+\draw[sog attr] (p3) -- node[sog lab,right] {rule} (r3);
+\node[sog entity=soggreen] (o0) at (10.8,-2.375) {:people};
+\node[sog entity=soggreen] (e0) at (14.8,-2.375) {:peopleTTL};
+\draw[sog ref] (o0) -- node[sog lab,above] {exportAs} (e0);
+\node[sog value] (fmt0) at (14.8,-3.495) {"Turtle"};
+\draw[sog attr] (e0) -- node[sog lab,right] {format} (fmt0);
+\draw[sog ref] (p0.east) -- node[sog lab,above] {feeds} (8.85,-1.15) |- ([yshift=5pt]o0.west);
+\draw[sog ref] (p1.east) -- node[sog lab,above] {feeds} (8.85,-3.6) |- ([yshift=-5pt]o0.west);
+\node[sog entity=soggreen] (o1) at (10.8,-7.275) {:works};
+\node[sog entity=soggreen] (e1) at (14.8,-7.275) {:worksTTL};
+\draw[sog ref] (o1) -- node[sog lab,above] {exportAs} (e1);
+\node[sog value] (fmt1) at (14.8,-8.395) {"Turtle"};
+\draw[sog attr] (e1) -- node[sog lab,right] {format} (fmt1);
+\draw[sog ref] (p2.east) -- node[sog lab,above] {feeds} (8.85,-6.050000000000001) |- ([yshift=5pt]o1.west);
+\draw[sog ref] (p3.east) -- node[sog lab,above] {feeds} (8.85,-8.5) |- ([yshift=-5pt]o1.west);
+\draw[sog ref] (o1.north) -- node[sog lab,right] {createdBy} (o0.south);
+\node[sog entity=sogblue,sog swatch,rounded corners=4pt] (k0) at (0.65,-11.25) {};
+\node[sog keytext] (kt0) at (1.05,-11.25) {source};
+\node[sog entity=sogorange,sog swatch,rounded corners=4pt] (k1) at (5.050000000000001,-11.25) {};
+\node[sog keytext] (kt1) at (5.450000000000001,-11.25) {operation};
+\node[sog entity=soggreen,sog swatch,rounded corners=4pt] (k2) at (9.450000000000001,-11.25) {};
+\node[sog keytext] (kt2) at (9.850000000000001,-11.25) {output};
+\draw[sog ref] (13.1,-11.25) -- (13.8,-11.25);
+\node[sog keytext] (ke) at (14,-11.25) {relation};
+\begin{scope}[on background layer]\node[sog key,fit=(k0)(ke)] {};\end{scope}
+\end{tikzpicture}
+\end{document}

@@ -1,0 +1,90 @@
+% Soft ontology style example. Fictional content; layouts and colour meanings are illustrative.
+% Copy softontology.sty alongside the source when using this outside the skill.
+% Build at natural width (~17 cm): build_figure.py <file>.tex --max-width 500 --png-dir .
+\documentclass[10pt,tikz,border=5pt]{standalone}
+\usepackage[T1]{fontenc}
+\usepackage{DejaVuSans}
+\usepackage{DejaVuSansMono}
+\renewcommand{\familydefault}{\sfdefault}
+\usepackage{softontology}
+\begin{document}
+\begin{tikzpicture}
+\node[sog title] (title) at (0,1) {06\quad A connected research catalogue};
+\node[sog subtitle] (sub) at (0,0.52) {27 nodes: resources, literal branches, shared affiliation and a text excerpt.};
+\fill[sog region] (0,0.05) rectangle (16.9,-11.45);
+\node[sog entity=sogblue] (a0) at (2.15,-1.0) {:alice};
+\node[sog value] (an0) at (2.15,-2.1) {"Alice Chen"};
+\draw[sog attr] (a0) -- node[sog lab,right] {name} (an0);
+\node[sog entity=sogorange] (p0) at (8.15,-1.0) {:paper17};
+\node[sog value] (py0) at (6.4,-2.1) {2024};
+\node[sog value] (pt0) at (9.25,-2.1) {"Graph Retrieval"};
+\draw[sog attr] ([xshift=-8pt]p0.south) -- ++(0,-.4) -| (py0.north);
+\draw[sog attr] ([xshift=8pt]p0.south) -- ++(0,-.4) -| (pt0.north);
+\node[sog lab] at (6.4,-1.5699999999999998) {year};
+\node[sog lab] at (9.25,-1.5699999999999998) {title};
+\node[sog entity=soggreen] (t0) at (14.5,-1.0) {:retrieval};
+\node[sog value] (tl0) at (14.5,-2.1) {"Retrieval"};
+\draw[sog attr] (t0) -- node[sog lab,right] {label} (tl0);
+\draw[sog ref] (a0) -- node[sog lab,above] {writes} (p0);
+\draw[sog ref] (p0) -- node[sog lab,above] {hasTopic} (t0);
+\node[sog entity=sogblue] (a1) at (2.15,-3.8) {:ben};
+\node[sog value] (an1) at (2.15,-4.9) {"Ben Ortiz"};
+\draw[sog attr] (a1) -- node[sog lab,right] {name} (an1);
+\node[sog entity=sogorange] (p1) at (8.15,-3.8) {:paper28};
+\node[sog value] (py1) at (6.4,-4.9) {2025};
+\node[sog value] (pt1) at (9.25,-4.9) {"Entity Linking"};
+\draw[sog attr] ([xshift=-8pt]p1.south) -- ++(0,-.4) -| (py1.north);
+\draw[sog attr] ([xshift=8pt]p1.south) -- ++(0,-.4) -| (pt1.north);
+\node[sog lab] at (6.4,-4.37) {year};
+\node[sog lab] at (9.25,-4.37) {title};
+\node[sog entity=soggreen] (t1) at (14.5,-3.8) {:linking};
+\node[sog value] (tl1) at (14.5,-4.9) {"Linking"};
+\draw[sog attr] (t1) -- node[sog lab,right] {label} (tl1);
+\draw[sog ref] (a1) -- node[sog lab,above] {writes} (p1);
+\draw[sog ref] (p1) -- node[sog lab,above] {hasTopic} (t1);
+\node[sog entity=sogblue] (a2) at (2.15,-6.6) {:cara};
+\node[sog value] (an2) at (2.15,-7.699999999999999) {"Cara Singh"};
+\draw[sog attr] (a2) -- node[sog lab,right] {name} (an2);
+\node[sog entity=sogorange] (p2) at (8.15,-6.6) {:paper39};
+\node[sog value] (py2) at (6.4,-7.699999999999999) {2026};
+\node[sog value] (pt2) at (9.25,-7.699999999999999) {"Schema Matching"};
+\draw[sog attr] ([xshift=-8pt]p2.south) -- ++(0,-.4) -| (py2.north);
+\draw[sog attr] ([xshift=8pt]p2.south) -- ++(0,-.4) -| (pt2.north);
+\node[sog lab] at (6.4,-7.17) {year};
+\node[sog lab] at (9.25,-7.17) {title};
+\node[sog entity=soggreen] (t2) at (14.5,-6.6) {:matching};
+\node[sog value] (tl2) at (14.5,-7.699999999999999) {"Matching"};
+\draw[sog attr] (t2) -- node[sog lab,right] {label} (tl2);
+\draw[sog ref] (a2) -- node[sog lab,above] {writes} (p2);
+\draw[sog ref] (p2) -- node[sog lab,above] {hasTopic} (t2);
+\node[sog entity=sogblue] (org) at (2.15,-9.4) {:labA};
+\node[sog value] (orgn) at (2.15,-10.5) {"Data Lab"};
+\draw[sog attr] (org) -- node[sog lab,right] {name} (orgn);
+\node[sog entity=sogorange] (coll) at (8.15,-9.4) {:collection};
+\node[sog value] (colln) at (8.15,-10.5) {"Research 2026"};
+\draw[sog attr] (coll) -- node[sog lab,right] {label} (colln);
+\node[sog entity=soggreen] (scheme) at (14.5,-9.4) {:topicScheme};
+\node[sog value] (schemen) at (14.5,-10.5) {"Research topics"};
+\draw[sog attr] (scheme) -- node[sog lab,right] {label} (schemen);
+\draw[sog ref] (org) -- node[sog lab,above] {curates} (coll);
+\draw[sog ref] (coll) -- node[sog lab,above] {usesScheme} (scheme);
+\draw[sog ref] (a0.west) -- (0.3,-1.0) -- (0.3,-9.4) -- (org.west);
+\draw[sog ref] (a1.west) -- (0.52,-3.8) -- (0.52,-9.4) -- (org.west);
+\draw[sog ref] (a2.west) -- (0.74,-6.6) -- (0.74,-9.4) -- (org.west);
+\node[sog lab,rotate=90,anchor=west,fill=black!3.5] (aff) at (0.5,-8.5) {affiliatedWith};
+\draw[sog ref] (p2.south west) -- ++(0,-.04) -| (5.05,-8.65) -- node[sog lab,above] {inCollection} (8.15,-8.65) -- (coll.north);
+\draw[sog ref] (t2.east) -- (16.5,-6.6) -- node[sog lab,left,pos=.7] {inScheme} (16.5,-9.4) -- (scheme.east);
+\node[sog edit,fit=(pt1)] (select) at (9.25,-4.9) {};
+\node[sog heading] (excerpt) at (0.2,-12) {TURTLE EXCERPT};
+\node[sog code,text width=16cm] (code) at (0.2,-12.3) {ex:ben ex:affiliatedWith ex:labA ; ex:writes ex:paper28 .\\ex:paper28 ex:title "Entity Linking" ; ex:hasTopic ex:linking .};
+\node[sog entity=sogblue,sog swatch,rounded corners=4pt] (k0) at (0.65,-14.1) {};
+\node[sog keytext] (kt0) at (1.05,-14.1) {person / lab};
+\node[sog entity=sogorange,sog swatch,rounded corners=4pt] (k1) at (5.050000000000001,-14.1) {};
+\node[sog keytext] (kt1) at (5.450000000000001,-14.1) {paper / collection};
+\node[sog entity=soggreen,sog swatch,rounded corners=4pt] (k2) at (9.450000000000001,-14.1) {};
+\node[sog keytext] (kt2) at (9.850000000000001,-14.1) {topic / scheme};
+\draw[sog ref] (13.1,-14.1) -- (13.8,-14.1);
+\node[sog keytext] (ke) at (14,-14.1) {relation};
+\begin{scope}[on background layer]\node[sog key,fit=(k0)(ke)] {};\end{scope}
+\end{tikzpicture}
+\end{document}

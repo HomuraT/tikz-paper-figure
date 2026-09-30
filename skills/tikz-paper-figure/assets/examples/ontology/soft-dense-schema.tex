@@ -1,0 +1,87 @@
+% Soft ontology style example. Fictional content; layouts and colour meanings are illustrative.
+% Copy softontology.sty alongside the source when using this outside the skill.
+% Build at natural width (~17 cm): build_figure.py <file>.tex --max-width 500 --png-dir .
+\documentclass[10pt,tikz,border=5pt]{standalone}
+\usepackage[T1]{fontenc}
+\usepackage{DejaVuSans}
+\usepackage{DejaVuSansMono}
+\renewcommand{\familydefault}{\sfdefault}
+\usepackage{softontology}
+\begin{document}
+\begin{tikzpicture}
+\node[sog title] (title) at (0,1) {04\quad A richer schema and its instances};
+\node[sog subtitle] (sub) at (0,0.52) {28 nodes: four classes, three connected records, twelve literal values.};
+\fill[sog region] (0,0.05) rectangle (16.5,-1.45);
+\node[sog kind=sogblue] (c0) at (1.85,-0.7) {Researcher};
+\node[sog kind=sogorange] (c1) at (6.1,-0.7) {Paper};
+\node[sog kind=soggreen] (c2) at (10.35,-0.7) {Dataset};
+\node[sog kind=soggreen] (c3) at (14.6,-0.7) {License};
+\draw[sog ref] (c0) -- node[sog lab,above] {writes} (c1);
+\draw[sog ref] (c1) -- node[sog lab,above] {usesData} (c2);
+\draw[sog ref] (c2) -- node[sog lab,above] {licensedBy} (c3);
+\fill[sog region] (0,-1.88) rectangle (16.5,-4.28);
+\node[sog entity=sogblue] (n00) at (1.85,-2.5) {:alice};
+\node[sog value] (v00) at (1.85,-3.63) {"Alice Chen"};
+\draw[sog attr] (n00) -- node[sog lab,right] {name} (v00);
+\draw[sog type] (n00.north) -- node[sog lab,right] {rdf:type} (c0.south);
+\node[sog entity=sogorange] (n01) at (6.1,-2.5) {:paper17};
+\node[sog value] (v01) at (6.1,-3.63) {"Graph Retrieval"};
+\draw[sog attr] (n01) -- node[sog lab,right] {title} (v01);
+\draw[sog type] (n01.north) -- node[sog lab,right] {rdf:type} (c1.south);
+\node[sog entity=soggreen] (n02) at (10.35,-2.5) {:atlas};
+\node[sog value] (v02) at (10.35,-3.63) {"Atlas v2"};
+\draw[sog attr] (n02) -- node[sog lab,right] {label} (v02);
+\draw[sog type] (n02.north) -- node[sog lab,right] {rdf:type} (c2.south);
+\node[sog entity=soggreen] (n03) at (14.6,-2.5) {:ccby};
+\node[sog value] (v03) at (14.6,-3.63) {"CC BY 4.0"};
+\draw[sog attr] (n03) -- node[sog lab,right] {label} (v03);
+\draw[sog type] (n03.north) -- node[sog lab,right] {rdf:type} (c3.south);
+\draw[sog ref] (n00) -- node[sog lab,above] {writes} (n01);
+\draw[sog ref] (n01) -- node[sog lab,above] {usesData} (n02);
+\draw[sog ref] (n02) -- node[sog lab,above] {licensedBy} (n03);
+\fill[sog region] (0,-4.68) rectangle (16.5,-7.08);
+\node[sog entity=sogblue] (n10) at (1.85,-5.3) {:ben};
+\node[sog value] (v10) at (1.85,-6.43) {"Ben Ortiz"};
+\draw[sog attr] (n10) -- node[sog lab,right] {name} (v10);
+\node[sog entity=sogorange] (n11) at (6.1,-5.3) {:paper28};
+\node[sog value] (v11) at (6.1,-6.43) {"Entity Linking"};
+\draw[sog attr] (n11) -- node[sog lab,right] {title} (v11);
+\node[sog entity=soggreen] (n12) at (10.35,-5.3) {:orion};
+\node[sog value] (v12) at (10.35,-6.43) {"Orion v1"};
+\draw[sog attr] (n12) -- node[sog lab,right] {label} (v12);
+\node[sog entity=soggreen] (n13) at (14.6,-5.3) {:mit};
+\node[sog value] (v13) at (14.6,-6.43) {"MIT"};
+\draw[sog attr] (n13) -- node[sog lab,right] {label} (v13);
+\draw[sog ref] (n10) -- node[sog lab,above] {writes} (n11);
+\draw[sog ref] (n11) -- node[sog lab,above] {usesData} (n12);
+\draw[sog ref] (n12) -- node[sog lab,above] {licensedBy} (n13);
+\fill[sog region] (0,-7.4799999999999995) rectangle (16.5,-9.879999999999999);
+\node[sog entity=sogblue] (n20) at (1.85,-8.1) {:cara};
+\node[sog value] (v20) at (1.85,-9.23) {"Cara Singh"};
+\draw[sog attr] (n20) -- node[sog lab,right] {name} (v20);
+\node[sog entity=sogorange] (n21) at (6.1,-8.1) {:paper39};
+\node[sog value] (v21) at (6.1,-9.23) {"Schema Matching"};
+\draw[sog attr] (n21) -- node[sog lab,right] {title} (v21);
+\node[sog entity=soggreen] (n22) at (10.35,-8.1) {:iris};
+\node[sog value] (v22) at (10.35,-9.23) {"Iris v3"};
+\draw[sog attr] (n22) -- node[sog lab,right] {label} (v22);
+\node[sog entity=soggreen] (n23) at (14.6,-8.1) {:cc0};
+\node[sog value] (v23) at (14.6,-9.23) {"CC0 1.0"};
+\draw[sog attr] (n23) -- node[sog lab,right] {label} (v23);
+\draw[sog ref] (n20) -- node[sog lab,above] {writes} (n21);
+\draw[sog ref] (n21) -- node[sog lab,above] {usesData} (n22);
+\draw[sog ref] (n22) -- node[sog lab,above] {licensedBy} (n23);
+\node[sog subtitle] (hint) at (0.2,-10.23) {Columns retain the class of the first row; dotted arrows show explicit typing.};
+
+\node[sog kind=sogblue,sog swatch,rounded corners=2pt] (k0) at (.65,-10.95) {};
+\node[sog keytext] at (1.05,-10.95) {class};
+\node[sog entity=sogorange,sog swatch,rounded corners=4pt] at (3.05,-10.95) {};
+\node[sog keytext] at (3.45,-10.95) {instance};
+\node[sog value,sog swatch,rounded corners=2pt] at (5.85,-10.95) {};
+\node[sog keytext] at (6.25,-10.95) {value};
+\draw[sog ref] (8,-10.95) -- (8.7,-10.95); \node[sog keytext] at (8.9,-10.95) {relation};
+\draw[sog attr] (10.8,-10.95) -- (11.5,-10.95); \node[sog keytext] at (11.7,-10.95) {attribute};
+\draw[sog type] (14,-10.95) -- (14.7,-10.95); \node[sog keytext] (ke) at (14.9,-10.95) {type};
+\begin{scope}[on background layer]\node[sog key,fit=(k0)(ke)] {};\end{scope}
+\end{tikzpicture}
+\end{document}

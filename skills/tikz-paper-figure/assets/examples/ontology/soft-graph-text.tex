@@ -1,0 +1,49 @@
+% Soft ontology style example. Fictional content; layouts and colour meanings are illustrative.
+% Copy softontology.sty alongside the source when using this outside the skill.
+% Build at natural width (~17 cm): build_figure.py <file>.tex --max-width 500 --png-dir .
+\documentclass[10pt,tikz,border=5pt]{standalone}
+\usepackage[T1]{fontenc}
+\usepackage{DejaVuSans}
+\usepackage{DejaVuSansMono}
+\renewcommand{\familydefault}{\sfdefault}
+\usepackage{softontology}
+\begin{document}
+\begin{tikzpicture}
+
+\node[sog title] at (0,1) {03\quad A relation and its text representation};
+\node[sog subtitle] at (0,.55) {White text blocks and a restrained accent sit beside the graph.};
+\fill[sog region] (0,-.05) rectangle (16.5,-5.25);
+\node[sog heading] at (.25,-.4) {RESOURCE GRAPH};
+\node[sog entity=sogorange,minimum width=2cm] (paper) at (2.25,-1.45) {:paper17};
+\node[sog entity=sogblue,minimum width=2cm] (author) at (8,-1.45) {:alice};
+\node[sog entity=soggreen,minimum width=2cm] (topic) at (14,-1.45) {:graphs};
+\draw[sog ref] (paper) -- node[sog lab,above] {createdBy} (author);
+\draw[sog ref] (paper.north) -- (2.25,-.72) -- node[sog lab,above,pos=.62] {hasTopic} (14,-.72) -- (topic.north);
+\node[sog value] (name) at (8,-3.55) {"Alice Chen"};
+\draw[sog attr] (author) -- node[sog lab,right,pos=.72] {name} (name);
+\node[sog value] (title) at (2.25,-4.55) {"Graph Retrieval"};
+\draw[sog attr] (paper.south) -- node[sog lab,right] {title} (title.north);
+\node[sog value] (label) at (14,-4.55) {"Knowledge graphs"};
+\draw[sog attr] (topic.south) -- node[sog lab,right] {label} (label.north);
+\node[sog heading] at (.25,-5.85) {TURTLE EXCERPT};
+\node[sog code,text width=15.6cm] (listing) at (.2,-6.15) {\strut
+@prefix ex: <https://example.org/> .\\[3pt]
+ex:paper17 ex:createdBy ex:alice ;\\
+\phantom{ex:paper17 }ex:hasTopic ex:graphs ;\\
+\phantom{ex:paper17 }ex:title "Graph Retrieval" .\\[3pt]
+ex:alice\phantom{17} ex:name "Alice Chen" .};
+\node[sog edit,fit=(name)] {};
+\node[sog note,anchor=west,text=sogaccent] at (9.3,-3.55) {selected value};
+\node[sog note,anchor=north west] at ([yshift=-8pt]listing.south west) {Prefixes shortened in the graph; identifiers preserved in the text.};
+\node[sog entity=sogorange,sog swatch] (k1) at (1,-10.05) {};
+\node[sog keytext] at (1.4,-10.05) {resource};
+\node[sog value,sog swatch,rounded corners=2pt] at (4.15,-10.05) {};
+\node[sog keytext] at (4.55,-10.05) {value};
+\draw[sog ref] (6.8,-10.05) -- (7.5,-10.05); \node[sog keytext] at (7.65,-10.05) {relation};
+\draw[sog attr] (10.1,-10.05) -- (10.8,-10.05); \node[sog keytext] at (10.95,-10.05) {attribute};
+\node[sog edit,minimum width=.4cm,minimum height=.3cm] at (13.7,-10.05) {};
+\node[sog keytext] (end) at (14.1,-10.05) {selection};
+\begin{scope}[on background layer]\node[sog key,fit=(k1)(end)] {};\end{scope}
+
+\end{tikzpicture}
+\end{document}

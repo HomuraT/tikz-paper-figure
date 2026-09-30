@@ -15,3 +15,6 @@ __pycache__/
 # OS
 .DS_Store
 Thumbs.db
+
+# Local figure review drafts; approved examples live under skills/.../assets
+/draft/

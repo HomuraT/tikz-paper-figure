@@ -1,0 +1,32 @@
+% Soft ontology diagrams: shared appearance, no prescribed graph topology.
+% Fonts come from the document; examples use DejaVu Sans and DejaVu Sans Mono.
+% All public TikZ styles are prefixed `sog `; colours are prefixed `sog`.
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{softontology}[2026/09/30 v0.2.2 Soft ontology diagram components]
+\RequirePackage{tikz}
+\RequirePackage{xcolor}
+\usetikzlibrary{arrows.meta,calc,positioning,fit,backgrounds,shadows}
+\definecolor{sogblue}{HTML}{AEC7E8}
+\definecolor{sogorange}{HTML}{FFBB78}
+\definecolor{soggreen}{HTML}{98DF8A}
+\definecolor{sogaccent}{HTML}{D62728}
+\tikzset{
+ sog region/.style={fill=black!3.5,draw=none,rounded corners=4pt},
+ sog title/.style={font=\fontsize{10}{12}\selectfont\bfseries,text=black!80,anchor=west,inner sep=0pt},
+ sog subtitle/.style={font=\fontsize{8}{10}\selectfont,text=black!60,anchor=west,inner sep=0pt},
+ sog heading/.style={font=\fontsize{8}{10}\selectfont\bfseries,text=black!65,anchor=west,inner sep=0pt},
+ sog base/.style={draw=black,line width=.55pt,text=black,font=\fontsize{8}{10}\selectfont\ttfamily,inner xsep=6pt,inner ysep=3pt,minimum height=.49cm},
+ sog kind/.style={sog base,rounded corners=2pt,fill=#1,font=\fontsize{8}{10}\selectfont\ttfamily\bfseries,drop shadow={shadow xshift=.8pt,shadow yshift=-.8pt,opacity=1,fill=black!35}},
+ sog entity/.style={sog base,rounded corners=7pt,fill=#1!45,drop shadow={shadow xshift=.7pt,shadow yshift=-.7pt,opacity=1,fill=black!25}},
+ sog value/.style={sog base,fill=white,rounded corners=2pt,inner xsep=4pt,drop shadow={shadow xshift=.7pt,shadow yshift=-.7pt,opacity=1,fill=black!25}},
+ sog code/.style={sog value,align=left,inner sep=7pt,font=\fontsize{7.5}{12}\selectfont\ttfamily,anchor=north west},
+ sog ref/.style={-{Latex[length=1.65mm,width=1.2mm]},draw=black,line width=.6pt},
+ sog attr/.style={sog ref,draw=black!55},
+ sog type/.style={sog ref,draw=black!55,densely dotted,line width=.7pt},
+ sog lab/.style={font=\fontsize{7.4}{9}\selectfont\ttfamily,inner sep=2pt,text=black},
+ sog note/.style={font=\fontsize{7.8}{10}\selectfont,text=black!65,align=left,inner sep=0pt},
+ sog keytext/.style={font=\fontsize{7.6}{9}\selectfont,anchor=west,inner sep=0pt,text height=1.6ex,text depth=.4ex},
+ sog key/.style={draw=black!20,line width=.7pt,rounded corners=2pt,fill=white,inner xsep=7pt,inner ysep=6pt},
+ sog swatch/.style={minimum width=.55cm,minimum height=.34cm,rounded corners=3pt,inner sep=0pt},
+ sog edit/.style={draw=sogaccent,line width=1pt,rounded corners=1pt,inner sep=2pt}
+}

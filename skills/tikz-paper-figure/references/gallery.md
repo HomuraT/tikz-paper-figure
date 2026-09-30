@@ -1,11 +1,11 @@
 # Gallery: every example in this skill
 
-All fifty-seven renders on one page, with the question each answers and where its source and recipe live, in
+All sixty-three renders on one page, with the question each answers and where its source and recipe live, in
 two styles: the house style (card figures, bar panels, `plotfig.sty` data plots) and the classic style
-(`classicfig.sty`, Matplotlib's look), plus three ontology and RDF diagrams across both. Paths are relative
+(`classicfig.sty`, Matplotlib's look), plus nine ontology and RDF diagrams across both. Paths are relative
 to the skill root. Open the render closest to the figure at hand before drawing; it is the target.
 `assets/examples/gallery.png` tiles the house-style renders into one image and
-`assets/examples/classic/gallery.png` the classic ones, `assets/examples/ontology/gallery.png` the three
+`assets/examples/classic/gallery.png` the classic ones, `assets/examples/ontology/gallery.png` the nine
 ontology diagrams; regenerate them with `python scripts/gallery_sheet.py`
 after adding or re-rendering an example.
 
@@ -13,7 +13,7 @@ Contents: [Card figures](#card-figures-cardfigsty) (3) · [Bar panels](#benchmar
 [Data plots](#data-plots-plotfigsty) (28): amounts, gains and paired data, trends, classifier quality,
 distributions, composition, matrices · [Composite figures](#composite-figures) (4) ·
 [Classic style](#classic-style-classicfigsty) (18): lines and points, distributions, categories and fields,
-composite figures · [Ontology and RDF diagrams](#ontology-and-rdf-diagrams) (3).
+composite figures · [Ontology and RDF diagrams](#ontology-and-rdf-diagrams) (9).
 
 ## Card figures (cardfig.sty)
 
@@ -499,7 +499,7 @@ Three published notations for the three things a knowledge-graph or ontology pap
 plain TikZ on `classicfig.sty` (classic style), one uses cardfig's class boxes and chips without the cards
 (house style). Which to open, what each notation prescribes and where it comes from, the layout rules, the
 styles and a checklist are in `references/ontology.md`. Sources are `assets/examples/ontology/<name>.tex`;
-`assets/examples/ontology/gallery.png` tiles the three.
+`assets/examples/ontology/gallery.png` tiles all nine, including the six soft-style examples below.
 
 #### rdf-triples: the triples about one resource
 
@@ -526,6 +526,58 @@ TBox; individuals in the ABox below a faint rule, each in the column of its clas
 link, each assertion routed as the axiom it instantiates. Black outlines on tab20's light shades (class
 blue, individual orange, datatype green). House style (cardfig's fonts).
 
+
+The soft examples use `softontology.sty` with DejaVu fonts. Their appearance is reusable; the colours,
+content, node counts and layouts are illustrative. See [Soft ontology style](ontology.md#soft-ontology-style).
+
+#### soft-schema: a small class/instance graph
+
+![soft-schema](../assets/examples/ontology/soft-schema.png)
+
+Small example of class boxes, instance capsules and white values, with a consistent black outline and tiny shadow.
+
+[Source](../assets/examples/ontology/soft-schema.tex) · [PDF](../assets/examples/ontology/soft-schema.pdf).
+
+#### soft-lineage: sources and a shared output
+
+![soft-lineage](../assets/examples/ontology/soft-lineage.png)
+
+A branching dependency graph with source, operation and output colours; grey attribute arrows lead to white values.
+
+[Source](../assets/examples/ontology/soft-lineage.tex) · [PDF](../assets/examples/ontology/soft-lineage.pdf).
+
+#### soft-graph-text: a graph with a text excerpt
+
+![soft-graph-text](../assets/examples/ontology/soft-graph-text.png)
+
+A resource graph and Turtle excerpt, using the same white-box treatment for values and code; red marks a selected value.
+
+[Source](../assets/examples/ontology/soft-graph-text.tex) · [PDF](../assets/examples/ontology/soft-graph-text.pdf).
+
+#### soft-dense-schema: 28 nodes across schema and records
+
+![soft-dense-schema](../assets/examples/ontology/soft-dense-schema.png)
+
+Four class boxes, twelve instances and twelve literals. Repeated rows demonstrate density; they are not a required layout.
+
+[Source](../assets/examples/ontology/soft-dense-schema.tex) · [PDF](../assets/examples/ontology/soft-dense-schema.pdf).
+
+#### soft-dense-lineage: 26 nodes with converging dependencies
+
+![soft-dense-lineage](../assets/examples/ontology/soft-dense-lineage.png)
+
+Four source branches, file and count fields, processing rules, shared collections and exports.
+
+[Source](../assets/examples/ontology/soft-dense-lineage.tex) · [PDF](../assets/examples/ontology/soft-dense-lineage.pdf).
+
+#### soft-dense-catalogue: 27 nodes with shared resources
+
+![soft-dense-catalogue](../assets/examples/ontology/soft-dense-catalogue.png)
+
+People, papers, topics, shared affiliation, literal branches and a Turtle excerpt. Tests long labels, shared paths and selection frames.
+
+[Source](../assets/examples/ontology/soft-dense-catalogue.tex) · [PDF](../assets/examples/ontology/soft-dense-catalogue.pdf).
+
 ## Regenerating a render
 
 ```
@@ -533,9 +585,9 @@ python scripts/build_figure.py assets/examples/plots/<name>.tex --png-dir assets
 python scripts/gallery_sheet.py
 ```
 
-The first command rebuilds one example and writes its PNG next to the source; the second retiles both contact
+The first command rebuilds one example and writes its PNG next to the source; the second retiles all three contact
 sheets (`--style house`, `--style classic` or `--style ontology` for one); the ontology examples have their own
-sheet and build with `--png-dir assets/examples/ontology`. Generated examples are rebuilt from their CSV first
+sheet and build with `--png-dir assets/examples/ontology` (add `--max-width 500` for the full-width `soft-*` examples). Generated examples are rebuilt from their CSV first
 (`flows_from_csv.py`, `treemap_from_csv.py`, `bars_from_csv.py`). Classic examples build the same way
 (`--png-dir assets/examples/classic`; the build runs in the figure's directory, so `data/*.dat` resolves).
 Their data come from `data/make_data.py` (numpy only, fixed seeds; it writes the `.dat` files beside itself and
