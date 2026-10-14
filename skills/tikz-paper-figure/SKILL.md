@@ -1,15 +1,17 @@
 ---
 name: tikz-paper-figure
 metadata:
-  version: "0.2.2"
+  version: "0.2.3"
 description: >-
-  Create and revise standalone TikZ/pgfplots paper figures: schematic cards,
-  pipelines, benchmark panels, data plots and scientific composites. Includes
-  house style (Source Sans Pro and a fixed palette), classic Matplotlib style,
-  and ontology/RDF diagrams (RDF, VOWL, TBox/ABox and soft ontology, mapping and
-  provenance graphs). Use for choosing a chart, Figure 1, method or results
-  figures, redrawing or beautifying a figure, and requests such as 画图、先导图、
-  方法图、流程图、实验图、消融图、本体图、知识图谱, even when TikZ is not mentioned.
+  Create and revise standalone TikZ/pgfplots paper figures: schematic cards
+  (including card-style stage figures), benchmark panels, data plots and
+  scientific composites. Includes house style (Source Sans Pro and a fixed
+  palette), classic Matplotlib style, and ontology/RDF diagrams (RDF, VOWL,
+  TBox/ABox and soft ontology, mapping and provenance graphs). Use for choosing
+  a chart, Figure 1 teasers, results figures, redrawing or beautifying such a
+  figure, and requests such as 画图、先导图、实验图、消融图、本体图、知识图谱, even
+  when TikZ is not mentioned. Method overviews, model architectures and
+  framework figures (方法图、框架图、模型结构图) belong to paper-framework-figure.
 license: MIT for SKILL.md, references and scripts; CC0-1.0 for everything under assets (see LICENSE-ASSETS in the repository)
 compatibility: Needs TeX Live or MiKTeX with latexmk, pgfplots 1.18+, tikzmark, fontawesome5, sourcesanspro and inconsolata, poppler (pdfinfo, pdftoppm) and Python 3.9+ on PATH; the classic style also needs dejavu, mathastext and contour (lualatex for contour lines) and numpy for its data scripts. scripts/check_env.py verifies all of it.
 ---

@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.3 (2026-10-14)
+
+Narrower triggering.
+
+- The skill description no longer claims method and pipeline figures (方法图、流程图). Method overviews, model architectures and framework figures go to the sibling skill paper-framework-figure; card-style stage figures, Figure 1 teasers, results figures and ontology diagrams stay here. No style, example or script changed.
+
 ## 0.2.2 (2026-09-30)
 
 Soft ontology diagrams with a reusable visual style.
